@@ -1,17 +1,17 @@
 import { client } from '../../../client';
 import type { Page } from '#/pagination';
 import type {
-  AddTodo,
-  EditTodo,
-  Todo,
-  ListTodos,
-} from '#/features/todos/schemas';
+  AddClient,
+  EditClient,
+  Client,
+  ListClients,
+} from '#/features/clients/schemas';
 
-export async function listTodos(
-  params?: ListTodos,
+export async function listClients(
+  params?: ListClients,
   token?: string | null
-): Promise<Page<Todo>> {
-  const response = await client.api.todos.$get(
+): Promise<Page<Client>> {
+  const response = await client.api.clients.$get(
     {
       query: {
         pageNumber: params?.pageNumber?.toString(),
@@ -23,56 +23,56 @@ export async function listTodos(
   );
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.detail || 'Failed to fetch stores');
+    throw new Error(error.detail || 'Failed to fetch clients');
   }
   return response.json();
 }
 
-export async function getTodo(
-  todoId: string,
+export async function getClient(
+  clientId: string,
   token?: string | null
-): Promise<Todo> {
-  const response = await client.api.todos[':todoId'].$get(
-    { param: { todoId } },
+): Promise<Client> {
+  const response = await client.api.clients[':clientId'].$get(
+    { param: { clientId } },
     { headers: token ? { Authorization: `Bearer ${token}` } : {} }
   );
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.detail || 'Failed to fetch todo');
+    throw new Error(error.detail || 'Failed to fetch client');
   }
   return response.json();
 }
 
-export async function addTodo(
-  data: AddTodo,
+export async function addClient(
+  data: AddClient,
   token?: string | null
-): Promise<Todo> {
-  const response = await client.api.todos.$post(
+): Promise<Client> {
+  const response = await client.api.clients.$post(
     { json: data },
     { headers: token ? { Authorization: `Bearer ${token}` } : {} }
   );
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.detail || 'Failed to add todo');
+    throw new Error(error.detail || 'Failed to add client');
   }
   return response.json();
 }
 
-export async function editTodo(
-  todoId: string,
-  data: EditTodo,
+export async function editClient(
+  clientId: string,
+  data: EditClient,
   token?: string | null
-): Promise<Todo> {
-  const response = await client.api.todos[':todoId'].$put(
+): Promise<Client> {
+  const response = await client.api.clients[':clientId'].$put(
     {
-      param: { todoId },
+      param: { clientId },
       json: data,
     },
     { headers: token ? { Authorization: `Bearer ${token}` } : {} }
   );
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.detail || 'Failed to update todo');
+    throw new Error(error.detail || 'Failed to update client');
   }
   return response.json();
 }

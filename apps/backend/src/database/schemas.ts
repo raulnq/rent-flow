@@ -1,1 +1,1 @@
-export { todos } from '#/features/todos/todo.js';
+export { clients } from '#/features/clients/client.js';

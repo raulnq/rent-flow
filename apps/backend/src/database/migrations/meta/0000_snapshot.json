@@ -1,36 +1,60 @@
 {
-  "id": "b50a4e82-4add-4fbb-afdf-74758a975b01",
+  "id": "086ed4a0-1813-48b3-a71a-f04efb39ac76",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "todos_schema.todos": {
-      "name": "todos",
-      "schema": "todos_schema",
+    "rent_flow.clients": {
+      "name": "clients",
+      "schema": "rent_flow",
       "columns": {
-        "todoId": {
-          "name": "todoId",
+        "clientId": {
+          "name": "clientId",
           "type": "uuid",
           "primaryKey": true,
           "notNull": true
         },
         "name": {
           "name": "name",
-          "type": "varchar(1024)",
+          "type": "varchar(200)",
           "primaryKey": false,
           "notNull": true
         },
-        "completed": {
-          "name": "completed",
-          "type": "boolean",
+        "dni": {
+          "name": "dni",
+          "type": "varchar(20)",
           "primaryKey": false,
           "notNull": true
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address": {
+          "name": "address",
+          "type": "varchar(1000)",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
+      "uniqueConstraints": {
+        "clients_dni_unique": {
+          "name": "clients_dni_unique",
+          "nullsNotDistinct": false,
+          "columns": ["dni"]
+        }
+      },
       "policies": {},
       "checkConstraints": {},
       "isRLSEnabled": false

@@ -11,13 +11,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import {
-  Building2,
-  LayoutDashboard,
-  ListTodo,
-  Settings,
-  Wallet,
-} from 'lucide-react';
+import { LayoutDashboard, Users } from 'lucide-react';
 import { useLocation } from 'react-router';
 import { UserButton } from '@clerk/clerk-react';
 
@@ -30,10 +24,7 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { title: 'Dashboard', to: '/', icon: LayoutDashboard, end: true },
-  { title: 'Todos', to: '/todos', icon: ListTodo },
-  { title: 'Companies', to: '/companies', icon: Building2 },
-  { title: 'Deals', to: '/deals', icon: Wallet },
-  { title: 'Settings', to: '/settings', icon: Settings },
+  { title: 'Clients', to: '/clients', icon: Users },
 ];
 
 export function AppSidebar() {

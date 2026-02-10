@@ -67,11 +67,23 @@ export const validationError = {
     message: 'Invalid input: expected number, received undefined',
     code: 'invalid_type',
   }),
+  invalidEmail: (path: string): ValidationError => ({
+    path,
+    message: 'Invalid email address',
+    code: 'invalid_format',
+  }),
 };
 
 export const createNotFoundError = (detail: string): ProblemDocument => {
   return new ProblemDocument({
     detail,
     status: StatusCodes.NOT_FOUND,
+  });
+};
+
+export const createConflictError = (detail: string): ProblemDocument => {
+  return new ProblemDocument({
+    detail,
+    status: StatusCodes.CONFLICT,
   });
 };

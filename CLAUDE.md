@@ -45,6 +45,7 @@ Conventional Commits: `<type>(<scope>): <subject>`
 
 - Scopes: `backend`, `frontend`, `repo`
 - Subject: sentence-case or lower-case
+- **Do NOT include** `Co-Authored-By` lines in commit messages
 
 ## Feature file structure
 

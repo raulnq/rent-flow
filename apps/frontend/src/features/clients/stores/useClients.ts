@@ -3,16 +3,20 @@ import {
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query';
-import { listTodos, getTodo, addTodo, editTodo } from './todosClient';
+import { listClients, getClient, addClient, editClient } from './clientsClient';
 import { useAuth } from '@clerk/clerk-react';
 import { useSearchParams } from 'react-router';
-import type { AddTodo, EditTodo, ListTodos } from '#/features/todos/schemas';
+import type {
+  AddClient,
+  EditClient,
+  ListClients,
+} from '#/features/clients/schemas';
 
-export function useTodosSuspense({
+export function useClientsSuspense({
   pageNumber,
   pageSize,
   name,
-}: Partial<ListTodos> = {}) {
+}: Partial<ListClients> = {}) {
   const { getToken } = useAuth();
   const [searchParams] = useSearchParams();
   const queryPage = searchParams.get('page') ?? '1';
@@ -20,53 +24,53 @@ export function useTodosSuspense({
   const params = {
     pageNumber: pageNumber ?? currentPage,
     pageSize: pageSize ?? 10,
-    name: name || undefined,
+    name,
   };
   return useSuspenseQuery({
-    queryKey: ['todos', params],
+    queryKey: ['clients', params],
     queryFn: async () => {
       const token = await getToken();
-      return listTodos(params, token);
+      return listClients(params, token);
     },
   });
 }
 
-export function useTodoSuspense(todoId: string) {
+export function useClientSuspense(clientId: string) {
   const { getToken } = useAuth();
   return useSuspenseQuery({
-    queryKey: ['todo', todoId],
+    queryKey: ['client', clientId],
     queryFn: async () => {
       const token = await getToken();
-      return getTodo(todoId, token);
+      return getClient(clientId, token);
     },
   });
 }
 
-export function useAddTodo() {
+export function useAddClient() {
   const queryClient = useQueryClient();
   const { getToken } = useAuth();
   return useMutation({
-    mutationFn: async (data: AddTodo) => {
+    mutationFn: async (data: AddClient) => {
       const token = await getToken();
-      return addTodo(data, token);
+      return addClient(data, token);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['todos'] });
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
     },
   });
 }
 
-export function useEditTodo(todoId: string) {
+export function useEditClient(clientId: string) {
   const queryClient = useQueryClient();
   const { getToken } = useAuth();
   return useMutation({
-    mutationFn: async (data: EditTodo) => {
+    mutationFn: async (data: EditClient) => {
       const token = await getToken();
-      return editTodo(todoId, data, token);
+      return editClient(clientId, data, token);
     },
     onSuccess: data => {
-      queryClient.invalidateQueries({ queryKey: ['todos'] });
-      queryClient.setQueryData(['todo', todoId], data);
+      queryClient.invalidateQueries({ queryKey: ['clients'] });
+      queryClient.setQueryData(['client', clientId], data);
     },
   });
 }

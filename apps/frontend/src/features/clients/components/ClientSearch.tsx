@@ -4,10 +4,11 @@ import { Search } from 'lucide-react';
 import { useRef } from 'react';
 import { useSearchParams } from 'react-router';
 
-export function TodoSearch() {
+export function ClientSearch() {
   const [searchParams, setSearchParams] = useSearchParams();
   const name = searchParams.get('name') ?? '';
   const searchInputRef = useRef<HTMLInputElement>(null);
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setSearchParams(prev => {
@@ -39,7 +40,7 @@ export function TodoSearch() {
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           ref={searchInputRef}
-          placeholder="Search todos..."
+          placeholder="Search clients..."
           defaultValue={name}
           className="pl-9"
         />

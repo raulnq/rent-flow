@@ -44,7 +44,7 @@ File: `apps/backend/src/features/<entities>/<entity>.ts`
 ```ts
 import { varchar, pgSchema, uuid, boolean } from 'drizzle-orm/pg-core';
 
-const dbSchema = pgSchema('<entities>_schema');
+const dbSchema = pgSchema('<schema>');
 
 export const <entities> = dbSchema.table('<entities>', {
   <entityId>: uuid('<entityId>').primaryKey(),
@@ -55,7 +55,7 @@ export const <entities> = dbSchema.table('<entities>', {
 
 Key rules:
 
-- **`pgSchema('<entities>_schema')`** — each feature gets its own named schema. Do NOT use `pgTable()` (which defaults to `public` schema).
+- **`pgSchema('<schema>')`** — The schema is the same in `migrations.schema`(`apps/backend/drizzle.config.ts`). Do NOT use `pgTable()` (which defaults to `public` schema).
 - **UUID primary key**: `uuid('<entityId>').primaryKey()` — no `.defaultRandom()`
 - **`varchar` with explicit length**: always specify `{ length: N }`
 - **`.notNull()`** on all required columns

@@ -1,5 +1,5 @@
 import { Link, useSearchParams } from 'react-router';
-import { Search, Pencil, Check, X } from 'lucide-react';
+import { Search, Pencil } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import {
@@ -10,16 +10,18 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useTodosSuspense } from '../stores/useTodos';
+import { useClientsSuspense } from '../stores/useClients';
 import { Pagination } from '@/components/Pagination';
 
-export function TodosSkeleton() {
+export function ClientsSkeleton() {
   return (
     <Table>
       <TableHeader>
         <TableRow>
           <TableHead>Name</TableHead>
-          <TableHead className="w-[100px]">Completed</TableHead>
+          <TableHead>DNI</TableHead>
+          <TableHead>Phone</TableHead>
+          <TableHead>Email</TableHead>
           <TableHead className="w-[100px]">Actions</TableHead>
         </TableRow>
       </TableHeader>
@@ -30,7 +32,13 @@ export function TodosSkeleton() {
               <Skeleton className="h-8 w-[50%]" />
             </TableCell>
             <TableCell>
-              <Skeleton className="h-8" />
+              <Skeleton className="h-8 w-[60%]" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-8 w-[50%]" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-8 w-[70%]" />
             </TableCell>
             <TableCell>
               <Skeleton className="h-8" />
@@ -42,14 +50,14 @@ export function TodosSkeleton() {
   );
 }
 
-export function TodosError({
+export function ClientsError({
   resetErrorBoundary,
 }: {
   resetErrorBoundary: () => void;
 }) {
   return (
     <div className="text-center py-8">
-      <p className="text-destructive mb-4">Error loading todos.</p>
+      <p className="text-destructive mb-4">Error loading clients.</p>
       <Button onClick={resetErrorBoundary} variant="outline">
         Try again
       </Button>
@@ -57,15 +65,15 @@ export function TodosError({
   );
 }
 
-export function TodoTable() {
+export function ClientTable() {
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name') ?? '';
-  const { data } = useTodosSuspense({ name: name });
+  const { data } = useClientsSuspense({ name: name });
 
   if (data.items.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
-        No stores found matching your search.
+        No clients found matching your search.
       </div>
     );
   }
@@ -76,40 +84,35 @@ export function TodoTable() {
         <TableHeader>
           <TableRow>
             <TableHead>Name</TableHead>
-            <TableHead className="w-[100px]">Completed</TableHead>
+            <TableHead>DNI</TableHead>
+            <TableHead>Phone</TableHead>
+            <TableHead>Email</TableHead>
             <TableHead className="w-[100px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data?.items.map(todo => (
-            <TableRow key={todo.todoId}>
+          {data?.items.map(item => (
+            <TableRow key={item.clientId}>
               <TableCell className="font-medium">
-                <Link to={`/todos/${todo.todoId}`} className="hover:underline">
-                  {todo.name}
+                <Link
+                  to={`/clients/${item.clientId}`}
+                  className="hover:underline"
+                >
+                  {item.name}
                 </Link>
               </TableCell>
-              <TableCell>
-                {todo.completed ? (
-                  <span className="flex items-center gap-1 text-green-600">
-                    <Check className="h-4 w-4" />
-                    Yes
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-1 text-muted-foreground">
-                    <X className="h-4 w-4" />
-                    No
-                  </span>
-                )}
-              </TableCell>
+              <TableCell>{item.dni}</TableCell>
+              <TableCell>{item.phone}</TableCell>
+              <TableCell>{item.email ?? '—'}</TableCell>
               <TableCell>
                 <div className="flex gap-2">
                   <Button variant="ghost" size="icon" asChild>
-                    <Link to={`/todos/${todo.todoId}`}>
+                    <Link to={`/clients/${item.clientId}`}>
                       <Search className="h-4 w-4" />
                     </Link>
                   </Button>
                   <Button variant="ghost" size="icon" asChild>
-                    <Link to={`/todos/${todo.todoId}/edit`}>
+                    <Link to={`/clients/${item.clientId}/edit`}>
                       <Pencil className="h-4 w-4" />
                     </Link>
                   </Button>

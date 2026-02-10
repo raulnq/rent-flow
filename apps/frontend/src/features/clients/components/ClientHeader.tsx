@@ -2,19 +2,19 @@ import { Button } from '@/components/ui/button';
 import { ArrowLeft } from 'lucide-react';
 import { type ReactNode } from 'react';
 
-type TodoHeaderProps = {
+type ClientHeaderProps = {
   onBack: () => void;
   title: string;
   description: string;
   children?: ReactNode;
 };
 
-export function TodoHeader({
+export function ClientHeader({
   onBack,
   title,
   description,
   children,
-}: TodoHeaderProps) {
+}: ClientHeaderProps) {
   return (
     <div className="flex items-center justify-between">
       <div className="flex items-center gap-3">

@@ -1,32 +1,34 @@
 import { Hono } from 'hono';
-import { todos } from './todo.js';
 import { StatusCodes } from 'http-status-codes';
+import { clients } from './client.js';
 import { createPage } from '#/pagination.js';
 import { zValidator } from '#/validator.js';
 import { client } from '#/database/client.js';
-import { like, count, SQL, and } from 'drizzle-orm';
-import { listTodosSchema } from './schemas.js';
+import { like, count, and } from 'drizzle-orm';
+import type { SQL } from 'drizzle-orm';
+import { listClientsSchema } from './schemas.js';
 
 export const listRoute = new Hono().get(
   '/',
-  zValidator('query', listTodosSchema),
+  zValidator('query', listClientsSchema),
   async c => {
     const { pageNumber, pageSize, name } = c.req.valid('query');
     const filters: SQL[] = [];
     const offset = (pageNumber - 1) * pageSize;
-    if (name) filters.push(like(todos.name, `%${name}%`));
+    if (name) filters.push(like(clients.name, `%${name}%`));
 
     const [{ totalCount }] = await client
       .select({ totalCount: count() })
-      .from(todos)
+      .from(clients)
       .where(and(...filters));
 
     const items = await client
       .select()
-      .from(todos)
+      .from(clients)
       .where(and(...filters))
       .limit(pageSize)
       .offset(offset);
+
     return c.json(
       createPage(items, totalCount, pageNumber, pageSize),
       StatusCodes.OK

@@ -7,15 +7,17 @@ import { ThemeToggle } from '../ThemeToggle';
 
 const TITLE_BY_PATH: Record<string, string> = {
   '/': 'Dashboard',
-  '/todos': 'Todos',
-  '/companies': 'Companies',
-  '/deals': 'Deals',
-  '/settings': 'Settings',
+  '/clients': 'Clients',
 };
 
 function usePageTitle() {
   const { pathname } = useLocation();
-  return TITLE_BY_PATH[pathname] ?? 'CRM';
+
+  const matchedKey = Object.keys(TITLE_BY_PATH)
+    .sort((a, b) => b.length - a.length)
+    .find(key => pathname.startsWith(key));
+
+  return matchedKey ? TITLE_BY_PATH[matchedKey] : 'CRM';
 }
 
 export default function AppHeader() {

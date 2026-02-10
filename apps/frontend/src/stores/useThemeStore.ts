@@ -18,7 +18,7 @@ export const useThemeStore = create<ThemeStore>()(
       },
     }),
     {
-      name: 'todo-theme',
+      name: 'rent-flow-theme',
     }
   )
 );
