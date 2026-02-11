@@ -26,6 +26,7 @@ import {
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ClientCombobox } from '@/features/clients/components/ClientCombobox';
+import { LocationMapField } from './LocationMapField';
 
 export function EditPropertyError({
   resetErrorBoundary,
@@ -319,62 +320,7 @@ export function EditPropertyForm({
               </Field>
             )}
           />
-          <div className="grid grid-cols-2 gap-4">
-            <Controller
-              name="latitude"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="latitude">Latitude</FieldLabel>
-                  <Input
-                    {...field}
-                    id="latitude"
-                    type="number"
-                    step="any"
-                    value={field.value ?? ''}
-                    onChange={e =>
-                      field.onChange(
-                        e.target.value === '' ? null : Number(e.target.value)
-                      )
-                    }
-                    aria-invalid={fieldState.invalid}
-                    placeholder="Latitude (optional)"
-                    disabled={isPending}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            <Controller
-              name="longitude"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="longitude">Longitude</FieldLabel>
-                  <Input
-                    {...field}
-                    id="longitude"
-                    type="number"
-                    step="any"
-                    value={field.value ?? ''}
-                    onChange={e =>
-                      field.onChange(
-                        e.target.value === '' ? null : Number(e.target.value)
-                      )
-                    }
-                    aria-invalid={fieldState.invalid}
-                    placeholder="Longitude (optional)"
-                    disabled={isPending}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-          </div>
+          <LocationMapField control={form.control} disabled={isPending} />
         </form>
       </CardContent>
       <CardFooter>

@@ -1,7 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { lazy, Suspense } from 'react';
 import type { Property } from '#/features/properties/schemas';
+
+const MapViewer = lazy(() =>
+  import('../../../components/MapViewer').then(module => ({
+    default: module.MapViewer,
+  }))
+);
 
 export function ViewPropertyError({
   resetErrorBoundary,
@@ -118,24 +125,25 @@ export function ViewPropertyCard({ property }: ViewPropertyCardProps) {
             </label>
             <p className="text-lg font-medium">{property.constraints ?? '—'}</p>
           </div>
-          {(property.latitude !== null || property.longitude !== null) && (
-            <div className="grid grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">
-                  Latitude
-                </label>
-                <p className="text-lg font-medium">
-                  {property.latitude ?? '—'}
-                </p>
-              </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-muted-foreground">
-                  Longitude
-                </label>
-                <p className="text-lg font-medium">
-                  {property.longitude ?? '—'}
-                </p>
-              </div>
+          {property.latitude !== null && property.longitude !== null && (
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                Location
+              </label>
+              <Suspense
+                fallback={
+                  <Skeleton className="h-[300px] w-full rounded-md border border-border" />
+                }
+              >
+                <MapViewer
+                  latitude={property.latitude}
+                  longitude={property.longitude}
+                />
+              </Suspense>
+              <p className="text-sm text-muted-foreground">
+                Coordinates: {property.latitude.toFixed(6)},{' '}
+                {property.longitude.toFixed(6)}
+              </p>
             </div>
           )}
         </div>
