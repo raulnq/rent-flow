@@ -1,5 +1,7 @@
 import {
+  keepPreviousData,
   useMutation,
+  useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query';
@@ -43,6 +45,42 @@ export function useClientSuspense(clientId: string) {
       const token = await getToken();
       return getClient(clientId, token);
     },
+  });
+}
+
+export function useClients({
+  name,
+  enabled,
+  pageNumber = 1,
+  pageSize = 10,
+}: {
+  name?: string;
+  enabled: boolean;
+  pageNumber?: number;
+  pageSize?: number;
+}) {
+  const { getToken } = useAuth();
+  const params = { pageNumber, pageSize, name };
+  return useQuery({
+    queryKey: ['clients', 'search', params],
+    queryFn: async () => {
+      const token = await getToken();
+      return listClients(params, token);
+    },
+    placeholderData: keepPreviousData,
+    enabled,
+  });
+}
+
+export function useClient(clientId?: string) {
+  const { getToken } = useAuth();
+  return useQuery({
+    queryKey: ['client', clientId],
+    queryFn: async () => {
+      const token = await getToken();
+      return getClient(clientId!, token);
+    },
+    enabled: !!clientId,
   });
 }
 

@@ -72,6 +72,26 @@ export const validationError = {
     message: 'Invalid email address',
     code: 'invalid_format',
   }),
+  nonNegative: (path: string): ValidationError => ({
+    path,
+    message: 'Too small: expected number to be >=0',
+    code: 'too_small',
+  }),
+  invalidEnum: (path: string, options: string[]): ValidationError => ({
+    path,
+    message: `Invalid option: expected one of ${options.map(o => `"${o}"`).join('|')}`,
+    code: 'invalid_value',
+  }),
+  tooSmallNumber: (path: string, min: number): ValidationError => ({
+    path,
+    message: `Too small: expected number to be >=${min}`,
+    code: 'too_small',
+  }),
+  tooBigNumber: (path: string, max: number): ValidationError => ({
+    path,
+    message: `Too big: expected number to be <=${max}`,
+    code: 'too_big',
+  }),
 };
 
 export const createNotFoundError = (detail: string): ProblemDocument => {

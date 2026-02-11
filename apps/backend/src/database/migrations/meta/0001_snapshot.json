@@ -1,0 +1,176 @@
+{
+  "id": "d4a6f264-43e1-429a-be2f-81583e787d7f",
+  "prevId": "086ed4a0-1813-48b3-a71a-f04efb39ac76",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "rent_flow.clients": {
+      "name": "clients",
+      "schema": "rent_flow",
+      "columns": {
+        "clientId": {
+          "name": "clientId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dni": {
+          "name": "dni",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address": {
+          "name": "address",
+          "type": "varchar(1000)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "clients_dni_unique": {
+          "name": "clients_dni_unique",
+          "nullsNotDistinct": false,
+          "columns": ["dni"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "rent_flow.properties": {
+      "name": "properties",
+      "schema": "rent_flow",
+      "columns": {
+        "propertyId": {
+          "name": "propertyId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "address": {
+          "name": "address",
+          "type": "varchar(1000)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "propertyType": {
+          "name": "propertyType",
+          "type": "varchar(25)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "clientId": {
+          "name": "clientId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rentalPrice": {
+          "name": "rentalPrice",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "numberOfRooms": {
+          "name": "numberOfRooms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "numberOfBathrooms": {
+          "name": "numberOfBathrooms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "numberOfGarages": {
+          "name": "numberOfGarages",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "totalArea": {
+          "name": "totalArea",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(5000)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "constraints": {
+          "name": "constraints",
+          "type": "varchar(5000)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "properties_clientId_clients_clientId_fk": {
+          "name": "properties_clientId_clients_clientId_fk",
+          "tableFrom": "properties",
+          "tableTo": "clients",
+          "schemaTo": "rent_flow",
+          "columnsFrom": ["clientId"],
+          "columnsTo": ["clientId"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

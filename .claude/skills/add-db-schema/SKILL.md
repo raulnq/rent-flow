@@ -42,13 +42,32 @@ The code templates below are the canonical patterns for table definitions — fo
 File: `apps/backend/src/features/<entities>/<entity>.ts`
 
 ```ts
-import { varchar, pgSchema, uuid, boolean } from 'drizzle-orm/pg-core';
+import {
+  varchar,
+  pgSchema,
+  uuid,
+  boolean,
+  numeric,
+  integer,
+  timestamp,
+  date,
+} from 'drizzle-orm/pg-core';
 
 const dbSchema = pgSchema('<schema>');
 
 export const <entities> = dbSchema.table('<entities>', {
   <entityId>: uuid('<entityId>').primaryKey(),
   name: varchar('name', { length: 1024 }).notNull(),
+  price: numeric('price', {
+    precision: 10,
+    scale: 2,
+    mode: 'number'
+  }).notNull(),
+  quantity: integer('quantity').notNull(),
+  createdAt: timestamp('createdAt', {
+    mode: 'date',
+    withTimezone: true
+  }).notNull().defaultNow(),
   // ... other columns
 });
 ```
@@ -58,6 +77,8 @@ Key rules:
 - **`pgSchema('<schema>')`** — The schema is the same in `migrations.schema`(`apps/backend/drizzle.config.ts`). Do NOT use `pgTable()` (which defaults to `public` schema).
 - **UUID primary key**: `uuid('<entityId>').primaryKey()` — no `.defaultRandom()`
 - **`varchar` with explicit length**: always specify `{ length: N }`
+- **`numeric` with `mode: 'number'`**: always specify `{ precision, scale, mode: 'number' }` to get TypeScript `number` type
+- **`timestamp` with `mode: 'date'`**: always specify `{ mode: 'date', withTimezone: true }` to get JavaScript `Date` objects
 - **`.notNull()`** on all required columns
 - Column name in quotes must match the property name exactly
 
@@ -165,7 +186,10 @@ import {
   uuid,
   boolean,
   integer,
+  numeric,
+  doublePrecision,
   timestamp,
+  date,
   text,
   pgSchema,
 } from 'drizzle-orm/pg-core';
@@ -176,9 +200,55 @@ varchar('name', { length: 1024 }).notNull(); // Required string
 varchar('description', { length: 4096 }); // Optional string
 boolean('active').notNull(); // Required boolean
 integer('quantity').notNull(); // Required integer
-timestamp('createdAt').notNull(); // Required timestamp
 text('content').notNull(); // Unlimited text
+
+// Numeric columns (prices, measurements, etc.)
+numeric('price', {
+  precision: 10,
+  scale: 2,
+  mode: 'number',
+}).notNull(); // Required decimal (returns as number)
+
+numeric('amount', {
+  precision: 10,
+  scale: 2,
+  mode: 'number',
+}); // Optional decimal
+
+// Geographic coordinates
+doublePrecision('latitude'); // Returns as number by default
+doublePrecision('longitude');
+
+// Timestamp columns (created/updated tracking)
+timestamp('createdAt', {
+  mode: 'date',
+  withTimezone: true,
+})
+  .notNull()
+  .defaultNow(); // Auto-generated, returns Date object
+
+timestamp('updatedAt', {
+  mode: 'date',
+  withTimezone: true,
+}); // Optional, returns Date object
+
+// Date-only columns (birthdate, deadline, etc.)
+date('birthDate', {
+  mode: 'string',
+}); // Returns 'YYYY-MM-DD' string (avoids timezone issues)
+
+date('deadline', {
+  mode: 'string',
+}).notNull(); // Required date, returns 'YYYY-MM-DD'
 ```
+
+**Important:**
+
+- **Numeric columns**: Always use `mode: 'number'` for `numeric()` to get TypeScript `number` types instead of strings.
+- **Timestamp columns**: Always use `mode: 'date'` with `withTimezone: true` to get JavaScript `Date` objects with timezone information.
+- **Date-only columns**: Use `date()` with `mode: 'string'` to get 'YYYY-MM-DD' strings. This avoids timezone shift bugs that occur when using `Date` objects for date-only values.
+- **Auto timestamps**: Use `.defaultNow()` for auto-generated creation timestamps.
+- **Coordinates**: Use `doublePrecision()` for latitude/longitude (returns number by default).
 
 ## Checklist
 
