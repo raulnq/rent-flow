@@ -15,6 +15,20 @@
       "when": 1770767965434,
       "tag": "0001_shocking_matthew_murdock",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1770847288834,
+      "tag": "0002_third_power_pack",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1770849674231,
+      "tag": "0003_tense_exiles",
+      "breakpoints": true
     }
   ]
 }

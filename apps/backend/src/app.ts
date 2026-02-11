@@ -8,6 +8,7 @@ import { cors } from 'hono/cors';
 import { pinoLogger } from 'hono-pino';
 import { logger } from './logger.js';
 import { clientRoute } from './features/clients/routes.js';
+import { leadRoute } from './features/leads/routes.js';
 import { propertyRoute } from './features/properties/routes.js';
 
 export const app = new Hono({ strict: false })
@@ -36,6 +37,7 @@ export const app = new Hono({ strict: false })
     })
   )
   .route('/api', clientRoute)
+  .route('/api', leadRoute)
   .route('/api', propertyRoute)
   .notFound(onNotFound)
   .onError(onError);
