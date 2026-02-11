@@ -4,6 +4,10 @@ import { ListClientPage } from '@/features/clients/pages/ListClientPage';
 import { AddClientPage } from '@/features/clients/pages/AddClientPage';
 import { ViewClientPage } from '@/features/clients/pages/ViewClientPage';
 import { EditClientPage } from '@/features/clients/pages/EditClientPage';
+import { ListLeadPage } from '@/features/leads/pages/ListLeadPage';
+import { AddLeadPage } from '@/features/leads/pages/AddLeadPage';
+import { ViewLeadPage } from '@/features/leads/pages/ViewLeadPage';
+import { EditLeadPage } from '@/features/leads/pages/EditLeadPage';
 import { ListPropertyPage } from '@/features/properties/pages/ListPropertyPage';
 import { AddPropertyPage } from '@/features/properties/pages/AddPropertyPage';
 import { ViewPropertyPage } from '@/features/properties/pages/ViewPropertyPage';
@@ -22,6 +26,15 @@ export const router = createBrowserRouter([
           { path: 'new', element: <AddClientPage /> },
           { path: ':clientId', element: <ViewClientPage /> },
           { path: ':clientId/edit', element: <EditClientPage /> },
+        ],
+      },
+      {
+        path: 'leads',
+        children: [
+          { index: true, element: <ListLeadPage /> },
+          { path: 'new', element: <AddLeadPage /> },
+          { path: ':leadId', element: <ViewLeadPage /> },
+          { path: ':leadId/edit', element: <EditLeadPage /> },
         ],
       },
       {
