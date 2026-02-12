@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useDebounce } from 'use-debounce';
-import { Check, ChevronsUpDown, Loader2 } from 'lucide-react';
+import { Check, ChevronDownIcon, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -16,38 +16,33 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import { useClients, useClient } from '@/features/clients/stores/useClients';
+import { useClients } from '@/features/clients/stores/useClients';
 
 type ClientComboboxProps = {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
-  placeholder?: string;
+  label?: string | null;
 };
+
+const DEFAULT_LABEL = 'Select client...';
 
 export function ClientCombobox({
   value,
   onChange,
   disabled,
-  placeholder = 'Select client...',
+  label,
 }: ClientComboboxProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 300);
-
-  const { data, isFetching, isError } = useClients({
+  const [display, setDisplay] = useState(label || DEFAULT_LABEL);
+  const { data, isError, isLoading } = useClients({
     name: debouncedSearch || undefined,
     pageNumber: 1,
     pageSize: 10,
     enabled: open,
   });
-
-  const {
-    data: dataClient,
-    isLoading: isLoadingClient,
-    isError: isClientError,
-  } = useClient(value || undefined);
-  const displayName = dataClient?.name;
 
   return (
     <Popover
@@ -68,17 +63,12 @@ export function ClientCombobox({
           <span
             className={cn(
               'truncate',
-              !displayName && 'text-muted-foreground',
-              isClientError && 'text-destructive'
+              display == DEFAULT_LABEL && 'text-muted-foreground'
             )}
           >
-            {isLoadingClient
-              ? 'Loading...'
-              : isClientError
-                ? 'Error loading client'
-                : (displayName ?? placeholder)}
+            {display}
           </span>
-          <ChevronsUpDown className="opacity-50" />
+          <ChevronDownIcon className="opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -96,7 +86,7 @@ export function ClientCombobox({
               <div className="py-6 text-center text-sm text-destructive">
                 Failed to load clients. Please try again.
               </div>
-            ) : isFetching ? (
+            ) : isLoading ? (
               <div className="flex items-center justify-center py-6">
                 <Loader2 className="size-4 animate-spin opacity-50" />
               </div>
@@ -111,9 +101,15 @@ export function ClientCombobox({
                       onSelect={selected => {
                         onChange(selected);
                         setOpen(false);
+                        setDisplay(c.name);
                       }}
                     >
-                      {c.name}
+                      <div className="flex flex-col">
+                        <span className="font-medium">{c.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          DNI: {c.dni}
+                        </span>
+                      </div>
                       <Check
                         className={cn(
                           'ml-auto',

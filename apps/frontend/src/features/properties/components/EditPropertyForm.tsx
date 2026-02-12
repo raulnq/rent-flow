@@ -86,7 +86,6 @@ export function EditPropertyForm({
     resolver: zodResolver(editPropertySchema),
     defaultValues: property,
   });
-
   return (
     <Card>
       <CardHeader>
@@ -153,6 +152,7 @@ export function EditPropertyForm({
                   value={field.value}
                   onChange={field.onChange}
                   disabled={isPending}
+                  label={property.clientName}
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
