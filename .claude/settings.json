@@ -23,7 +23,8 @@
       "Bash(gh pr *)",
       "Bash(gh issue *)",
       "Bash(npm install*)",
-      "Bash(npm ci*)"
+      "Bash(npm ci*)",
+      "Bash(npm test:*)"
     ]
   },
   "hooks": {
