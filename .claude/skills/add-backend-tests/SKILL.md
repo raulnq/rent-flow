@@ -244,6 +244,138 @@ describe('List <Entities> Endpoint', () => {
 });
 ```
 
+## Advanced Patterns (when applicable)
+
+### Dependency creation helpers
+
+When an entity has foreign key dependencies, add helper functions to the DSL for creating prerequisite data. Import factories and actions from other feature DSLs:
+
+```ts
+import { alice } from '../../clients/client-dsl.js';
+import { addClient } from '../../clients/client-dsl.js';
+import { john } from '../../leads/lead-dsl.js';
+import { addLead } from '../../leads/lead-dsl.js';
+
+export const createOwner = async (): Promise<string> => {
+  const owner = await addClient(alice());
+  return owner.clientId;
+};
+
+export const createLead = async (): Promise<string> => {
+  const lead = await addLead(john());
+  return lead.leadId;
+};
+
+export const create<Entity> = async (
+  overrides?: Partial<Add<Entity>>
+): Promise<<Entity>> => {
+  const relatedId = overrides?.relatedId ?? (await createRelated());
+  return await add<Entity>(factory({ relatedId, ...overrides }));
+};
+```
+
+### Date helper
+
+For date string inputs in tests:
+
+```ts
+export const todayDate = (): string => {
+  return new Date().toISOString().split('T')[0];
+};
+```
+
+### Date parsing in action functions
+
+When the API returns date strings (e.g., `createdAt`), parse them to `Date` objects for consistent comparison:
+
+```ts
+// In action function, after response.json():
+return {
+  ...item,
+  createdAt: new Date(item.createdAt),
+};
+
+// For list actions:
+return {
+  ...page,
+  items: page.items.map((item: any) => ({
+    ...item,
+    createdAt: new Date(item.createdAt),
+  })),
+};
+```
+
+### State transition action functions
+
+For endpoints like `POST /:id/approve`, use nested routing syntax:
+
+```ts
+export async function approve(
+  <entityId>: string,
+  input: Approve<Entity>
+): Promise<<Entity>>;
+export async function approve(
+  <entityId>: string,
+  input: Approve<Entity>,
+  expectedProblemDocument: ProblemDocument
+): Promise<ProblemDocument>;
+
+export async function approve(
+  <entityId>: string,
+  input: Approve<Entity>,
+  expectedProblemDocument?: ProblemDocument
+): Promise<<Entity> | ProblemDocument> {
+  const api = testClient(app);
+  const response = await api.api.<entities>[':<entityId>'].approve.$post({
+    param: { <entityId> },
+    json: input,
+  });
+  // ... same overload pattern as CRUD actions
+}
+```
+
+### State transition tests
+
+```ts
+describe('Approve <Entity> Endpoint', () => {
+  test('should approve <entity> with valid status', async () => {
+    const created = await create<Entity>();
+    // Move to required state first
+    await startReview(created.<entityId>, { reviewStartedAt: todayDate() });
+    const updated = await approve(created.<entityId>, {
+      approvedAt: todayDate(),
+    });
+    assert<Entity>(updated).hasStatus('Approved');
+    assert.ok(updated.approvedAt);
+  });
+
+  test('should reject approval when status is not Under Review', async () => {
+    const created = await create<Entity>();
+    await approve(
+      created.<entityId>,
+      { approvedAt: todayDate() },
+      createConflictError(
+        `Cannot approve <entity> with status "Submitted". Must be in "Under Review" status.`
+      )
+    );
+  });
+});
+```
+
+### Conflict/duplicate tests
+
+```ts
+test('should reject duplicate uniqueField', async () => {
+  const existing = await add<Entity>(factory());
+  await add<Entity>(
+    factory({ uniqueField: existing.uniqueField }),
+    createConflictError(
+      `A <entity> with <field> ${existing.uniqueField} already exists`
+    )
+  );
+});
+```
+
 ## Shared helpers reference
 
 ### `assertions.ts`
@@ -257,7 +389,8 @@ describe('List <Entities> Endpoint', () => {
 - `bigText(length)` — generates string of given length
 - `createValidationError(errors)` — creates ProblemDocument with BAD_REQUEST
 - `createNotFoundError(detail)` — creates ProblemDocument with NOT_FOUND
-- `validationError.tooSmall(path, min)`, `.tooBig(path, max)`, `.requiredString(path)`, `.invalidUrl(path)`, `.invalidUuid(path)`, `.notPositive(path)`, `.requiredNumber(path)`
+- `createConflictError(detail)` — creates ProblemDocument with CONFLICT
+- `validationError.tooSmall(path, min)`, `.tooBig(path, max)`, `.requiredString(path)`, `.invalidUrl(path)`, `.invalidUuid(path)`, `.invalidEmail(path)`, `.invalidEnum(path, options)`, `.notPositive(path)`, `.requiredNumber(path)`
 
 ## Critical rules
 

@@ -100,11 +100,11 @@ File: `apps/frontend/src/components/layout/AppHeader.tsx` — add to `TITLE_BY_P
 - [ ] `stores/<entities>Client.ts` — raw API functions (list, get, add, edit)
 - [ ] `stores/use<Entities>.ts` — React Query hooks (suspense queries + mutations)
 - [ ] `components/<Entity>Header.tsx` — header with back button + children slot
-- [ ] `components/<Entity>Search.tsx` — ref-based search form
+- [ ] `components/<Entity>Search.tsx` — ref-based search form (or multi-field search)
 - [ ] `components/<Entity>Table.tsx` — table + skeleton + error + pagination
 - [ ] `components/Add<Entity>Form.tsx` — Card form with Controller fields
 - [ ] `components/Edit<Entity>Form.tsx` — Card form + skeleton + error
-- [ ] `components/View<Entity>Card.tsx` — read-only card + skeleton + error
+- [ ] `components/View<Entity>Card.tsx` — read-only card with Field/FieldLabel/Input + skeleton + error
 - [ ] `pages/List<Entity>Page.tsx` — list with search + triple-layer table
 - [ ] `pages/Add<Entity>Page.tsx` — add with mutation + toast
 - [ ] `pages/Edit<Entity>Page.tsx` — edit with inner component pattern
@@ -113,9 +113,17 @@ File: `apps/frontend/src/components/layout/AppHeader.tsx` — add to `TITLE_BY_P
 - [ ] `AppSidebar.tsx` — nav item added
 - [ ] `AppHeader.tsx` — title added
 
+### Optional (when applicable)
+
+- [ ] `components/<Entity>Combobox.tsx` — searchable combobox (if entity is referenced as FK in other features)
+- [ ] `stores/use<Entities>.ts` — `use<Entities>()` non-Suspense hook for combobox search
+- [ ] `components/<Action>Button.tsx` — action button with dialog (for state transitions)
+- [ ] `stores/use<Entities>.ts` — action mutation hooks (e.g., `useApprove<Entity>`)
+- [ ] Status `Badge` with variants in table (for entities with workflow states)
+
 ## Critical rules
 
-- **`useSuspenseQuery`** — never `useQuery` for data fetching
+- **`useSuspenseQuery`** for page data fetching — `useQuery` only for combobox search hooks (with `enabled` prop)
 - **`Controller` + `zodResolver`** — never `register()` for forms
 - **`Field`, `FieldLabel`, `FieldError`** from `@/components/ui/field` — not shadcn `FormField`
 - **Triple-layer wrapper**: `QueryErrorResetBoundary` > `ErrorBoundary` > `Suspense`

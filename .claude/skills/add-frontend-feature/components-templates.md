@@ -224,6 +224,162 @@ export function <Entity>Table() {
 }
 ```
 
+## Field Type Variants
+
+When building forms, use the correct pattern for each field type. Only the basic text `Input` is shown in the Add/Edit templates below — use these variants for other types.
+
+### Nullable string field
+
+```tsx
+<Controller
+  name="email"
+  control={form.control}
+  render={({ field, fieldState }) => (
+    <Field data-invalid={fieldState.invalid}>
+      <FieldLabel htmlFor="email">Email</FieldLabel>
+      <Input
+        {...field}
+        value={field.value ?? ''}
+        onChange={e => field.onChange(e.target.value || null)}
+        id="email"
+        aria-invalid={fieldState.invalid}
+        placeholder="Email (optional)"
+        disabled={isPending}
+      />
+      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+    </Field>
+  )}
+/>
+```
+
+### Number field
+
+```tsx
+<Controller
+  name="rentalPrice"
+  control={form.control}
+  render={({ field, fieldState }) => (
+    <Field data-invalid={fieldState.invalid}>
+      <FieldLabel htmlFor="rentalPrice">Rental Price</FieldLabel>
+      <Input
+        {...field}
+        id="rentalPrice"
+        type="number"
+        step="0.01"
+        value={field.value ?? ''}
+        onChange={e => field.onChange(Number(e.target.value))}
+        aria-invalid={fieldState.invalid}
+        placeholder="0.00"
+        disabled={isPending}
+      />
+      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+    </Field>
+  )}
+/>
+```
+
+### Boolean field (Select)
+
+```tsx
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
+<Controller
+  name="hasElevator"
+  control={form.control}
+  render={({ field, fieldState }) => (
+    <Field data-invalid={fieldState.invalid}>
+      <FieldLabel htmlFor="hasElevator">Has Elevator</FieldLabel>
+      <Select
+        value={String(field.value)}
+        onValueChange={v => field.onChange(v === 'true')}
+        disabled={isPending}
+      >
+        <SelectTrigger id="hasElevator">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="true">Yes</SelectItem>
+          <SelectItem value="false">No</SelectItem>
+        </SelectContent>
+      </Select>
+      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+    </Field>
+  )}
+/>;
+```
+
+### Textarea field (long text)
+
+```tsx
+import { Textarea } from '@/components/ui/textarea';
+
+<Controller
+  name="notes"
+  control={form.control}
+  render={({ field, fieldState }) => (
+    <Field data-invalid={fieldState.invalid}>
+      <FieldLabel htmlFor="notes">Notes</FieldLabel>
+      <Textarea
+        {...field}
+        value={field.value ?? ''}
+        onChange={e => field.onChange(e.target.value || null)}
+        id="notes"
+        rows={4}
+        aria-invalid={fieldState.invalid}
+        placeholder="Notes (optional)"
+        disabled={isPending}
+      />
+      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+    </Field>
+  )}
+/>;
+```
+
+### Combobox field (foreign key reference)
+
+Use the entity's combobox component (see Combobox section below):
+
+```tsx
+<Controller
+  name="clientId"
+  control={form.control}
+  render={({ field, fieldState }) => (
+    <Field data-invalid={fieldState.invalid}>
+      <FieldLabel>Client (Owner)</FieldLabel>
+      <ClientCombobox
+        value={field.value}
+        onChange={field.onChange}
+        disabled={isPending}
+      />
+      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+    </Field>
+  )}
+/>
+```
+
+### Grid layout for compact fields
+
+Group related fields in grids:
+
+```tsx
+<div className="grid grid-cols-3 gap-6">
+  <Controller name="rooms" ... />
+  <Controller name="bathrooms" ... />
+  <Controller name="parkingSpaces" ... />
+</div>
+
+<div className="grid grid-cols-2 gap-6">
+  <Controller name="totalArea" ... />
+  <Controller name="builtArea" ... />
+</div>
+```
+
 ## Add Form (`components/Add<Entity>Form.tsx`)
 
 Card layout. Form uses `id="form"`, submit button uses `form="form"` (button is outside form element in CardFooter).
@@ -443,13 +599,15 @@ export function Edit<Entity>Form({ isPending, onSubmit, <entity> }: Edit<Entity>
 
 ## View Card (`components/View<Entity>Card.tsx`)
 
-Read-only display. Exports Card, Skeleton, and Error.
+Read-only display using disabled `Input`/`Textarea` fields. Exports Card, Skeleton, and Error.
 
 ```tsx
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { type <Entity> } from '#/features/<entities>/schemas';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import type { <Entity> } from '#/features/<entities>/schemas';
 
 export function View<Entity>Error({
   resetErrorBoundary,
@@ -474,11 +632,12 @@ export function View<Entity>Skeleton() {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
+          {/* One skeleton block per field */}
           <div className="space-y-2">
-            <Skeleton className="h-4 w-[60px]" />
-            <Skeleton className="h-6 w-full max-w-md" />
+            <Skeleton className="h-4 w-[50px]" />
+            <Skeleton className="h-10 w-full" />
           </div>
-          {/* Add skeleton rows per field */}
+          {/* Add more skeleton rows per field */}
         </div>
       </CardContent>
     </Card>
@@ -497,16 +656,392 @@ export function View<Entity>Card({ <entity> }: View<Entity>CardProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">
-              Name
-            </label>
-            <p className="text-lg font-medium">{<entity>.name}</p>
+          <Field>
+            <FieldLabel>Name</FieldLabel>
+            <Input value={<entity>.name} disabled />
+          </Field>
+          <Field>
+            <FieldLabel>Email</FieldLabel>
+            <Input value={<entity>.email ?? ''} disabled />
+          </Field>
+          {/* Use grids for compact display */}
+          <div className="grid grid-cols-3 gap-6">
+            <Field>
+              <FieldLabel>Rooms</FieldLabel>
+              <Input value={<entity>.rooms.toString()} disabled />
+            </Field>
+            {/* ... */}
           </div>
-          {/* Add more labeled fields */}
+          {/* Boolean fields: display as "Yes"/"No" */}
+          <Field>
+            <FieldLabel>Has Elevator</FieldLabel>
+            <Input value={<entity>.hasElevator ? 'Yes' : 'No'} disabled />
+          </Field>
+          {/* Use Textarea for long text fields */}
+          {/* <Textarea value={<entity>.notes ?? ''} disabled /> */}
         </div>
       </CardContent>
     </Card>
   );
 }
+```
+
+## Searchable Combobox (`components/<Entity>Combobox.tsx`)
+
+When an entity is referenced as a foreign key in other features' forms, create a searchable combobox. Uses `useQuery` (non-Suspense) with debounced search, display state, and clear button.
+
+```tsx
+import { useState } from 'react';
+import { useDebounce } from 'use-debounce';
+import { Check, ChevronDownIcon, Loader2, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from '@/components/ui/command';
+import { use<Entities> } from '../stores/use<Entities>';
+
+type <Entity>ComboboxProps = {
+  value: string;
+  onChange: (value: string) => void;
+  disabled?: boolean;
+  label?: string | null;
+};
+
+const DEFAULT_LABEL = 'Select <entity>...';
+
+export function <Entity>Combobox({
+  value,
+  onChange,
+  disabled,
+  label,
+}: <Entity>ComboboxProps) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const [debouncedSearch] = useDebounce(search, 300);
+  const [display, setDisplay] = useState(label || DEFAULT_LABEL);
+
+  const { data, isError, isLoading } = use<Entities>({
+    name: debouncedSearch || undefined,
+    pageNumber: 1,
+    pageSize: 10,
+    enabled: open,
+  });
+
+  const displayValue = !value ? DEFAULT_LABEL : display;
+
+  return (
+    <Popover
+      open={open}
+      onOpenChange={nextOpen => {
+        setOpen(nextOpen);
+        if (!nextOpen) setSearch('');
+      }}
+    >
+      <div className="relative">
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            role="combobox"
+            aria-expanded={open}
+            disabled={disabled}
+            className="w-full justify-between font-normal"
+          >
+            <span
+              className={cn(
+                'truncate',
+                displayValue === DEFAULT_LABEL && 'text-muted-foreground'
+              )}
+            >
+              {displayValue}
+            </span>
+            <ChevronDownIcon className="size-4 shrink-0 opacity-50" />
+          </Button>
+        </PopoverTrigger>
+
+        {value && !disabled && (
+          <button
+            type="button"
+            className="absolute right-8 top-1/2 -translate-y-1/2 p-1 hover:bg-accent rounded-sm"
+            onClick={e => {
+              e.stopPropagation();
+              onChange('');
+              setDisplay(DEFAULT_LABEL);
+            }}
+          >
+            <X className="size-3 opacity-50 hover:opacity-100" />
+          </button>
+        )}
+      </div>
+
+      <PopoverContent
+        className="p-0"
+        style={{ width: 'var(--radix-popover-trigger-width)' }}
+      >
+        <Command shouldFilter={false}>
+          <CommandInput
+            placeholder="Search <entities>..."
+            value={search}
+            onValueChange={setSearch}
+          />
+          <CommandList>
+            {isError ? (
+              <div className="py-6 text-center text-sm text-destructive">
+                Failed to load <entities>. Please try again.
+              </div>
+            ) : isLoading ? (
+              <div className="flex items-center justify-center py-6">
+                <Loader2 className="size-4 animate-spin opacity-50" />
+              </div>
+            ) : (
+              <>
+                <CommandEmpty>No <entities> found.</CommandEmpty>
+                <CommandGroup>
+                  {data?.items.map(item => (
+                    <CommandItem
+                      key={item.<entityId>}
+                      value={item.<entityId>}
+                      onSelect={selected => {
+                        onChange(selected);
+                        setOpen(false);
+                        setDisplay(item.name);
+                      }}
+                    >
+                      <div className="flex flex-col">
+                        <span className="font-medium">{item.name}</span>
+                        <span className="text-xs text-muted-foreground">
+                          {/* Secondary info: DNI, type, etc. */}
+                        </span>
+                      </div>
+                      <Check
+                        className={cn(
+                          'ml-auto',
+                          value === item.<entityId>
+                            ? 'opacity-100'
+                            : 'opacity-0'
+                        )}
+                      />
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </>
+            )}
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+```
+
+Key features:
+
+- 300ms debounce on search input via `use-debounce`
+- Only fetches when popover opens (`enabled: open`)
+- Display text stored separately (shows name, not UUID)
+- Clear button (X) appears when a value is selected
+- Loading, error, and empty states
+- `shouldFilter={false}` — server-side filtering, not client-side
+
+## Multi-Field Search (`components/<Entity>Search.tsx` — advanced variant)
+
+When filtering by comboboxes, dates, or multiple fields instead of just text:
+
+```tsx
+import { useRef, useState } from 'react';
+import { useSearchParams } from 'react-router';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { <Related>Combobox } from '../../<related>/components/<Related>Combobox';
+
+export function <Entity>Search() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialRelatedId = searchParams.get('relatedId') ?? '';
+  const startCreatedAt = searchParams.get('startCreatedAt') ?? '';
+  const [relatedId, setRelatedId] = useState(initialRelatedId);
+  const dateRef = useRef<HTMLInputElement>(null);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSearchParams(prev => {
+      if (relatedId) prev.set('relatedId', relatedId);
+      else prev.delete('relatedId');
+      const dateValue = dateRef.current?.value ?? '';
+      if (dateValue) prev.set('startCreatedAt', dateValue);
+      else prev.delete('startCreatedAt');
+      prev.set('page', '1');
+      return prev;
+    });
+  };
+
+  const handleClear = () => {
+    setRelatedId('');
+    if (dateRef.current) dateRef.current.value = '';
+    setSearchParams(prev => {
+      prev.delete('relatedId');
+      prev.delete('startCreatedAt');
+      prev.set('page', '1');
+      return prev;
+    });
+  };
+
+  return (
+    <form onSubmit={handleSearch} className="mb-4">
+      <div className="flex gap-2">
+        <div className="w-[250px]">
+          <<Related>Combobox value={relatedId} onChange={setRelatedId} />
+        </div>
+        <Input
+          ref={dateRef}
+          type="date"
+          defaultValue={startCreatedAt}
+          className="w-[200px]"
+        />
+        <Button type="submit" variant="secondary">Search</Button>
+        {(relatedId || startCreatedAt) && (
+          <Button type="button" variant="ghost" onClick={handleClear}>Clear</Button>
+        )}
+      </div>
+    </form>
+  );
+}
+```
+
+## Action Button with Dialog (`components/<Action>Button.tsx`)
+
+For state transitions (approve, reject, etc.), create a button that opens a dialog with a small form:
+
+```tsx
+import { useState } from 'react';
+import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { CheckCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import {
+  approve<Entity>Schema,
+  type Approve<Entity>,
+} from '#/features/<entities>/schemas';
+
+type ApproveButtonProps = {
+  disabled: boolean;
+  onApprove: (data: Approve<Entity>) => void;
+};
+
+export function ApproveButton({ disabled, onApprove }: ApproveButtonProps) {
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const form = useForm<Approve<Entity>>({
+    resolver: zodResolver(approve<Entity>Schema),
+    defaultValues: {
+      approvedAt: new Date().toISOString().split('T')[0],
+    },
+  });
+
+  return (
+    <>
+      <Button
+        type="button"
+        onClick={() => setDialogOpen(true)}
+        disabled={disabled}
+        variant="default"
+        size="sm"
+      >
+        <CheckCircle className="h-4 w-4 mr-2" />
+        Approve
+      </Button>
+
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Approve <Entity></DialogTitle>
+            <DialogDescription>
+              Please confirm the approval date.
+            </DialogDescription>
+          </DialogHeader>
+          <form
+            id="approve-form"
+            onSubmit={form.handleSubmit(data => {
+              onApprove(data);
+              setDialogOpen(false);
+              form.reset();
+            })}
+          >
+            <Controller
+              name="approvedAt"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="approvedAt">Date</FieldLabel>
+                  <Input
+                    {...field}
+                    id="approvedAt"
+                    type="date"
+                    aria-invalid={fieldState.invalid}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+          </form>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setDialogOpen(false);
+                form.reset();
+              }}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" form="approve-form">
+              Approve
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+```
+
+## Status Badge (`Badge` variant)
+
+Use `Badge` with variants for status display in tables:
+
+```tsx
+import { Badge } from '@/components/ui/badge';
+
+// Map status to badge variant
+function statusVariant(status: string) {
+  switch (status) {
+    case 'Approved':
+      return 'success';
+    case 'Rejected':
+      return 'destructive';
+    case 'Under Review':
+      return 'secondary';
+    default:
+      return 'outline';
+  }
+}
+
+// In table cell:
+<Badge variant={statusVariant(item.status)}>{item.status}</Badge>;
 ```

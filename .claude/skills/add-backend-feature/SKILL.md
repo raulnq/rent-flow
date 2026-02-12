@@ -253,6 +253,151 @@ export const <entity>Route = new Hono()
   .route('/', editRoute);
 ```
 
+## Advanced Patterns (when applicable)
+
+### State transition endpoints
+
+For entities with workflow states (e.g., applications: Submitted → Under Review → Approved/Rejected), create a separate endpoint file per action.
+
+File: `apps/backend/src/features/<entities>/<action>-<entity>.ts`
+
+```ts
+import { Hono } from 'hono';
+import { StatusCodes } from 'http-status-codes';
+import { <entities> } from './<entity>.js';
+import { zValidator } from '#/validator.js';
+import { client } from '#/database/client.js';
+import { eq } from 'drizzle-orm';
+import { <entity>Schema, <action><Entity>Schema } from './schemas.js';
+import { notFoundError, conflictError } from '#/extensions.js';
+
+const paramSchema = <entity>Schema.pick({ <entityId>: true });
+
+export const <action>Route = new Hono().post(
+  '/:<entityId>/<action>',
+  zValidator('param', paramSchema),
+  zValidator('json', <action><Entity>Schema),
+  async c => {
+    const { <entityId> } = c.req.valid('param');
+    const data = c.req.valid('json');
+
+    const [existing] = await client
+      .select()
+      .from(<entities>)
+      .where(eq(<entities>.<entityId>, <entityId>))
+      .limit(1);
+
+    if (!existing) {
+      return notFoundError(c, `<Entity> ${<entityId>} not found`);
+    }
+
+    if (existing.status !== 'Expected Status') {
+      return conflictError(
+        c,
+        `Cannot <action> <entity> with status "${existing.status}". Must be in "Expected Status" status.`
+      );
+    }
+
+    const [item] = await client
+      .update(<entities>)
+      .set({ ...data, status: 'New Status' })
+      .where(eq(<entities>.<entityId>, <entityId>))
+      .returning();
+
+    return c.json(item, StatusCodes.OK);
+  }
+);
+```
+
+Add to `routes.ts`:
+
+```ts
+import { <action>Route } from './<action>-<entity>.js';
+
+export const <entity>Route = new Hono()
+  .basePath('/<entities>')
+  .route('/', listRoute)
+  .route('/', addRoute)
+  .route('/', getRoute)
+  .route('/', editRoute)
+  .route('/', <action>Route);
+```
+
+### Join queries for related data
+
+When a list endpoint should return data from related tables (e.g., property list showing client name):
+
+```ts
+import { eq, and, like, count, SQL } from 'drizzle-orm';
+import { <related> } from '#/features/<related>/<relatedEntity>.js';
+
+// In list endpoint:
+const items = await client
+  .select({
+    <entityId>: <entities>.<entityId>,
+    name: <entities>.name,
+    // ... all entity fields
+    <related>Name: <related>.name,  // joined field
+  })
+  .from(<entities>)
+  .leftJoin(<related>, eq(<entities>.<relatedId>, <related>.<relatedId>))
+  .where(and(...filters))
+  .limit(pageSize)
+  .offset(offset);
+```
+
+For reuse across multiple endpoints (get, list, state transitions), extract into a helper:
+
+```ts
+function get<Entity>WithRelations() {
+  return client
+    .select({
+      <entityId>: <entities>.<entityId>,
+      // ... fields
+      <related>Name: <related>.name,
+    })
+    .from(<entities>)
+    .leftJoin(<related>, eq(<entities>.<relatedId>, <related>.<relatedId>));
+}
+```
+
+### Foreign key validation
+
+When inserting entities with foreign key references, verify the referenced entities exist:
+
+```ts
+// In add endpoint, before insert:
+const [referencedItem] = await client
+  .select()
+  .from(<related>)
+  .where(eq(<related>.<relatedId>, data.<relatedId>))
+  .limit(1);
+
+if (!referencedItem) {
+  return notFoundError(c, `<Related> ${data.<relatedId>} not found`);
+}
+```
+
+### Conflict/duplicate detection
+
+When an entity has a unique constraint (e.g., DNI):
+
+```ts
+// In add endpoint, before insert:
+const [duplicate] = await client
+  .select()
+  .from(<entities>)
+  .where(eq(<entities>.uniqueField, data.uniqueField))
+  .limit(1);
+
+if (duplicate) {
+  return conflictError(
+    c,
+    `A <entity> with <field> ${data.uniqueField} already exists`
+  );
+}
+```
+
 ## Step 7 — Register the route in the app
 
 File: `apps/backend/src/app.ts`

@@ -200,7 +200,13 @@ varchar('name', { length: 1024 }).notNull(); // Required string
 varchar('description', { length: 4096 }); // Optional string
 boolean('active').notNull(); // Required boolean
 integer('quantity').notNull(); // Required integer
-text('content').notNull(); // Unlimited text
+text('content').notNull(); // Unlimited text (notes, descriptions)
+varchar('status', { length: 25 }).notNull(); // Status/state fields
+
+// Foreign key reference
+uuid('relatedId')
+  .notNull()
+  .references(() => relatedTable.relatedId); // FK with constraint
 
 // Numeric columns (prices, measurements, etc.)
 numeric('price', {
@@ -249,6 +255,7 @@ date('deadline', {
 - **Date-only columns**: Use `date()` with `mode: 'string'` to get 'YYYY-MM-DD' strings. This avoids timezone shift bugs that occur when using `Date` objects for date-only values.
 - **Auto timestamps**: Use `.defaultNow()` for auto-generated creation timestamps.
 - **Coordinates**: Use `doublePrecision()` for latitude/longitude (returns number by default).
+- **Foreign keys**: Use `.references(() => relatedTable.relatedId)` — import the related table from its feature. The arrow function syntax avoids circular dependency issues.
 
 ## Checklist
 

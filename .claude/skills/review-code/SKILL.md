@@ -59,16 +59,31 @@ Use this skill to review code (staged changes, a PR, or specific files) against 
 - [ ] Zod schemas in `schemas.ts` mirror Drizzle columns
 - [ ] Migration generated if table changed (`npm run database:generate`)
 
+### Backend advanced patterns
+
+- [ ] State transition endpoints validate current status before transitioning, use `conflictError`
+- [ ] Foreign key references verified before insert (return `notFoundError` if missing)
+- [ ] Unique field constraints checked before insert (return `conflictError` for duplicates)
+- [ ] Join queries use explicit column selection (not bare `.select()`)
+- [ ] State transition endpoints use `POST /:id/<action>` pattern
+
 ### Frontend components
 
-- [ ] Data fetching uses `useSuspenseQuery`, never `useQuery`
+- [ ] Page data fetching uses `useSuspenseQuery` — `useQuery` only for combobox search hooks
+- [ ] Combobox search hooks use `useQuery` with `enabled` prop and `placeholderData: keepPreviousData`
 - [ ] Triple-layer wrapper present: `QueryErrorResetBoundary` > `ErrorBoundary` > `Suspense`
 - [ ] Forms use `Controller` + `zodResolver`, never `register()`
 - [ ] Form fields use `Field`, `FieldLabel`, `FieldError` from `@/components/ui/field`
+- [ ] View cards use `Field` + `FieldLabel` + disabled `Input`/`Textarea` (not raw `<label>/<p>`)
+- [ ] Number fields use `type="number"` with `onChange={e => field.onChange(Number(e.target.value))}`
+- [ ] Boolean fields use `Select` with string conversion (`String(field.value)` / `v === 'true'`)
+- [ ] Nullable fields handle `null` → `''` display and `'' || null` on change
 - [ ] Pages that fetch by ID use inner component pattern
 - [ ] Clerk `getToken()` passed to every API call
 - [ ] Pagination via URL search params, not component state
 - [ ] Toast notifications via `sonner` (`toast.success`, `toast.error`)
+- [ ] Searchable comboboxes have debounce (300ms), loading/error/empty states, clear button
+- [ ] Action buttons with dialogs use separate `form id` + `form="..."` pattern
 - [ ] Routes registered in `routes.tsx`
 - [ ] Sidebar entry added in `AppSidebar.tsx`
 - [ ] Header title added in `AppHeader.tsx`
