@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Separator } from '@/components/ui/separator';
 import { useNavigate } from 'react-router';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -42,13 +43,44 @@ export function EditApplicationSkeleton() {
         <CardTitle className="text-base">Application Details</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i} className="space-y-2">
-              <Skeleton className="h-4 w-[100px]" />
-              <Skeleton className="h-10 w-full" />
+        <div className="space-y-6">
+          {/* Basic Info Section */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-[80px]" />
+              <Skeleton className="h-px w-full" />
             </div>
-          ))}
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-4 w-[70px]" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            ))}
+          </div>
+          {/* Others Section */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-[60px]" />
+              <Skeleton className="h-px w-full" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[110px]" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+          </div>
+          {/* Audit Section */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-[50px]" />
+              <Skeleton className="h-px w-full" />
+            </div>
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-4 w-[100px]" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            ))}
+          </div>
         </div>
       </CardContent>
       <CardFooter>
@@ -95,102 +127,127 @@ export function EditApplicationForm({
           <form
             id="form"
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4"
+            className="space-y-6"
           >
-            <Field>
-              <FieldLabel>Property</FieldLabel>
-              <Input value={application.propertyAddress ?? 'N/A'} disabled />
-            </Field>
+            {/* Basic Info Section */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold text-foreground">
+                  Basic Info
+                </h3>
+                <Separator />
+              </div>
+              <Field>
+                <FieldLabel>Property</FieldLabel>
+                <Input value={application.propertyAddress ?? 'N/A'} disabled />
+              </Field>
+              <Field>
+                <FieldLabel>Lead</FieldLabel>
+                <Input value={application.leadName ?? 'N/A'} disabled />
+              </Field>
+            </div>
 
-            <Field>
-              <FieldLabel>Lead</FieldLabel>
-              <Input value={application.leadName ?? 'N/A'} disabled />
-            </Field>
-
-            <Field>
-              <FieldLabel>Created At</FieldLabel>
-              <Input
-                value={new Date(application.createdAt).toLocaleString()}
-                disabled
+            {/* Others Section */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold text-foreground">
+                  Others
+                </h3>
+                <Separator />
+              </div>
+              <Controller
+                name="notes"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="notes">Additional Notes</FieldLabel>
+                    <Textarea
+                      {...field}
+                      value={field.value ?? ''}
+                      id="notes"
+                      aria-invalid={fieldState.invalid}
+                      placeholder="Notes (optional)"
+                      disabled={isPending}
+                      rows={3}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
               />
-            </Field>
+            </div>
 
-            <Controller
-              name="notes"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="notes">Notes</FieldLabel>
-                  <Textarea
-                    {...field}
-                    value={field.value ?? ''}
-                    id="notes"
-                    aria-invalid={fieldState.invalid}
-                    placeholder="Notes"
-                    disabled={isPending}
-                    rows={4}
+            {/* Audit Section */}
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <h3 className="text-sm font-semibold text-foreground">Audit</h3>
+                <Separator />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <Field>
+                  <FieldLabel>Created At</FieldLabel>
+                  <Input
+                    value={new Date(application.createdAt).toLocaleString()}
+                    disabled
                   />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
+                </Field>
+                {application.reviewStartedAt && (
+                  <Field>
+                    <FieldLabel>Review Started At</FieldLabel>
+                    <Input value={application.reviewStartedAt} disabled />
+                  </Field>
+                )}
+              </div>
+              {(application.approvedAt || application.contractSignedAt) && (
+                <div className="grid grid-cols-2 gap-4">
+                  {application.approvedAt && (
+                    <Field>
+                      <FieldLabel>Approved At</FieldLabel>
+                      <Input value={application.approvedAt} disabled />
+                    </Field>
                   )}
-                </Field>
+                  {application.contractSignedAt && (
+                    <Field>
+                      <FieldLabel>Contract Signed At</FieldLabel>
+                      <Input value={application.contractSignedAt} disabled />
+                    </Field>
+                  )}
+                </div>
               )}
-            />
-
-            {application.reviewStartedAt && (
-              <Field>
-                <FieldLabel>Review Started At</FieldLabel>
-                <Input value={application.reviewStartedAt} disabled />
-              </Field>
-            )}
-
-            {application.approvedAt && (
-              <Field>
-                <FieldLabel>Approved At</FieldLabel>
-                <Input value={application.approvedAt} disabled />
-              </Field>
-            )}
-
-            {application.rejectedAt && (
-              <>
-                <Field>
-                  <FieldLabel>Rejected At</FieldLabel>
-                  <Input value={application.rejectedAt} disabled />
-                </Field>
-                <Field>
-                  <FieldLabel>Rejected Reason</FieldLabel>
-                  <Textarea
-                    value={application.rejectedReason ?? ''}
-                    disabled
-                    rows={2}
-                  />
-                </Field>
-              </>
-            )}
-
-            {application.withdrawnAt && (
-              <>
-                <Field>
-                  <FieldLabel>Withdrawn At</FieldLabel>
-                  <Input value={application.withdrawnAt} disabled />
-                </Field>
-                <Field>
-                  <FieldLabel>Withdrawn Reason</FieldLabel>
-                  <Textarea
-                    value={application.withdrawnReason ?? ''}
-                    disabled
-                    rows={2}
-                  />
-                </Field>
-              </>
-            )}
-
-            {application.contractSignedAt && (
-              <Field>
-                <FieldLabel>Contract Signed At</FieldLabel>
-                <Input value={application.contractSignedAt} disabled />
-              </Field>
-            )}
+              {application.rejectedAt && (
+                <div className="grid grid-cols-2 gap-4">
+                  <Field>
+                    <FieldLabel>Rejected At</FieldLabel>
+                    <Input value={application.rejectedAt} disabled />
+                  </Field>
+                  <Field>
+                    <FieldLabel>Rejected Reason</FieldLabel>
+                    <Textarea
+                      value={application.rejectedReason ?? ''}
+                      disabled
+                      rows={2}
+                    />
+                  </Field>
+                </div>
+              )}
+              {application.withdrawnAt && (
+                <div className="grid grid-cols-2 gap-4">
+                  <Field>
+                    <FieldLabel>Withdrawn At</FieldLabel>
+                    <Input value={application.withdrawnAt} disabled />
+                  </Field>
+                  <Field>
+                    <FieldLabel>Withdrawn Reason</FieldLabel>
+                    <Textarea
+                      value={application.withdrawnReason ?? ''}
+                      disabled
+                      rows={2}
+                    />
+                  </Field>
+                </div>
+              )}
+            </div>
           </form>
         </CardContent>
         <CardFooter className="flex justify-end gap-2">

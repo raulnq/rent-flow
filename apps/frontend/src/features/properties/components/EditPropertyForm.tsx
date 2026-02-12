@@ -8,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 import { useNavigate } from 'react-router';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -50,13 +51,108 @@ export function EditPropertySkeleton() {
         <CardTitle className="text-base">Property Details</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="space-y-2">
-              <Skeleton className="h-4 w-[60px]" />
+        <div className="space-y-6">
+          {/* Basic Info Section */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-[80px]" />
+              <Skeleton className="h-px w-full" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[90px]" />
               <Skeleton className="h-10 w-full" />
             </div>
-          ))}
+            <div className="grid grid-cols-2 gap-4">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <Skeleton className="h-4 w-[80px]" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              ))}
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[60px]" />
+              <Skeleton className="h-16 w-full" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[80px]" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+            <Skeleton className="h-[200px] w-full" />
+          </div>
+          {/* Characteristics Section */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-[110px]" />
+              <Skeleton className="h-px w-full" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <Skeleton className="h-4 w-[80px]" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <Skeleton className="h-4 w-[70px]" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <Skeleton className="h-4 w-[80px]" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <Skeleton className="h-4 w-[75px]" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Rental Info Section */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-[85px]" />
+              <Skeleton className="h-px w-full" />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <Skeleton className="h-4 w-[90px]" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              ))}
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              {Array.from({ length: 2 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <Skeleton className="h-4 w-[100px]" />
+                  <Skeleton className="h-10 w-full" />
+                </div>
+              ))}
+            </div>
+          </div>
+          {/* Others Section */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Skeleton className="h-5 w-[60px]" />
+              <Skeleton className="h-px w-full" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-[110px]" />
+              <Skeleton className="h-20 w-full" />
+            </div>
+          </div>
         </div>
       </CardContent>
       <CardFooter>
@@ -95,329 +191,102 @@ export function EditPropertyForm({
         <form
           id="form"
           onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4"
+          className="space-y-6"
         >
-          <Controller
-            name="address"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="address">Address</FieldLabel>
-                <Textarea
-                  {...field}
-                  id="address"
-                  aria-invalid={fieldState.invalid}
-                  placeholder="Property address"
-                  disabled={isPending}
-                  rows={2}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-          <Controller
-            name="propertyType"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="propertyType">Property Type</FieldLabel>
-                <Select
-                  value={field.value}
-                  onValueChange={field.onChange}
-                  disabled={isPending}
-                >
-                  <SelectTrigger id="propertyType">
-                    <SelectValue placeholder="Select type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Apartment">Apartment</SelectItem>
-                    <SelectItem value="House">House</SelectItem>
-                  </SelectContent>
-                </Select>
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-          <Controller
-            name="clientId"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel>Client (Owner)</FieldLabel>
-                <ClientCombobox
-                  value={field.value}
-                  onChange={field.onChange}
-                  disabled={isPending}
-                  label={property.clientName}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-          <div className="grid grid-cols-2 gap-4">
+          {/* Basic Info Section */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-foreground">
+                Basic Info
+              </h3>
+              <Separator />
+            </div>
             <Controller
-              name="rentalPrice"
+              name="clientId"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="rentalPrice">Rental Price</FieldLabel>
-                  <Input
-                    {...field}
-                    id="rentalPrice"
-                    type="number"
-                    step="0.01"
-                    value={field.value ?? ''}
-                    onChange={e => field.onChange(Number(e.target.value))}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="0.00"
-                    disabled={isPending}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            <Controller
-              name="totalArea"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="totalArea">Total Area (m²)</FieldLabel>
-                  <Input
-                    {...field}
-                    id="totalArea"
-                    type="number"
-                    step="0.01"
-                    value={field.value ?? ''}
-                    onChange={e => field.onChange(Number(e.target.value))}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="0.00"
-                    disabled={isPending}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <Controller
-              name="rooms"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="rooms">Rooms</FieldLabel>
-                  <Input
-                    {...field}
-                    id="rooms"
-                    type="number"
-                    value={field.value ?? ''}
-                    onChange={e => field.onChange(Number(e.target.value))}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="0"
-                    disabled={isPending}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            <Controller
-              name="bathrooms"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="bathrooms">Bathrooms</FieldLabel>
-                  <Input
-                    {...field}
-                    id="bathrooms"
-                    type="number"
-                    value={field.value ?? ''}
-                    onChange={e => field.onChange(Number(e.target.value))}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="0"
-                    disabled={isPending}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            <Controller
-              name="parkingSpaces"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="parkingSpaces">
-                    Parking Spaces
-                  </FieldLabel>
-                  <Input
-                    {...field}
-                    id="parkingSpaces"
-                    type="number"
-                    value={field.value ?? ''}
-                    onChange={e => field.onChange(Number(e.target.value))}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="0"
-                    disabled={isPending}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <Controller
-              name="builtArea"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="builtArea">Built Area (m²)</FieldLabel>
-                  <Input
-                    {...field}
-                    id="builtArea"
-                    type="number"
-                    step="0.01"
-                    value={field.value ?? ''}
-                    onChange={e => field.onChange(Number(e.target.value))}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="0.00"
-                    disabled={isPending}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            <Controller
-              name="floorNumber"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="floorNumber">Floor Number</FieldLabel>
-                  <Input
-                    {...field}
-                    id="floorNumber"
-                    type="number"
-                    value={field.value ?? ''}
-                    onChange={e => field.onChange(Number(e.target.value))}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="0"
-                    disabled={isPending}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            <Controller
-              name="yearBuilt"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="yearBuilt">Year Built</FieldLabel>
-                  <Input
-                    {...field}
-                    id="yearBuilt"
-                    type="number"
-                    value={field.value ?? ''}
-                    onChange={e => field.onChange(Number(e.target.value))}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="2024"
-                    disabled={isPending}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Controller
-              name="maintenanceFee"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="maintenanceFee">
-                    Maintenance Fee
-                  </FieldLabel>
-                  <Input
-                    {...field}
-                    id="maintenanceFee"
-                    type="number"
-                    step="0.01"
-                    value={field.value ?? ''}
-                    onChange={e => field.onChange(Number(e.target.value))}
-                    aria-invalid={fieldState.invalid}
-                    placeholder="0.00"
-                    disabled={isPending}
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            <Controller
-              name="status"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="status">Status</FieldLabel>
-                  <Select
+                  <FieldLabel>Client (Owner)</FieldLabel>
+                  <ClientCombobox
                     value={field.value}
-                    onValueChange={field.onChange}
+                    onChange={field.onChange}
                     disabled={isPending}
-                  >
-                    <SelectTrigger id="status">
-                      <SelectValue placeholder="Select status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Available">Available</SelectItem>
-                      <SelectItem value="InProcess">In Process</SelectItem>
-                      <SelectItem value="Rented">Rented</SelectItem>
-                    </SelectContent>
-                  </Select>
+                    label={property.clientName}
+                  />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
                 </Field>
               )}
             />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
+              <Controller
+                name="propertyType"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="propertyType">
+                      Property Type
+                    </FieldLabel>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={isPending}
+                    >
+                      <SelectTrigger id="propertyType">
+                        <SelectValue placeholder="Select type" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Apartment">Apartment</SelectItem>
+                        <SelectItem value="House">House</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="status"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="status">Status</FieldLabel>
+                    <Select
+                      value={field.value}
+                      onValueChange={field.onChange}
+                      disabled={isPending}
+                    >
+                      <SelectTrigger id="status">
+                        <SelectValue placeholder="Select status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Available">Available</SelectItem>
+                        <SelectItem value="InProcess">In Process</SelectItem>
+                        <SelectItem value="Rented">Rented</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </div>
             <Controller
-              name="minimumContractMonths"
+              name="address"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="minimumContractMonths">
-                    Min Contract (months)
-                  </FieldLabel>
-                  <Input
+                  <FieldLabel htmlFor="address">Address</FieldLabel>
+                  <Textarea
                     {...field}
-                    id="minimumContractMonths"
-                    type="number"
-                    value={field.value ?? ''}
-                    onChange={e => field.onChange(Number(e.target.value))}
+                    id="address"
                     aria-invalid={fieldState.invalid}
-                    placeholder="12"
+                    placeholder="Property address"
                     disabled={isPending}
+                    rows={2}
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -426,22 +295,412 @@ export function EditPropertyForm({
               )}
             />
             <Controller
-              name="depositMonths"
+              name="description"
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="depositMonths">
-                    Deposit (months)
-                  </FieldLabel>
-                  <Input
+                  <FieldLabel htmlFor="description">Description</FieldLabel>
+                  <Textarea
                     {...field}
-                    id="depositMonths"
-                    type="number"
+                    id="description"
                     value={field.value ?? ''}
-                    onChange={e => field.onChange(Number(e.target.value))}
+                    onChange={e => field.onChange(e.target.value || null)}
                     aria-invalid={fieldState.invalid}
-                    placeholder="2"
+                    placeholder="Description (optional)"
                     disabled={isPending}
+                    rows={3}
+                  />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <LocationMapField control={form.control} disabled={isPending} />
+          </div>
+
+          {/* Characteristics Section */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-foreground">
+                Characteristics
+              </h3>
+              <Separator />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Controller
+                name="totalArea"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="totalArea">Total Area (m²)</FieldLabel>
+                    <Input
+                      {...field}
+                      id="totalArea"
+                      type="number"
+                      step="0.01"
+                      value={field.value ?? ''}
+                      onChange={e => field.onChange(Number(e.target.value))}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="0.00"
+                      disabled={isPending}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="builtArea"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="builtArea">Built Area (m²)</FieldLabel>
+                    <Input
+                      {...field}
+                      id="builtArea"
+                      type="number"
+                      step="0.01"
+                      value={field.value ?? ''}
+                      onChange={e => field.onChange(Number(e.target.value))}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="0.00"
+                      disabled={isPending}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <Controller
+                name="floorNumber"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="floorNumber">Floor Number</FieldLabel>
+                    <Input
+                      {...field}
+                      id="floorNumber"
+                      type="number"
+                      value={field.value ?? ''}
+                      onChange={e => field.onChange(Number(e.target.value))}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="0"
+                      disabled={isPending}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="rooms"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="rooms">Rooms</FieldLabel>
+                    <Input
+                      {...field}
+                      id="rooms"
+                      type="number"
+                      value={field.value ?? ''}
+                      onChange={e => field.onChange(Number(e.target.value))}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="0"
+                      disabled={isPending}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="bathrooms"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="bathrooms">Bathrooms</FieldLabel>
+                    <Input
+                      {...field}
+                      id="bathrooms"
+                      type="number"
+                      value={field.value ?? ''}
+                      onChange={e => field.onChange(Number(e.target.value))}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="0"
+                      disabled={isPending}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </div>
+            <div className="grid grid-cols-3 gap-4">
+              <Controller
+                name="parkingSpaces"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="parkingSpaces">
+                      Parking Spaces
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id="parkingSpaces"
+                      type="number"
+                      value={field.value ?? ''}
+                      onChange={e => field.onChange(Number(e.target.value))}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="0"
+                      disabled={isPending}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="yearBuilt"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="yearBuilt">Year Built</FieldLabel>
+                    <Input
+                      {...field}
+                      id="yearBuilt"
+                      type="number"
+                      value={field.value ?? ''}
+                      onChange={e => field.onChange(Number(e.target.value))}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="2024"
+                      disabled={isPending}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="hasElevator"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="hasElevator">Has Elevator</FieldLabel>
+                    <Select
+                      value={String(field.value)}
+                      onValueChange={v => field.onChange(v === 'true')}
+                      disabled={isPending}
+                    >
+                      <SelectTrigger id="hasElevator">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="true">Yes</SelectItem>
+                        <SelectItem value="false">No</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Controller
+                name="allowPets"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="allowPets">Allow Pets</FieldLabel>
+                    <Select
+                      value={String(field.value)}
+                      onValueChange={v => field.onChange(v === 'true')}
+                      disabled={isPending}
+                    >
+                      <SelectTrigger id="allowPets">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="true">Yes</SelectItem>
+                        <SelectItem value="false">No</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="allowKids"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="allowKids">Allow Kids</FieldLabel>
+                    <Select
+                      value={String(field.value)}
+                      onValueChange={v => field.onChange(v === 'true')}
+                      disabled={isPending}
+                    >
+                      <SelectTrigger id="allowKids">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="true">Yes</SelectItem>
+                        <SelectItem value="false">No</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Rental Info Section */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-foreground">
+                Rental Info
+              </h3>
+              <Separator />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Controller
+                name="rentalPrice"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="rentalPrice">Rental Price</FieldLabel>
+                    <Input
+                      {...field}
+                      id="rentalPrice"
+                      type="number"
+                      step="0.01"
+                      value={field.value ?? ''}
+                      onChange={e => field.onChange(Number(e.target.value))}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="0.00"
+                      disabled={isPending}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="maintenanceFee"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="maintenanceFee">
+                      Maintenance Fee
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id="maintenanceFee"
+                      type="number"
+                      step="0.01"
+                      value={field.value ?? ''}
+                      onChange={e => field.onChange(Number(e.target.value))}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="0.00"
+                      disabled={isPending}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Controller
+                name="depositMonths"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="depositMonths">
+                      Deposit (months)
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id="depositMonths"
+                      type="number"
+                      value={field.value ?? ''}
+                      onChange={e => field.onChange(Number(e.target.value))}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="2"
+                      disabled={isPending}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="minimumContractMonths"
+                control={form.control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="minimumContractMonths">
+                      Min Contract (months)
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id="minimumContractMonths"
+                      type="number"
+                      value={field.value ?? ''}
+                      onChange={e => field.onChange(Number(e.target.value))}
+                      aria-invalid={fieldState.invalid}
+                      placeholder="12"
+                      disabled={isPending}
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[fieldState.error]} />
+                    )}
+                  </Field>
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Others Section */}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <h3 className="text-sm font-semibold text-foreground">Others</h3>
+              <Separator />
+            </div>
+            <Controller
+              name="notes"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="notes">Additional Notes</FieldLabel>
+                  <Textarea
+                    {...field}
+                    id="notes"
+                    value={field.value ?? ''}
+                    onChange={e => field.onChange(e.target.value || null)}
+                    aria-invalid={fieldState.invalid}
+                    placeholder="Notes (optional)"
+                    disabled={isPending}
+                    rows={3}
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -450,128 +709,6 @@ export function EditPropertyForm({
               )}
             />
           </div>
-          <div className="grid grid-cols-3 gap-4">
-            <Controller
-              name="hasElevator"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="hasElevator">Has Elevator</FieldLabel>
-                  <Select
-                    value={String(field.value)}
-                    onValueChange={v => field.onChange(v === 'true')}
-                    disabled={isPending}
-                  >
-                    <SelectTrigger id="hasElevator">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="true">Yes</SelectItem>
-                      <SelectItem value="false">No</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            <Controller
-              name="allowPets"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="allowPets">Allow Pets</FieldLabel>
-                  <Select
-                    value={String(field.value)}
-                    onValueChange={v => field.onChange(v === 'true')}
-                    disabled={isPending}
-                  >
-                    <SelectTrigger id="allowPets">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="true">Yes</SelectItem>
-                      <SelectItem value="false">No</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            <Controller
-              name="allowKids"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="allowKids">Allow Kids</FieldLabel>
-                  <Select
-                    value={String(field.value)}
-                    onValueChange={v => field.onChange(v === 'true')}
-                    disabled={isPending}
-                  >
-                    <SelectTrigger id="allowKids">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="true">Yes</SelectItem>
-                      <SelectItem value="false">No</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-          </div>
-          <Controller
-            name="description"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="description">Description</FieldLabel>
-                <Textarea
-                  {...field}
-                  id="description"
-                  value={field.value ?? ''}
-                  onChange={e => field.onChange(e.target.value || null)}
-                  aria-invalid={fieldState.invalid}
-                  placeholder="Description (optional)"
-                  disabled={isPending}
-                  rows={3}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-          <Controller
-            name="notes"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="notes">Notes</FieldLabel>
-                <Textarea
-                  {...field}
-                  id="notes"
-                  value={field.value ?? ''}
-                  onChange={e => field.onChange(e.target.value || null)}
-                  aria-invalid={fieldState.invalid}
-                  placeholder="Notes (optional)"
-                  disabled={isPending}
-                  rows={3}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-          <LocationMapField control={form.control} disabled={isPending} />
         </form>
       </CardContent>
       <CardFooter>
