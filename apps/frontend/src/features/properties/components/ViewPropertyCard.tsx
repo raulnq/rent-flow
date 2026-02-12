@@ -88,30 +88,110 @@ export function ViewPropertyCard({ property }: ViewPropertyCardProps) {
               <label className="text-sm font-medium text-muted-foreground">
                 Rooms
               </label>
-              <p className="text-lg font-medium">{property.numberOfRooms}</p>
+              <p className="text-lg font-medium">{property.rooms}</p>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">
                 Bathrooms
               </label>
+              <p className="text-lg font-medium">{property.bathrooms}</p>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                Parking Spaces
+              </label>
+              <p className="text-lg font-medium">{property.parkingSpaces}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                Total Area
+              </label>
               <p className="text-lg font-medium">
-                {property.numberOfBathrooms}
+                {property.totalArea.toFixed(2)} m²
               </p>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">
-                Garages
+                Built Area
               </label>
-              <p className="text-lg font-medium">{property.numberOfGarages}</p>
+              <p className="text-lg font-medium">
+                {property.builtArea.toFixed(2)} m²
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                Floor Number
+              </label>
+              <p className="text-lg font-medium">{property.floorNumber}</p>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                Year Built
+              </label>
+              <p className="text-lg font-medium">{property.yearBuilt}</p>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                Status
+              </label>
+              <p className="text-lg font-medium">{property.status}</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                Maintenance Fee
+              </label>
+              <p className="text-lg font-medium">
+                ${property.maintenanceFee.toFixed(2)}
+              </p>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                Deposit
+              </label>
+              <p className="text-lg font-medium">
+                {property.depositMonths} months
+              </p>
             </div>
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">
-              Total Area
+              Minimum Contract
             </label>
             <p className="text-lg font-medium">
-              {property.totalArea.toFixed(2)} m²
+              {property.minimumContractMonths} months
             </p>
+          </div>
+          <div className="grid grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                Has Elevator
+              </label>
+              <p className="text-lg font-medium">
+                {property.hasElevator ? 'Yes' : 'No'}
+              </p>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                Allow Pets
+              </label>
+              <p className="text-lg font-medium">
+                {property.allowPets ? 'Yes' : 'No'}
+              </p>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-muted-foreground">
+                Allow Kids
+              </label>
+              <p className="text-lg font-medium">
+                {property.allowKids ? 'Yes' : 'No'}
+              </p>
+            </div>
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">
@@ -121,9 +201,9 @@ export function ViewPropertyCard({ property }: ViewPropertyCardProps) {
           </div>
           <div className="space-y-2">
             <label className="text-sm font-medium text-muted-foreground">
-              Constraints
+              Notes
             </label>
-            <p className="text-lg font-medium">{property.constraints ?? '—'}</p>
+            <p className="text-lg font-medium">{property.notes ?? '—'}</p>
           </div>
           {property.latitude !== null && property.longitude !== null && (
             <div className="space-y-2">

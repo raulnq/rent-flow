@@ -109,7 +109,7 @@ export function PropertyTable() {
               <TableCell>{item.propertyType}</TableCell>
               <TableCell>{item.clientName ?? '—'}</TableCell>
               <TableCell>${item.rentalPrice.toFixed(2)}</TableCell>
-              <TableCell>{item.numberOfRooms}</TableCell>
+              <TableCell>{item.rooms}</TableCell>
               <TableCell>
                 <div className="flex gap-2">
                   <Button variant="ghost" size="icon" asChild>

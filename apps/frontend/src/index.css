@@ -122,3 +122,24 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Leaflet GeoSearch dark mode support */
+.dark .leaflet-control-geosearch form input {
+  color: oklch(0.145 0 0);
+  background-color: oklch(1 0 0);
+}
+
+.dark .leaflet-control-geosearch .results {
+  background-color: oklch(0.205 0 0);
+  border-color: oklch(1 0 0 / 10%);
+}
+
+.dark .leaflet-control-geosearch .results > * {
+  background-color: oklch(0.205 0 0);
+  color: oklch(0.985 0 0);
+  border-bottom-color: oklch(1 0 0 / 10%);
+}
+
+.dark .leaflet-control-geosearch .results > *:hover {
+  background-color: oklch(0.269 0 0);
+}
