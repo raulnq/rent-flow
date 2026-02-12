@@ -1,6 +1,8 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
 import type { Client } from '#/features/clients/schemas';
 
 export function ViewClientError({
@@ -26,12 +28,31 @@ export function ViewClientSkeleton() {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          {Array.from({ length: 5 }).map((_, i) => (
-            <div key={i} className="space-y-2">
-              <Skeleton className="h-4 w-[60px]" />
-              <Skeleton className="h-6 w-full max-w-md" />
-            </div>
-          ))}
+          {/* Name */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[50px]" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          {/* DNI */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[35px]" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          {/* Phone */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[50px]" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          {/* Email */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[45px]" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          {/* Address */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[60px]" />
+            <Skeleton className="h-10 w-full" />
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -42,7 +63,7 @@ type ViewClientCardProps = {
   client: Client;
 };
 
-export function ViewClientCard({ client: clientData }: ViewClientCardProps) {
+export function ViewClientCard({ client }: ViewClientCardProps) {
   return (
     <Card>
       <CardHeader>
@@ -50,36 +71,26 @@ export function ViewClientCard({ client: clientData }: ViewClientCardProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">
-              Name
-            </label>
-            <p className="text-lg font-medium">{clientData.name}</p>
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">
-              DNI
-            </label>
-            <p className="text-lg font-medium">{clientData.dni}</p>
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">
-              Phone
-            </label>
-            <p className="text-lg font-medium">{clientData.phone}</p>
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">
-              Email
-            </label>
-            <p className="text-lg font-medium">{clientData.email ?? '—'}</p>
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">
-              Address
-            </label>
-            <p className="text-lg font-medium">{clientData.address ?? '—'}</p>
-          </div>
+          <Field>
+            <FieldLabel>Name</FieldLabel>
+            <Input value={client.name} disabled />
+          </Field>
+          <Field>
+            <FieldLabel>DNI</FieldLabel>
+            <Input value={client.dni} disabled />
+          </Field>
+          <Field>
+            <FieldLabel>Phone</FieldLabel>
+            <Input value={client.phone} disabled />
+          </Field>
+          <Field>
+            <FieldLabel>Email</FieldLabel>
+            <Input value={client.email ?? ''} disabled />
+          </Field>
+          <Field>
+            <FieldLabel>Address</FieldLabel>
+            <Input value={client.address ?? ''} disabled />
+          </Field>
         </div>
       </CardContent>
     </Card>

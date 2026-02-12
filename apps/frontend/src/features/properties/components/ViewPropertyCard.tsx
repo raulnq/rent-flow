@@ -1,6 +1,9 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Field, FieldLabel } from '@/components/ui/field';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { lazy, Suspense } from 'react';
 import type { Property } from '#/features/properties/schemas';
 
@@ -33,12 +36,92 @@ export function ViewPropertySkeleton() {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <div key={i} className="space-y-2">
-              <Skeleton className="h-4 w-[60px]" />
-              <Skeleton className="h-6 w-full max-w-md" />
-            </div>
-          ))}
+          {/* Address */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[60px]" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          {/* Property Type */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[100px]" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          {/* Client */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[90px]" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          {/* Rental Price */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[85px]" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          {/* Rooms, Bathrooms, Parking Spaces */}
+          <div className="grid grid-cols-3 gap-6">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-4 w-[80px]" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            ))}
+          </div>
+          {/* Total Area, Built Area */}
+          <div className="grid grid-cols-2 gap-6">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-4 w-[75px]" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            ))}
+          </div>
+          {/* Floor Number, Year Built, Status */}
+          <div className="grid grid-cols-3 gap-6">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-4 w-[80px]" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            ))}
+          </div>
+          {/* Maintenance Fee, Deposit */}
+          <div className="grid grid-cols-2 gap-6">
+            {Array.from({ length: 2 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-4 w-[100px]" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            ))}
+          </div>
+          {/* Minimum Contract */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[120px]" />
+            <Skeleton className="h-10 w-full" />
+          </div>
+          {/* Has Elevator, Allow Pets, Allow Kids */}
+          <div className="grid grid-cols-3 gap-6">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-4 w-[80px]" />
+                <Skeleton className="h-10 w-full" />
+              </div>
+            ))}
+          </div>
+          {/* Description */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[80px]" />
+            <Skeleton className="h-20 w-full" />
+          </div>
+          {/* Notes */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[50px]" />
+            <Skeleton className="h-20 w-full" />
+          </div>
+          {/* Map Viewer */}
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-[60px]" />
+            <Skeleton className="h-[300px] w-full rounded-md" />
+            <Skeleton className="h-4 w-[200px]" />
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -57,154 +140,102 @@ export function ViewPropertyCard({ property }: ViewPropertyCardProps) {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">
-              Address
-            </label>
-            <p className="text-lg font-medium">{property.address}</p>
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">
-              Property Type
-            </label>
-            <p className="text-lg font-medium">{property.propertyType}</p>
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">
-              Client (Owner)
-            </label>
-            <p className="text-lg font-medium">{property.clientName ?? '—'}</p>
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">
-              Rental Price
-            </label>
-            <p className="text-lg font-medium">
-              ${property.rentalPrice.toFixed(2)}
-            </p>
-          </div>
+          <Field>
+            <FieldLabel>Address</FieldLabel>
+            <Input value={property.address} disabled />
+          </Field>
+          <Field>
+            <FieldLabel>Property Type</FieldLabel>
+            <Input value={property.propertyType} disabled />
+          </Field>
+          <Field>
+            <FieldLabel>Client (Owner)</FieldLabel>
+            <Input value={property.clientName ?? ''} disabled />
+          </Field>
+          <Field>
+            <FieldLabel>Rental Price</FieldLabel>
+            <Input value={`$${property.rentalPrice.toFixed(2)}`} disabled />
+          </Field>
           <div className="grid grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                Rooms
-              </label>
-              <p className="text-lg font-medium">{property.rooms}</p>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                Bathrooms
-              </label>
-              <p className="text-lg font-medium">{property.bathrooms}</p>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                Parking Spaces
-              </label>
-              <p className="text-lg font-medium">{property.parkingSpaces}</p>
-            </div>
+            <Field>
+              <FieldLabel>Rooms</FieldLabel>
+              <Input value={property.rooms.toString()} disabled />
+            </Field>
+            <Field>
+              <FieldLabel>Bathrooms</FieldLabel>
+              <Input value={property.bathrooms.toString()} disabled />
+            </Field>
+            <Field>
+              <FieldLabel>Parking Spaces</FieldLabel>
+              <Input value={property.parkingSpaces.toString()} disabled />
+            </Field>
           </div>
           <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                Total Area
-              </label>
-              <p className="text-lg font-medium">
-                {property.totalArea.toFixed(2)} m²
-              </p>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                Built Area
-              </label>
-              <p className="text-lg font-medium">
-                {property.builtArea.toFixed(2)} m²
-              </p>
-            </div>
+            <Field>
+              <FieldLabel>Total Area</FieldLabel>
+              <Input value={`${property.totalArea.toFixed(2)} m²`} disabled />
+            </Field>
+            <Field>
+              <FieldLabel>Built Area</FieldLabel>
+              <Input value={`${property.builtArea.toFixed(2)} m²`} disabled />
+            </Field>
           </div>
           <div className="grid grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                Floor Number
-              </label>
-              <p className="text-lg font-medium">{property.floorNumber}</p>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                Year Built
-              </label>
-              <p className="text-lg font-medium">{property.yearBuilt}</p>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                Status
-              </label>
-              <p className="text-lg font-medium">{property.status}</p>
-            </div>
+            <Field>
+              <FieldLabel>Floor Number</FieldLabel>
+              <Input value={property.floorNumber.toString()} disabled />
+            </Field>
+            <Field>
+              <FieldLabel>Year Built</FieldLabel>
+              <Input value={property.yearBuilt.toString()} disabled />
+            </Field>
+            <Field>
+              <FieldLabel>Status</FieldLabel>
+              <Input value={property.status} disabled />
+            </Field>
           </div>
           <div className="grid grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                Maintenance Fee
-              </label>
-              <p className="text-lg font-medium">
-                ${property.maintenanceFee.toFixed(2)}
-              </p>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                Deposit
-              </label>
-              <p className="text-lg font-medium">
-                {property.depositMonths} months
-              </p>
-            </div>
+            <Field>
+              <FieldLabel>Maintenance Fee</FieldLabel>
+              <Input
+                value={`$${property.maintenanceFee.toFixed(2)}`}
+                disabled
+              />
+            </Field>
+            <Field>
+              <FieldLabel>Deposit</FieldLabel>
+              <Input value={`${property.depositMonths} months`} disabled />
+            </Field>
           </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">
-              Minimum Contract
-            </label>
-            <p className="text-lg font-medium">
-              {property.minimumContractMonths} months
-            </p>
-          </div>
+          <Field>
+            <FieldLabel>Minimum Contract</FieldLabel>
+            <Input
+              value={`${property.minimumContractMonths} months`}
+              disabled
+            />
+          </Field>
           <div className="grid grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                Has Elevator
-              </label>
-              <p className="text-lg font-medium">
-                {property.hasElevator ? 'Yes' : 'No'}
-              </p>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                Allow Pets
-              </label>
-              <p className="text-lg font-medium">
-                {property.allowPets ? 'Yes' : 'No'}
-              </p>
-            </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-muted-foreground">
-                Allow Kids
-              </label>
-              <p className="text-lg font-medium">
-                {property.allowKids ? 'Yes' : 'No'}
-              </p>
-            </div>
+            <Field>
+              <FieldLabel>Has Elevator</FieldLabel>
+              <Input value={property.hasElevator ? 'Yes' : 'No'} disabled />
+            </Field>
+            <Field>
+              <FieldLabel>Allow Pets</FieldLabel>
+              <Input value={property.allowPets ? 'Yes' : 'No'} disabled />
+            </Field>
+            <Field>
+              <FieldLabel>Allow Kids</FieldLabel>
+              <Input value={property.allowKids ? 'Yes' : 'No'} disabled />
+            </Field>
           </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">
-              Description
-            </label>
-            <p className="text-lg font-medium">{property.description ?? '—'}</p>
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-muted-foreground">
-              Notes
-            </label>
-            <p className="text-lg font-medium">{property.notes ?? '—'}</p>
-          </div>
+          <Field>
+            <FieldLabel>Description</FieldLabel>
+            <Textarea value={property.description ?? ''} disabled />
+          </Field>
+          <Field>
+            <FieldLabel>Notes</FieldLabel>
+            <Textarea value={property.notes ?? ''} disabled />
+          </Field>
           {property.latitude !== null && property.longitude !== null && (
             <div className="space-y-2">
               <label className="text-sm font-medium text-muted-foreground">
