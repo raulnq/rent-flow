@@ -36,6 +36,13 @@
       "when": 1770853382291,
       "tag": "0004_yummy_paladin",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1770909410267,
+      "tag": "0005_opposite_white_tiger",
+      "breakpoints": true
     }
   ]
 }

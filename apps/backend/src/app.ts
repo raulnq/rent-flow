@@ -7,6 +7,7 @@ import { secureHeaders } from 'hono/secure-headers';
 import { cors } from 'hono/cors';
 import { pinoLogger } from 'hono-pino';
 import { logger } from './logger.js';
+import { applicationRoute } from './features/applications/routes.js';
 import { clientRoute } from './features/clients/routes.js';
 import { leadRoute } from './features/leads/routes.js';
 import { propertyRoute } from './features/properties/routes.js';
@@ -36,6 +37,7 @@ export const app = new Hono({ strict: false })
       timestamp: Date.now(),
     })
   )
+  .route('/api', applicationRoute)
   .route('/api', clientRoute)
   .route('/api', leadRoute)
   .route('/api', propertyRoute)

@@ -1,5 +1,7 @@
 import {
+  keepPreviousData,
   useMutation,
+  useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query';
@@ -39,6 +41,42 @@ export function useLeadSuspense(leadId: string) {
       const token = await getToken();
       return getLead(leadId, token);
     },
+  });
+}
+
+export function useLeads({
+  name,
+  enabled,
+  pageNumber = 1,
+  pageSize = 10,
+}: {
+  name?: string;
+  enabled: boolean;
+  pageNumber?: number;
+  pageSize?: number;
+}) {
+  const { getToken } = useAuth();
+  const params = { pageNumber, pageSize, name };
+  return useQuery({
+    queryKey: ['leads', 'search', params],
+    queryFn: async () => {
+      const token = await getToken();
+      return listLeads(params, token);
+    },
+    placeholderData: keepPreviousData,
+    enabled,
+  });
+}
+
+export function useLead(leadId?: string) {
+  const { getToken } = useAuth();
+  return useQuery({
+    queryKey: ['lead', leadId],
+    queryFn: async () => {
+      const token = await getToken();
+      return getLead(leadId!, token);
+    },
+    enabled: !!leadId,
   });
 }
 

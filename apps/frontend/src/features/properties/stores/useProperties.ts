@@ -1,5 +1,7 @@
 import {
+  keepPreviousData,
   useMutation,
+  useQuery,
   useQueryClient,
   useSuspenseQuery,
 } from '@tanstack/react-query';
@@ -48,6 +50,42 @@ export function usePropertySuspense(propertyId: string) {
       const token = await getToken();
       return getProperty(propertyId, token);
     },
+  });
+}
+
+export function useProperties({
+  address,
+  enabled,
+  pageNumber = 1,
+  pageSize = 10,
+}: {
+  address?: string;
+  enabled: boolean;
+  pageNumber?: number;
+  pageSize?: number;
+}) {
+  const { getToken } = useAuth();
+  const params = { pageNumber, pageSize, address };
+  return useQuery({
+    queryKey: ['properties', 'search', params],
+    queryFn: async () => {
+      const token = await getToken();
+      return listProperties(params, token);
+    },
+    placeholderData: keepPreviousData,
+    enabled,
+  });
+}
+
+export function useProperty(propertyId?: string) {
+  const { getToken } = useAuth();
+  return useQuery({
+    queryKey: ['property', propertyId],
+    queryFn: async () => {
+      const token = await getToken();
+      return getProperty(propertyId!, token);
+    },
+    enabled: !!propertyId,
   });
 }
 

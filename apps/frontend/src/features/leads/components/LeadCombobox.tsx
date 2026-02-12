@@ -16,28 +16,28 @@ import {
   CommandItem,
   CommandList,
 } from '@/components/ui/command';
-import { useClients } from '@/features/clients/stores/useClients';
+import { useLeads } from '@/features/leads/stores/useLeads';
 
-type ClientComboboxProps = {
+type LeadComboboxProps = {
   value: string;
   onChange: (value: string) => void;
   disabled?: boolean;
   label?: string | null;
 };
 
-const DEFAULT_LABEL = 'Select client...';
+const DEFAULT_LABEL = 'Select lead...';
 
-export function ClientCombobox({
+export function LeadCombobox({
   value,
   onChange,
   disabled,
   label,
-}: ClientComboboxProps) {
+}: LeadComboboxProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 300);
   const [display, setDisplay] = useState(label || DEFAULT_LABEL);
-  const { data, isError, isLoading } = useClients({
+  const { data, isError, isLoading } = useLeads({
     name: debouncedSearch || undefined,
     pageNumber: 1,
     pageSize: 10,
@@ -94,14 +94,14 @@ export function ClientCombobox({
       >
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder="Search clients..."
+            placeholder="Search leads..."
             value={search}
             onValueChange={setSearch}
           />
           <CommandList>
             {isError ? (
               <div className="py-6 text-center text-sm text-destructive">
-                Failed to load clients. Please try again.
+                Failed to load leads. Please try again.
               </div>
             ) : isLoading ? (
               <div className="flex items-center justify-center py-6">
@@ -109,28 +109,28 @@ export function ClientCombobox({
               </div>
             ) : (
               <>
-                <CommandEmpty>No clients found.</CommandEmpty>
+                <CommandEmpty>No leads found.</CommandEmpty>
                 <CommandGroup>
-                  {data?.items.map(c => (
+                  {data?.items.map(l => (
                     <CommandItem
-                      key={c.clientId}
-                      value={c.clientId}
+                      key={l.leadId}
+                      value={l.leadId}
                       onSelect={selected => {
                         onChange(selected);
                         setOpen(false);
-                        setDisplay(c.name);
+                        setDisplay(l.name);
                       }}
                     >
                       <div className="flex flex-col">
-                        <span className="font-medium">{c.name}</span>
+                        <span className="font-medium">{l.name}</span>
                         <span className="text-xs text-muted-foreground">
-                          DNI: {c.dni}
+                          DNI: {l.dni}
                         </span>
                       </div>
                       <Check
                         className={cn(
                           'ml-auto',
-                          value === c.clientId ? 'opacity-100' : 'opacity-0'
+                          value === l.leadId ? 'opacity-100' : 'opacity-0'
                         )}
                       />
                     </CommandItem>

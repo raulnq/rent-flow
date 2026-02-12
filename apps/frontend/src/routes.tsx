@@ -12,6 +12,9 @@ import { ListPropertyPage } from '@/features/properties/pages/ListPropertyPage';
 import { AddPropertyPage } from '@/features/properties/pages/AddPropertyPage';
 import { ViewPropertyPage } from '@/features/properties/pages/ViewPropertyPage';
 import { EditPropertyPage } from '@/features/properties/pages/EditPropertyPage';
+import { ListApplicationPage } from '@/features/applications/pages/ListApplicationPage';
+import { AddApplicationPage } from '@/features/applications/pages/AddApplicationPage';
+import { EditApplicationPage } from '@/features/applications/pages/EditApplicationPage';
 
 export const router = createBrowserRouter([
   {
@@ -44,6 +47,14 @@ export const router = createBrowserRouter([
           { path: 'new', element: <AddPropertyPage /> },
           { path: ':propertyId', element: <ViewPropertyPage /> },
           { path: ':propertyId/edit', element: <EditPropertyPage /> },
+        ],
+      },
+      {
+        path: 'applications',
+        children: [
+          { index: true, element: <ListApplicationPage /> },
+          { path: 'new', element: <AddApplicationPage /> },
+          { path: ':applicationId/edit', element: <EditApplicationPage /> },
         ],
       },
     ],
