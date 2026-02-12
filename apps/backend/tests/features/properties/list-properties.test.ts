@@ -25,14 +25,24 @@ describe('List Properties Endpoint', () => {
       .hasPropertyType(item.propertyType)
       .hasClientId(item.clientId)
       .hasRentalPrice(item.rentalPrice)
-      .hasNumberOfRooms(item.numberOfRooms)
-      .hasNumberOfBathrooms(item.numberOfBathrooms)
-      .hasNumberOfGarages(item.numberOfGarages)
+      .hasRooms(item.rooms)
+      .hasBathrooms(item.bathrooms)
+      .hasParkingSpaces(item.parkingSpaces)
       .hasTotalArea(item.totalArea)
+      .hasBuiltArea(item.builtArea)
+      .hasFloorNumber(item.floorNumber)
+      .hasYearBuilt(item.yearBuilt)
       .hasDescription(item.description)
-      .hasConstraints(item.constraints)
+      .hasNotes(item.notes)
       .hasLatitude(item.latitude)
-      .hasLongitude(item.longitude);
+      .hasLongitude(item.longitude)
+      .hasMaintenanceFee(item.maintenanceFee)
+      .hasMinimumContractMonths(item.minimumContractMonths)
+      .hasDepositMonths(item.depositMonths)
+      .hasElevator(item.hasElevator)
+      .allowsPets(item.allowPets)
+      .allowsKids(item.allowKids)
+      .hasStatus(item.status);
   });
 
   test('should return empty items when no match', async () => {

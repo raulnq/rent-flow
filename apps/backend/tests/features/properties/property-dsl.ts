@@ -26,14 +26,24 @@ export const apartment = (overrides?: Partial<AddProperty>): AddProperty => {
     propertyType: 'Apartment',
     clientId: overrides?.clientId ?? '00000000-0000-0000-0000-000000000000',
     rentalPrice: Number(faker.commerce.price({ min: 100, max: 5000 })),
-    numberOfRooms: faker.number.int({ min: 1, max: 10 }),
-    numberOfBathrooms: faker.number.int({ min: 1, max: 5 }),
-    numberOfGarages: faker.number.int({ min: 0, max: 3 }),
+    rooms: faker.number.int({ min: 1, max: 10 }),
+    bathrooms: faker.number.int({ min: 1, max: 5 }),
+    parkingSpaces: faker.number.int({ min: 0, max: 3 }),
     totalArea: Number(faker.commerce.price({ min: 30, max: 500 })),
+    builtArea: Number(faker.commerce.price({ min: 25, max: 450 })),
+    floorNumber: faker.number.int({ min: 0, max: 30 }),
+    yearBuilt: faker.number.int({ min: 1950, max: 2024 }),
     description: faker.lorem.paragraph(),
-    constraints: null,
+    notes: null,
     latitude: faker.location.latitude(),
     longitude: faker.location.longitude(),
+    maintenanceFee: Number(faker.commerce.price({ min: 50, max: 500 })),
+    minimumContractMonths: faker.number.int({ min: 6, max: 24 }),
+    depositMonths: faker.number.int({ min: 1, max: 3 }),
+    hasElevator: faker.datatype.boolean(),
+    allowPets: faker.datatype.boolean(),
+    allowKids: faker.datatype.boolean(),
+    status: faker.helpers.arrayElement(['Available', 'InProcess', 'Rented']),
     ...overrides,
   };
 };
@@ -44,14 +54,24 @@ export const house = (overrides?: Partial<AddProperty>): AddProperty => {
     propertyType: 'House',
     clientId: overrides?.clientId ?? '00000000-0000-0000-0000-000000000000',
     rentalPrice: Number(faker.commerce.price({ min: 500, max: 10000 })),
-    numberOfRooms: faker.number.int({ min: 2, max: 15 }),
-    numberOfBathrooms: faker.number.int({ min: 1, max: 8 }),
-    numberOfGarages: faker.number.int({ min: 1, max: 5 }),
+    rooms: faker.number.int({ min: 2, max: 15 }),
+    bathrooms: faker.number.int({ min: 1, max: 8 }),
+    parkingSpaces: faker.number.int({ min: 1, max: 5 }),
     totalArea: Number(faker.commerce.price({ min: 80, max: 1000 })),
+    builtArea: Number(faker.commerce.price({ min: 75, max: 950 })),
+    floorNumber: faker.number.int({ min: 1, max: 3 }),
+    yearBuilt: faker.number.int({ min: 1950, max: 2024 }),
     description: null,
-    constraints: null,
+    notes: null,
     latitude: null,
     longitude: null,
+    maintenanceFee: Number(faker.commerce.price({ min: 100, max: 1000 })),
+    minimumContractMonths: faker.number.int({ min: 12, max: 36 }),
+    depositMonths: faker.number.int({ min: 2, max: 4 }),
+    hasElevator: false,
+    allowPets: faker.datatype.boolean(),
+    allowKids: true,
+    status: faker.helpers.arrayElement(['Available', 'InProcess', 'Rented']),
     ...overrides,
   };
 };
@@ -217,27 +237,27 @@ export const assertProperty = (item: Property) => {
       );
       return this;
     },
-    hasNumberOfRooms(expected: number) {
+    hasRooms(expected: number) {
       assert.strictEqual(
-        item.numberOfRooms,
+        item.rooms,
         expected,
-        `Expected numberOfRooms to be ${expected}, got ${item.numberOfRooms}`
+        `Expected rooms to be ${expected}, got ${item.rooms}`
       );
       return this;
     },
-    hasNumberOfBathrooms(expected: number) {
+    hasBathrooms(expected: number) {
       assert.strictEqual(
-        item.numberOfBathrooms,
+        item.bathrooms,
         expected,
-        `Expected numberOfBathrooms to be ${expected}, got ${item.numberOfBathrooms}`
+        `Expected bathrooms to be ${expected}, got ${item.bathrooms}`
       );
       return this;
     },
-    hasNumberOfGarages(expected: number) {
+    hasParkingSpaces(expected: number) {
       assert.strictEqual(
-        item.numberOfGarages,
+        item.parkingSpaces,
         expected,
-        `Expected numberOfGarages to be ${expected}, got ${item.numberOfGarages}`
+        `Expected parkingSpaces to be ${expected}, got ${item.parkingSpaces}`
       );
       return this;
     },
@@ -249,6 +269,30 @@ export const assertProperty = (item: Property) => {
       );
       return this;
     },
+    hasBuiltArea(expected: number) {
+      assert.strictEqual(
+        item.builtArea,
+        expected,
+        `Expected builtArea to be ${expected}, got ${item.builtArea}`
+      );
+      return this;
+    },
+    hasFloorNumber(expected: number) {
+      assert.strictEqual(
+        item.floorNumber,
+        expected,
+        `Expected floorNumber to be ${expected}, got ${item.floorNumber}`
+      );
+      return this;
+    },
+    hasYearBuilt(expected: number) {
+      assert.strictEqual(
+        item.yearBuilt,
+        expected,
+        `Expected yearBuilt to be ${expected}, got ${item.yearBuilt}`
+      );
+      return this;
+    },
     hasDescription(expected: string | null) {
       assert.strictEqual(
         item.description,
@@ -257,11 +301,11 @@ export const assertProperty = (item: Property) => {
       );
       return this;
     },
-    hasConstraints(expected: string | null) {
+    hasNotes(expected: string | null) {
       assert.strictEqual(
-        item.constraints,
+        item.notes,
         expected,
-        `Expected constraints to be ${expected}, got ${item.constraints}`
+        `Expected notes to be ${expected}, got ${item.notes}`
       );
       return this;
     },
@@ -281,6 +325,62 @@ export const assertProperty = (item: Property) => {
       );
       return this;
     },
+    hasMaintenanceFee(expected: number) {
+      assert.strictEqual(
+        item.maintenanceFee,
+        expected,
+        `Expected maintenanceFee to be ${expected}, got ${item.maintenanceFee}`
+      );
+      return this;
+    },
+    hasMinimumContractMonths(expected: number) {
+      assert.strictEqual(
+        item.minimumContractMonths,
+        expected,
+        `Expected minimumContractMonths to be ${expected}, got ${item.minimumContractMonths}`
+      );
+      return this;
+    },
+    hasDepositMonths(expected: number) {
+      assert.strictEqual(
+        item.depositMonths,
+        expected,
+        `Expected depositMonths to be ${expected}, got ${item.depositMonths}`
+      );
+      return this;
+    },
+    hasElevator(expected: boolean) {
+      assert.strictEqual(
+        item.hasElevator,
+        expected,
+        `Expected hasElevator to be ${expected}, got ${item.hasElevator}`
+      );
+      return this;
+    },
+    allowsPets(expected: boolean) {
+      assert.strictEqual(
+        item.allowPets,
+        expected,
+        `Expected allowPets to be ${expected}, got ${item.allowPets}`
+      );
+      return this;
+    },
+    allowsKids(expected: boolean) {
+      assert.strictEqual(
+        item.allowKids,
+        expected,
+        `Expected allowKids to be ${expected}, got ${item.allowKids}`
+      );
+      return this;
+    },
+    hasStatus(expected: string) {
+      assert.strictEqual(
+        item.status,
+        expected,
+        `Expected status to be ${expected}, got ${item.status}`
+      );
+      return this;
+    },
     hasClientName(expected: string | null) {
       assert.strictEqual(
         item.clientName,
@@ -294,14 +394,24 @@ export const assertProperty = (item: Property) => {
         .hasPropertyType(expected.propertyType)
         .hasClientId(expected.clientId)
         .hasRentalPrice(expected.rentalPrice)
-        .hasNumberOfRooms(expected.numberOfRooms)
-        .hasNumberOfBathrooms(expected.numberOfBathrooms)
-        .hasNumberOfGarages(expected.numberOfGarages)
+        .hasRooms(expected.rooms)
+        .hasBathrooms(expected.bathrooms)
+        .hasParkingSpaces(expected.parkingSpaces)
         .hasTotalArea(expected.totalArea)
+        .hasBuiltArea(expected.builtArea)
+        .hasFloorNumber(expected.floorNumber)
+        .hasYearBuilt(expected.yearBuilt)
         .hasDescription(expected.description)
-        .hasConstraints(expected.constraints)
+        .hasNotes(expected.notes)
         .hasLatitude(expected.latitude)
         .hasLongitude(expected.longitude)
+        .hasMaintenanceFee(expected.maintenanceFee)
+        .hasMinimumContractMonths(expected.minimumContractMonths)
+        .hasDepositMonths(expected.depositMonths)
+        .hasElevator(expected.hasElevator)
+        .allowsPets(expected.allowPets)
+        .allowsKids(expected.allowKids)
+        .hasStatus(expected.status)
         .hasClientName(expected.clientName);
     },
   };

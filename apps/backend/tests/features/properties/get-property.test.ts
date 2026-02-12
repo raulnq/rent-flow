@@ -23,14 +23,24 @@ describe('Get Property Endpoint', () => {
       .hasPropertyType(created.propertyType)
       .hasClientId(created.clientId)
       .hasRentalPrice(created.rentalPrice)
-      .hasNumberOfRooms(created.numberOfRooms)
-      .hasNumberOfBathrooms(created.numberOfBathrooms)
-      .hasNumberOfGarages(created.numberOfGarages)
+      .hasRooms(created.rooms)
+      .hasBathrooms(created.bathrooms)
+      .hasParkingSpaces(created.parkingSpaces)
       .hasTotalArea(created.totalArea)
+      .hasBuiltArea(created.builtArea)
+      .hasFloorNumber(created.floorNumber)
+      .hasYearBuilt(created.yearBuilt)
       .hasDescription(created.description)
-      .hasConstraints(created.constraints)
+      .hasNotes(created.notes)
       .hasLatitude(created.latitude)
-      .hasLongitude(created.longitude);
+      .hasLongitude(created.longitude)
+      .hasMaintenanceFee(created.maintenanceFee)
+      .hasMinimumContractMonths(created.minimumContractMonths)
+      .hasDepositMonths(created.depositMonths)
+      .hasElevator(created.hasElevator)
+      .allowsPets(created.allowPets)
+      .allowsKids(created.allowKids)
+      .hasStatus(created.status);
   });
 
   test('should return 404 for non-existent property', async () => {

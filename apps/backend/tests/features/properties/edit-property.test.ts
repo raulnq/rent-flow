@@ -29,10 +29,13 @@ describe('Edit Property Endpoint', () => {
       .hasPropertyType('House')
       .hasClientId(clientId)
       .hasRentalPrice(input.rentalPrice)
-      .hasNumberOfRooms(input.numberOfRooms)
-      .hasNumberOfBathrooms(input.numberOfBathrooms)
-      .hasNumberOfGarages(input.numberOfGarages)
-      .hasTotalArea(input.totalArea);
+      .hasRooms(input.rooms)
+      .hasBathrooms(input.bathrooms)
+      .hasParkingSpaces(input.parkingSpaces)
+      .hasTotalArea(input.totalArea)
+      .hasBuiltArea(input.builtArea)
+      .hasFloorNumber(input.floorNumber)
+      .hasYearBuilt(input.yearBuilt);
   });
 
   test('should return 404 for non-existent property', async () => {
@@ -94,24 +97,24 @@ describe('Edit Property Endpoint', () => {
         ]),
       },
       {
-        name: 'should reject negative numberOfRooms',
-        override: { numberOfRooms: -1 },
+        name: 'should reject negative rooms',
+        override: { rooms: -1 },
         expectedError: createValidationError([
-          validationError.nonNegative('numberOfRooms'),
+          validationError.nonNegative('rooms'),
         ]),
       },
       {
-        name: 'should reject negative numberOfBathrooms',
-        override: { numberOfBathrooms: -1 },
+        name: 'should reject negative bathrooms',
+        override: { bathrooms: -1 },
         expectedError: createValidationError([
-          validationError.nonNegative('numberOfBathrooms'),
+          validationError.nonNegative('bathrooms'),
         ]),
       },
       {
-        name: 'should reject negative numberOfGarages',
-        override: { numberOfGarages: -1 },
+        name: 'should reject negative parkingSpaces',
+        override: { parkingSpaces: -1 },
         expectedError: createValidationError([
-          validationError.nonNegative('numberOfGarages'),
+          validationError.nonNegative('parkingSpaces'),
         ]),
       },
       {
@@ -119,6 +122,27 @@ describe('Edit Property Endpoint', () => {
         override: { totalArea: -50 },
         expectedError: createValidationError([
           validationError.nonNegative('totalArea'),
+        ]),
+      },
+      {
+        name: 'should reject yearBuilt before 1950',
+        override: { yearBuilt: 1949 },
+        expectedError: createValidationError([
+          validationError.tooSmallNumber('yearBuilt', 1950),
+        ]),
+      },
+      {
+        name: 'should reject negative maintenanceFee',
+        override: { maintenanceFee: -50 },
+        expectedError: createValidationError([
+          validationError.nonNegative('maintenanceFee'),
+        ]),
+      },
+      {
+        name: 'should reject status longer than 25 characters',
+        override: { status: bigText(26) },
+        expectedError: createValidationError([
+          validationError.tooBig('status', 25),
         ]),
       },
     ];

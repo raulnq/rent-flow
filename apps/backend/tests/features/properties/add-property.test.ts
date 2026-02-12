@@ -24,13 +24,24 @@ describe('Add Property Endpoint', () => {
       .hasPropertyType('Apartment')
       .hasClientId(clientId)
       .hasRentalPrice(input.rentalPrice)
-      .hasNumberOfRooms(input.numberOfRooms)
-      .hasNumberOfBathrooms(input.numberOfBathrooms)
-      .hasNumberOfGarages(input.numberOfGarages)
+      .hasRooms(input.rooms)
+      .hasBathrooms(input.bathrooms)
+      .hasParkingSpaces(input.parkingSpaces)
       .hasTotalArea(input.totalArea)
+      .hasBuiltArea(input.builtArea)
+      .hasFloorNumber(input.floorNumber)
+      .hasYearBuilt(input.yearBuilt)
       .hasDescription(input.description)
+      .hasNotes(input.notes)
       .hasLatitude(input.latitude)
-      .hasLongitude(input.longitude);
+      .hasLongitude(input.longitude)
+      .hasMaintenanceFee(input.maintenanceFee)
+      .hasMinimumContractMonths(input.minimumContractMonths)
+      .hasDepositMonths(input.depositMonths)
+      .hasElevator(input.hasElevator)
+      .allowsPets(input.allowPets)
+      .allowsKids(input.allowKids)
+      .hasStatus(input.status);
   });
 
   test('should create a property with only required fields (house)', async () => {
@@ -42,7 +53,7 @@ describe('Add Property Endpoint', () => {
       .hasPropertyType('House')
       .hasClientId(clientId)
       .hasDescription(null)
-      .hasConstraints(null)
+      .hasNotes(null)
       .hasLatitude(null)
       .hasLongitude(null);
   });
@@ -87,24 +98,24 @@ describe('Add Property Endpoint', () => {
         ]),
       },
       {
-        name: 'should reject negative numberOfRooms',
-        override: { numberOfRooms: -1 },
+        name: 'should reject negative rooms',
+        override: { rooms: -1 },
         expectedError: createValidationError([
-          validationError.nonNegative('numberOfRooms'),
+          validationError.nonNegative('rooms'),
         ]),
       },
       {
-        name: 'should reject negative numberOfBathrooms',
-        override: { numberOfBathrooms: -1 },
+        name: 'should reject negative bathrooms',
+        override: { bathrooms: -1 },
         expectedError: createValidationError([
-          validationError.nonNegative('numberOfBathrooms'),
+          validationError.nonNegative('bathrooms'),
         ]),
       },
       {
-        name: 'should reject negative numberOfGarages',
-        override: { numberOfGarages: -1 },
+        name: 'should reject negative parkingSpaces',
+        override: { parkingSpaces: -1 },
         expectedError: createValidationError([
-          validationError.nonNegative('numberOfGarages'),
+          validationError.nonNegative('parkingSpaces'),
         ]),
       },
       {
@@ -112,6 +123,55 @@ describe('Add Property Endpoint', () => {
         override: { totalArea: -50 },
         expectedError: createValidationError([
           validationError.nonNegative('totalArea'),
+        ]),
+      },
+      {
+        name: 'should reject negative builtArea',
+        override: { builtArea: -25 },
+        expectedError: createValidationError([
+          validationError.nonNegative('builtArea'),
+        ]),
+      },
+      {
+        name: 'should reject negative floorNumber',
+        override: { floorNumber: -1 },
+        expectedError: createValidationError([
+          validationError.nonNegative('floorNumber'),
+        ]),
+      },
+      {
+        name: 'should reject yearBuilt before 1950',
+        override: { yearBuilt: 1949 },
+        expectedError: createValidationError([
+          validationError.tooSmallNumber('yearBuilt', 1950),
+        ]),
+      },
+      {
+        name: 'should reject negative maintenanceFee',
+        override: { maintenanceFee: -50 },
+        expectedError: createValidationError([
+          validationError.nonNegative('maintenanceFee'),
+        ]),
+      },
+      {
+        name: 'should reject negative minimumContractMonths',
+        override: { minimumContractMonths: -1 },
+        expectedError: createValidationError([
+          validationError.nonNegative('minimumContractMonths'),
+        ]),
+      },
+      {
+        name: 'should reject negative depositMonths',
+        override: { depositMonths: -1 },
+        expectedError: createValidationError([
+          validationError.nonNegative('depositMonths'),
+        ]),
+      },
+      {
+        name: 'should reject status longer than 25 characters',
+        override: { status: bigText(26) },
+        expectedError: createValidationError([
+          validationError.tooBig('status', 25),
         ]),
       },
       {
@@ -140,20 +200,6 @@ describe('Add Property Endpoint', () => {
         override: { longitude: 181 },
         expectedError: createValidationError([
           validationError.tooBigNumber('longitude', 180),
-        ]),
-      },
-      {
-        name: 'should reject description longer than 5000 characters',
-        override: { description: bigText(5001) },
-        expectedError: createValidationError([
-          validationError.tooBig('description', 5000),
-        ]),
-      },
-      {
-        name: 'should reject constraints longer than 5000 characters',
-        override: { constraints: bigText(5001) },
-        expectedError: createValidationError([
-          validationError.tooBig('constraints', 5000),
         ]),
       },
     ];
