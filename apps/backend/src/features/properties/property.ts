@@ -5,6 +5,8 @@ import {
   integer,
   numeric,
   doublePrecision,
+  text,
+  boolean,
 } from 'drizzle-orm/pg-core';
 import { clients } from '#/features/clients/client.js';
 import type { InferSelectModel } from 'drizzle-orm';
@@ -23,18 +25,36 @@ export const properties = dbSchema.table('properties', {
     scale: 2,
     mode: 'number',
   }).notNull(),
-  numberOfRooms: integer('numberOfRooms').notNull(),
-  numberOfBathrooms: integer('numberOfBathrooms').notNull(),
-  numberOfGarages: integer('numberOfGarages').notNull(),
+  rooms: integer('rooms').notNull(),
+  bathrooms: integer('bathrooms').notNull(),
+  parkingSpaces: integer('parkingSpaces').notNull(),
   totalArea: numeric('totalArea', {
     precision: 10,
     scale: 2,
     mode: 'number',
   }).notNull(),
-  description: varchar('description', { length: 5000 }),
-  constraints: varchar('constraints', { length: 5000 }),
+  builtArea: numeric('builtArea', {
+    precision: 10,
+    scale: 2,
+    mode: 'number',
+  }).notNull(),
+  floorNumber: integer('floorNumber').notNull(),
+  yearBuilt: integer('yearBuilt').notNull(),
+  description: text('description'),
+  notes: text('notes'),
   latitude: doublePrecision('latitude'),
   longitude: doublePrecision('longitude'),
+  maintenanceFee: numeric('maintenanceFee', {
+    precision: 10,
+    scale: 2,
+    mode: 'number',
+  }).notNull(),
+  minimumContractMonths: integer('minimumContractMonths').notNull(),
+  depositMonths: integer('depositMonths').notNull(),
+  hasElevator: boolean('hasElevator').notNull(),
+  allowPets: boolean('allowPets').notNull(),
+  allowKids: boolean('allowKids').notNull(),
+  status: varchar('status', { length: 25 }).notNull(),
 });
 
 export type Property = InferSelectModel<typeof properties>;
