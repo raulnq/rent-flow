@@ -15,6 +15,8 @@ export const applicationSchema = z.object({
   withdrawnAt: z.string().nullable(),
   withdrawnReason: z.string().nullable(),
   contractSignedAt: z.string().nullable(),
+  reservedAt: z.string().nullable(),
+  reservedAmount: z.number().nullable(),
   leadName: z.string().max(200).nullable(),
   propertyAddress: z.string().max(1000).nullable(),
 });
@@ -33,6 +35,8 @@ export const addApplicationSchema = applicationSchema.omit({
   withdrawnAt: true,
   withdrawnReason: true,
   contractSignedAt: true,
+  reservedAt: true,
+  reservedAmount: true,
   leadName: true,
   propertyAddress: true,
 });
@@ -81,6 +85,13 @@ export const signContractApplicationSchema = z.object({
 export type SignContractApplication = z.infer<
   typeof signContractApplicationSchema
 >;
+
+export const reserveApplicationSchema = z.object({
+  reservedAt: z.string().min(1),
+  reservedAmount: z.number().positive(),
+});
+
+export type ReserveApplication = z.infer<typeof reserveApplicationSchema>;
 
 export const listApplicationsSchema = paginationSchema.extend({
   propertyId: z.uuidv7().optional(),

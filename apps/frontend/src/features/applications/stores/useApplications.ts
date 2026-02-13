@@ -13,6 +13,7 @@ import {
   reject,
   withdraw,
   signContract,
+  reserve,
 } from './applicationsClient';
 import { useAuth } from '@clerk/clerk-react';
 import { useSearchParams } from 'react-router';
@@ -25,6 +26,7 @@ import type {
   StartReviewApplication,
   ApproveApplication,
   SignContractApplication,
+  ReserveApplication,
 } from '#/features/applications/schemas';
 
 export function useApplicationsSuspense({
@@ -162,6 +164,21 @@ export function useSignContract(applicationId: string) {
     mutationFn: async (data: SignContractApplication) => {
       const token = await getToken();
       return signContract(applicationId, data, token);
+    },
+    onSuccess: data => {
+      queryClient.invalidateQueries({ queryKey: ['applications'] });
+      queryClient.setQueryData(['application', applicationId], data);
+    },
+  });
+}
+
+export function useReserve(applicationId: string) {
+  const queryClient = useQueryClient();
+  const { getToken } = useAuth();
+  return useMutation({
+    mutationFn: async (data: ReserveApplication) => {
+      const token = await getToken();
+      return reserve(applicationId, data, token);
     },
     onSuccess: data => {
       queryClient.invalidateQueries({ queryKey: ['applications'] });

@@ -15,6 +15,7 @@ import type {
   StartReviewApplication,
   ApproveApplication,
   SignContractApplication,
+  ReserveApplication,
 } from '#/features/applications/schemas.js';
 import { addLead, john } from '../leads/lead-dsl.js';
 import {
@@ -439,6 +440,51 @@ export async function signContract(
   }
 }
 
+export async function reserve(
+  applicationId: string,
+  input: ReserveApplication
+): Promise<Application>;
+export async function reserve(
+  applicationId: string,
+  input: ReserveApplication,
+  expectedProblemDocument: ProblemDocument
+): Promise<ProblemDocument>;
+
+export async function reserve(
+  applicationId: string,
+  input: ReserveApplication,
+  expectedProblemDocument?: ProblemDocument
+): Promise<Application | ProblemDocument> {
+  const api = testClient(app);
+
+  const response = await api.api.applications[':applicationId'].reserve.$post({
+    param: { applicationId },
+    json: input,
+  });
+
+  if (response.status === StatusCodes.OK) {
+    assert.ok(
+      !expectedProblemDocument,
+      'Expected a problem document but received OK status'
+    );
+    const item = await response.json();
+    assert.ok(item);
+    return {
+      ...item,
+      createdAt: new Date(item.createdAt),
+    };
+  } else {
+    const problemDocument = await response.json();
+    assert.ok(problemDocument);
+    assert.ok(
+      expectedProblemDocument,
+      `Expected OK status but received ${response.status}`
+    );
+    assertStrictEqualProblemDocument(problemDocument, expectedProblemDocument);
+    return problemDocument;
+  }
+}
+
 // --- Fluent assertion builder ---
 
 export const assertApplication = (item: Application) => {
@@ -528,6 +574,22 @@ export const assertApplication = (item: Application) => {
         item.contractSignedAt,
         expected,
         `Expected contractSignedAt to be ${expected}, got ${item.contractSignedAt}`
+      );
+      return this;
+    },
+    hasReservedAt(expected: string | null) {
+      assert.strictEqual(
+        item.reservedAt,
+        expected,
+        `Expected reservedAt to be ${expected}, got ${item.reservedAt}`
+      );
+      return this;
+    },
+    hasReservedAmount(expected: number | null) {
+      assert.strictEqual(
+        item.reservedAmount,
+        expected,
+        `Expected reservedAmount to be ${expected}, got ${item.reservedAmount}`
       );
       return this;
     },

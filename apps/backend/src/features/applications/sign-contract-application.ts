@@ -27,10 +27,10 @@ export const signContractRoute = new Hono().post(
       return notFoundError(c, `Application ${applicationId} not found`);
     }
 
-    if (existing.status !== 'Approved') {
+    if (!['Approved', 'Reserved'].includes(existing.status)) {
       return conflictError(
         c,
-        `Cannot sign contract for application with status "${existing.status}". Application must be in "Approved" status.`
+        `Cannot sign contract for application with status "${existing.status}". Application must be in "Approved" or "Reserved" status.`
       );
     }
 

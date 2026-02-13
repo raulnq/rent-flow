@@ -4,12 +4,14 @@ import type {
   StartReviewApplication,
   ApproveApplication,
   SignContractApplication,
+  ReserveApplication,
 } from '#/features/applications/schemas';
 import { StartReviewButton } from './StartReviewButton';
 import { ApproveButton } from './ApproveButton';
 import { RejectButton } from './RejectButton';
 import { WithdrawButton } from './WithdrawButton';
 import { SignContractButton } from './SignContractButton';
+import { ReserveButton } from './ReserveButton';
 
 type ApplicationToolbarProps = {
   status: string;
@@ -19,6 +21,7 @@ type ApplicationToolbarProps = {
   onReject: (data: RejectApplication) => void;
   onWithdraw: (data: WithdrawApplication) => void;
   onSignContract: (data: SignContractApplication) => void;
+  onReserve: (data: ReserveApplication) => void;
 };
 
 export function ApplicationToolbar({
@@ -29,12 +32,16 @@ export function ApplicationToolbar({
   onReject,
   onWithdraw,
   onSignContract,
+  onReserve,
 }: ApplicationToolbarProps) {
   const canStartReview = status === 'New';
   const canApprove = status === 'Under Review';
   const canReject = ['New', 'Under Review'].includes(status);
-  const canWithdraw = ['New', 'Under Review', 'Approved'].includes(status);
-  const canSignContract = status === 'Approved';
+  const canWithdraw = ['New', 'Under Review', 'Approved', 'Reserved'].includes(
+    status
+  );
+  const canSignContract = ['Approved', 'Reserved'].includes(status);
+  const canReserve = status === 'Approved';
 
   return (
     <>
@@ -45,6 +52,10 @@ export function ApplicationToolbar({
       <ApproveButton
         disabled={isPending || !canApprove}
         onApprove={onApprove}
+      />
+      <ReserveButton
+        disabled={isPending || !canReserve}
+        onReserve={onReserve}
       />
       <RejectButton disabled={isPending || !canReject} onReject={onReject} />
       <WithdrawButton

@@ -8,6 +8,7 @@ import { approveRoute } from './approve-application.js';
 import { rejectRoute } from './reject-application.js';
 import { withdrawRoute } from './withdraw-application.js';
 import { signContractRoute } from './sign-contract-application.js';
+import { reserveRoute } from './reserve-application.js';
 
 export const applicationRoute = new Hono()
   .basePath('/applications')
@@ -19,4 +20,5 @@ export const applicationRoute = new Hono()
   .route('/', approveRoute)
   .route('/', rejectRoute)
   .route('/', withdrawRoute)
-  .route('/', signContractRoute);
+  .route('/', signContractRoute)
+  .route('/', reserveRoute);

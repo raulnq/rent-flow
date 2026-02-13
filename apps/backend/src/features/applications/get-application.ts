@@ -42,6 +42,8 @@ export function getApplicationWithRelations() {
       withdrawnAt: applications.withdrawnAt,
       withdrawnReason: applications.withdrawnReason,
       contractSignedAt: applications.contractSignedAt,
+      reservedAt: applications.reservedAt,
+      reservedAmount: applications.reservedAmount,
       leadName: leads.name,
       propertyAddress: properties.address,
     })

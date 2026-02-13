@@ -10,6 +10,7 @@ import type {
   StartReviewApplication,
   ApproveApplication,
   SignContractApplication,
+  ReserveApplication,
 } from '#/features/applications/schemas';
 
 export async function listApplications(
@@ -183,6 +184,27 @@ export async function signContract(
   if (!response.ok) {
     const error = await response.json();
     throw new Error(error.detail || 'Failed to sign contract');
+  }
+  return response.json() as unknown as Application;
+}
+
+export async function reserve(
+  applicationId: string,
+  data: ReserveApplication,
+  token?: string | null
+): Promise<Application> {
+  const response = await client.api.applications[
+    ':applicationId'
+  ].reserve.$post(
+    {
+      param: { applicationId },
+      json: data,
+    },
+    { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+  );
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to reserve application');
   }
   return response.json() as unknown as Application;
 }

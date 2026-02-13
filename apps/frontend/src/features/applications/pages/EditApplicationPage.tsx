@@ -11,6 +11,7 @@ import type {
   StartReviewApplication,
   ApproveApplication,
   SignContractApplication,
+  ReserveApplication,
 } from '#/features/applications/schemas';
 import {
   useEditApplication,
@@ -20,6 +21,7 @@ import {
   useReject,
   useWithdraw,
   useSignContract,
+  useReserve,
 } from '../stores/useApplications';
 import {
   EditApplicationForm,
@@ -47,6 +49,7 @@ export function EditApplicationPage() {
   const reject = useReject(applicationId!);
   const withdraw = useWithdraw(applicationId!);
   const signContract = useSignContract(applicationId!);
+  const reserve = useReserve(applicationId!);
   const addMutation = useAddVisit(applicationId!);
 
   const workflowPending =
@@ -54,7 +57,8 @@ export function EditApplicationPage() {
     approve.isPending ||
     reject.isPending ||
     withdraw.isPending ||
-    signContract.isPending;
+    signContract.isPending ||
+    reserve.isPending;
 
   const handleAdd = async (data: AddVisit) => {
     try {
@@ -135,6 +139,17 @@ export function EditApplicationPage() {
     }
   };
 
+  const handleReserve = async (data: ReserveApplication) => {
+    try {
+      await reserve.mutateAsync(data);
+      toast.success('Application reserved successfully');
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to reserve application'
+      );
+    }
+  };
+
   return (
     <div className="space-y-4">
       <QueryErrorResetBoundary>
@@ -153,6 +168,7 @@ export function EditApplicationPage() {
                 onReject={handleReject}
                 onWithdraw={handleWithdraw}
                 onSignContract={handleSignContract}
+                onReserve={handleReserve}
                 workflowPending={workflowPending}
                 onBack={() => navigate('/applications')}
               />
@@ -198,6 +214,7 @@ type InnerApplicationProps = {
   onReject: (data: RejectApplication) => void;
   onWithdraw: (data: WithdrawApplication) => void;
   onSignContract: (data: SignContractApplication) => void;
+  onReserve: (data: ReserveApplication) => void;
   workflowPending: boolean;
   onBack: () => void;
 };
@@ -211,6 +228,7 @@ function InnerApplication({
   onReject,
   onWithdraw,
   onSignContract,
+  onReserve,
   workflowPending,
   onBack,
 }: InnerApplicationProps) {
@@ -232,6 +250,7 @@ function InnerApplication({
           onReject={onReject}
           onWithdraw={onWithdraw}
           onSignContract={onSignContract}
+          onReserve={onReserve}
         />
       </ApplicationHeader>
       <EditApplicationForm

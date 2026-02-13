@@ -3,6 +3,7 @@ import {
   createApplication,
   startReview,
   approve,
+  reserve,
   reject,
   withdraw,
   assertApplication,
@@ -60,6 +61,25 @@ describe('Withdraw Application Endpoint', () => {
     assert.ok(updated.withdrawnAt);
   });
 
+  test('should withdraw application with status Reserved', async () => {
+    const created = await createApplication();
+    await startReview(created.applicationId, { reviewStartedAt: todayDate() });
+    await approve(created.applicationId, { approvedAt: todayDate() });
+    await reserve(created.applicationId, {
+      reservedAt: todayDate(),
+      reservedAmount: 1500,
+    });
+    const updated = await withdraw(created.applicationId, {
+      withdrawnReason: 'Changed circumstances',
+      withdrawnAt: todayDate(),
+    });
+
+    assertApplication(updated)
+      .hasStatus('Withdrawn')
+      .hasWithdrawnReason('Changed circumstances');
+    assert.ok(updated.withdrawnAt);
+  });
+
   test('should set withdrawnAt date', async () => {
     const created = await createApplication();
     const updated = await withdraw(created.applicationId, {
@@ -82,7 +102,7 @@ describe('Withdraw Application Endpoint', () => {
       created.applicationId,
       { withdrawnReason: 'Test', withdrawnAt: todayDate() },
       createConflictError(
-        'Cannot withdraw application with status "Rejected". Application must be in "New", "Under Review", or "Approved" status.'
+        'Cannot withdraw application with status "Rejected". Application must be in "New", "Under Review", "Approved", or "Reserved" status.'
       )
     );
   });

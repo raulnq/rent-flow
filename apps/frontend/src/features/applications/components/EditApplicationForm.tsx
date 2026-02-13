@@ -188,6 +188,25 @@ export function EditApplicationForm({
                   )}
                 </div>
               )}
+              {application.reservedAt && (
+                <div className="grid grid-cols-2 gap-4">
+                  <Field>
+                    <FieldLabel>Reserved At</FieldLabel>
+                    <Input value={application.reservedAt} disabled />
+                  </Field>
+                  <Field>
+                    <FieldLabel>Reserved Amount</FieldLabel>
+                    <Input
+                      value={
+                        application.reservedAmount
+                          ? `$${application.reservedAmount.toFixed(2)}`
+                          : 'N/A'
+                      }
+                      disabled
+                    />
+                  </Field>
+                </div>
+              )}
               {application.rejectedAt && (
                 <div className="grid grid-cols-2 gap-4">
                   <Field>

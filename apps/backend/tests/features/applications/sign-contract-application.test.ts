@@ -3,6 +3,7 @@ import {
   createApplication,
   startReview,
   approve,
+  reserve,
   signContract,
   assertApplication,
   todayDate,
@@ -35,13 +36,29 @@ describe('Sign Contract Application Endpoint', () => {
     assert.strictEqual(typeof updated.contractSignedAt, 'string');
   });
 
+  test('should sign contract for application with status Reserved', async () => {
+    const created = await createApplication();
+    await startReview(created.applicationId, { reviewStartedAt: todayDate() });
+    await approve(created.applicationId, { approvedAt: todayDate() });
+    await reserve(created.applicationId, {
+      reservedAt: todayDate(),
+      reservedAmount: 1500,
+    });
+    const updated = await signContract(created.applicationId, {
+      contractSignedAt: todayDate(),
+    });
+
+    assertApplication(updated).hasStatus('Contract Signed');
+    assert.ok(updated.contractSignedAt);
+  });
+
   test('should reject signing contract with status New', async () => {
     const created = await createApplication();
     await signContract(
       created.applicationId,
       { contractSignedAt: todayDate() },
       createConflictError(
-        'Cannot sign contract for application with status "New". Application must be in "Approved" status.'
+        'Cannot sign contract for application with status "New". Application must be in "Approved" or "Reserved" status.'
       )
     );
   });
@@ -53,7 +70,7 @@ describe('Sign Contract Application Endpoint', () => {
       created.applicationId,
       { contractSignedAt: todayDate() },
       createConflictError(
-        'Cannot sign contract for application with status "Under Review". Application must be in "Approved" status.'
+        'Cannot sign contract for application with status "Under Review". Application must be in "Approved" or "Reserved" status.'
       )
     );
   });

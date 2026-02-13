@@ -5,6 +5,7 @@ import {
   timestamp,
   date,
   text,
+  numeric,
 } from 'drizzle-orm/pg-core';
 import { leads } from '#/features/leads/lead.js';
 import { properties } from '#/features/properties/property.js';
@@ -35,6 +36,12 @@ export const applications = dbSchema.table('applications', {
   withdrawnAt: date('withdrawnAt', { mode: 'string' }),
   withdrawnReason: text('withdrawnReason'),
   contractSignedAt: date('contractSignedAt', { mode: 'string' }),
+  reservedAt: date('reservedAt', { mode: 'string' }),
+  reservedAmount: numeric('reservedAmount', {
+    precision: 10,
+    scale: 2,
+    mode: 'number',
+  }),
 });
 
 export type Application = InferSelectModel<typeof applications>;
