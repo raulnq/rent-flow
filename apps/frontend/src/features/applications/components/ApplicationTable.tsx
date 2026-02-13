@@ -13,6 +13,7 @@ import {
 import { useApplicationsSuspense } from '../stores/useApplications';
 import { Pagination } from '@/components/Pagination';
 import { Badge } from '@/components/ui/badge';
+import { getStatusVariant } from '../utils/status-variants';
 
 export function ApplicationsSkeleton() {
   return (
@@ -66,18 +67,6 @@ export function ApplicationsError({
   );
 }
 
-const STATUS_VARIANTS: Record<
-  string,
-  'default' | 'secondary' | 'success' | 'destructive' | 'outline'
-> = {
-  New: 'default',
-  'Under Review': 'secondary',
-  Approved: 'success',
-  Rejected: 'destructive',
-  Withdrawn: 'outline',
-  'Contract Signed': 'success',
-};
-
 export function ApplicationTable() {
   const [searchParams] = useSearchParams();
   const propertyId = searchParams.get('propertyId') ?? undefined;
@@ -122,7 +111,7 @@ export function ApplicationTable() {
               </TableCell>
               <TableCell>{item.leadName ?? 'N/A'}</TableCell>
               <TableCell>
-                <Badge variant={STATUS_VARIANTS[item.status] || 'default'}>
+                <Badge variant={getStatusVariant(item.status)}>
                   {item.status}
                 </Badge>
               </TableCell>

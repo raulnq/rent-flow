@@ -1,0 +1,495 @@
+{
+  "id": "2a201ef3-09c0-4ab2-9083-200a382a22a7",
+  "prevId": "fa6ab65c-246b-42cb-80b1-9f9b738822d5",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "rent_flow.applications": {
+      "name": "applications",
+      "schema": "rent_flow",
+      "columns": {
+        "applicationId": {
+          "name": "applicationId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "leadId": {
+          "name": "leadId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "propertyId": {
+          "name": "propertyId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(25)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "reviewStartedAt": {
+          "name": "reviewStartedAt",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "approvedAt": {
+          "name": "approvedAt",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rejectedAt": {
+          "name": "rejectedAt",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rejectedReason": {
+          "name": "rejectedReason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "withdrawnAt": {
+          "name": "withdrawnAt",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "withdrawnReason": {
+          "name": "withdrawnReason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "contractSignedAt": {
+          "name": "contractSignedAt",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "applications_leadId_leads_leadId_fk": {
+          "name": "applications_leadId_leads_leadId_fk",
+          "tableFrom": "applications",
+          "tableTo": "leads",
+          "schemaTo": "rent_flow",
+          "columnsFrom": ["leadId"],
+          "columnsTo": ["leadId"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "applications_propertyId_properties_propertyId_fk": {
+          "name": "applications_propertyId_properties_propertyId_fk",
+          "tableFrom": "applications",
+          "tableTo": "properties",
+          "schemaTo": "rent_flow",
+          "columnsFrom": ["propertyId"],
+          "columnsTo": ["propertyId"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "rent_flow.clients": {
+      "name": "clients",
+      "schema": "rent_flow",
+      "columns": {
+        "clientId": {
+          "name": "clientId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dni": {
+          "name": "dni",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address": {
+          "name": "address",
+          "type": "varchar(1000)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "clients_dni_unique": {
+          "name": "clients_dni_unique",
+          "nullsNotDistinct": false,
+          "columns": ["dni"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "rent_flow.leads": {
+      "name": "leads",
+      "schema": "rent_flow",
+      "columns": {
+        "leadId": {
+          "name": "leadId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(200)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dni": {
+          "name": "dni",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "phone": {
+          "name": "phone",
+          "type": "varchar(20)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "address": {
+          "name": "address",
+          "type": "varchar(1000)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "birthDate": {
+          "name": "birthDate",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "occupation": {
+          "name": "occupation",
+          "type": "varchar(100)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "nationality": {
+          "name": "nationality",
+          "type": "varchar(50)",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "leads_dni_unique": {
+          "name": "leads_dni_unique",
+          "nullsNotDistinct": false,
+          "columns": ["dni"]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "rent_flow.properties": {
+      "name": "properties",
+      "schema": "rent_flow",
+      "columns": {
+        "propertyId": {
+          "name": "propertyId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "address": {
+          "name": "address",
+          "type": "varchar(1000)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "propertyType": {
+          "name": "propertyType",
+          "type": "varchar(25)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "clientId": {
+          "name": "clientId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rentalPrice": {
+          "name": "rentalPrice",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rooms": {
+          "name": "rooms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bathrooms": {
+          "name": "bathrooms",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "parkingSpaces": {
+          "name": "parkingSpaces",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "totalArea": {
+          "name": "totalArea",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "builtArea": {
+          "name": "builtArea",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "floorNumber": {
+          "name": "floorNumber",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "yearBuilt": {
+          "name": "yearBuilt",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "latitude": {
+          "name": "latitude",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "longitude": {
+          "name": "longitude",
+          "type": "double precision",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "maintenanceFee": {
+          "name": "maintenanceFee",
+          "type": "numeric(10, 2)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "minimumContractMonths": {
+          "name": "minimumContractMonths",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "depositMonths": {
+          "name": "depositMonths",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "hasElevator": {
+          "name": "hasElevator",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "allowPets": {
+          "name": "allowPets",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "allowKids": {
+          "name": "allowKids",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(25)",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "properties_clientId_clients_clientId_fk": {
+          "name": "properties_clientId_clients_clientId_fk",
+          "tableFrom": "properties",
+          "tableTo": "clients",
+          "schemaTo": "rent_flow",
+          "columnsFrom": ["clientId"],
+          "columnsTo": ["clientId"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "rent_flow.visits": {
+      "name": "visits",
+      "schema": "rent_flow",
+      "columns": {
+        "visitId": {
+          "name": "visitId",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "applicationId": {
+          "name": "applicationId",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "varchar(25)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "scheduledAt": {
+          "name": "scheduledAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "cancellationReason": {
+          "name": "cancellationReason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "visits_applicationId_applications_applicationId_fk": {
+          "name": "visits_applicationId_applications_applicationId_fk",
+          "tableFrom": "visits",
+          "tableTo": "applications",
+          "schemaTo": "rent_flow",
+          "columnsFrom": ["applicationId"],
+          "columnsTo": ["applicationId"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

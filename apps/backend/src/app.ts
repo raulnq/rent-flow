@@ -11,6 +11,7 @@ import { applicationRoute } from './features/applications/routes.js';
 import { clientRoute } from './features/clients/routes.js';
 import { leadRoute } from './features/leads/routes.js';
 import { propertyRoute } from './features/properties/routes.js';
+import { visitRoute } from './features/visits/routes.js';
 
 export const app = new Hono({ strict: false })
   .use(cors({ origin: ENV.CORS_ORIGIN, credentials: true }))
@@ -41,6 +42,7 @@ export const app = new Hono({ strict: false })
   .route('/api', clientRoute)
   .route('/api', leadRoute)
   .route('/api', propertyRoute)
+  .route('/api', visitRoute)
   .notFound(onNotFound)
   .onError(onError);
 

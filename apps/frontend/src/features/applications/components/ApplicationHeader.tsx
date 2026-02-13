@@ -1,11 +1,14 @@
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { ArrowLeft } from 'lucide-react';
 import { type ReactNode } from 'react';
+import { getStatusVariant } from '../utils/status-variants';
 
 type ApplicationHeaderProps = {
   onBack: () => void;
   title: string;
   description: string;
+  status?: string;
   children?: ReactNode;
 };
 
@@ -13,6 +16,7 @@ export function ApplicationHeader({
   onBack,
   title,
   description,
+  status,
   children,
 }: ApplicationHeaderProps) {
   return (
@@ -22,7 +26,12 @@ export function ApplicationHeader({
           <ArrowLeft className="h-4 w-4" />
         </Button>
         <div>
-          <h2 className="text-lg font-semibold">{title}</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-semibold">{title}</h2>
+            {status && (
+              <Badge variant={getStatusVariant(status)}>{status}</Badge>
+            )}
+          </div>
           <p className="text-sm text-muted-foreground">{description}</p>
         </div>
       </div>

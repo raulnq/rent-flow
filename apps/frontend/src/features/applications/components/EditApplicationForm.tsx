@@ -1,7 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
 import { useNavigate } from 'react-router';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -19,7 +18,7 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Badge } from '@/components/ui/badge';
+import { SubSection } from '@/components/SubSection';
 
 export function EditApplicationError({
   resetErrorBoundary,
@@ -117,26 +116,13 @@ export function EditApplicationForm({
   return (
     <>
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-base">Application Details</CardTitle>
-            <Badge>{application.status}</Badge>
-          </div>
-        </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <form
             id="form"
             onSubmit={form.handleSubmit(onSubmit)}
             className="space-y-6"
           >
-            {/* Basic Info Section */}
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-foreground">
-                  Basic Info
-                </h3>
-                <Separator />
-              </div>
+            <SubSection title="Basic Info">
               <Field>
                 <FieldLabel>Property</FieldLabel>
                 <Input value={application.propertyAddress ?? 'N/A'} disabled />
@@ -145,16 +131,9 @@ export function EditApplicationForm({
                 <FieldLabel>Lead</FieldLabel>
                 <Input value={application.leadName ?? 'N/A'} disabled />
               </Field>
-            </div>
+            </SubSection>
 
-            {/* Others Section */}
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-foreground">
-                  Others
-                </h3>
-                <Separator />
-              </div>
+            <SubSection title="Others">
               <Controller
                 name="notes"
                 control={form.control}
@@ -176,14 +155,8 @@ export function EditApplicationForm({
                   </Field>
                 )}
               />
-            </div>
-
-            {/* Audit Section */}
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <h3 className="text-sm font-semibold text-foreground">Audit</h3>
-                <Separator />
-              </div>
+            </SubSection>
+            <SubSection title="Audit">
               <div className="grid grid-cols-2 gap-4">
                 <Field>
                   <FieldLabel>Created At</FieldLabel>
@@ -247,7 +220,7 @@ export function EditApplicationForm({
                   </Field>
                 </div>
               )}
-            </div>
+            </SubSection>
           </form>
         </CardContent>
         <CardFooter className="flex justify-end gap-2">

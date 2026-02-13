@@ -35,7 +35,7 @@ describe('Add Application Endpoint', () => {
     test('should reject missing leadId', async () => {
       const propertyId = await createProperty();
       await addApplication(
-        newApplication({ leadId: undefined as unknown as string, propertyId }),
+        newApplication({ leadId: undefined, propertyId }),
         createValidationError([validationError.requiredString('leadId')])
       );
     });
@@ -43,7 +43,7 @@ describe('Add Application Endpoint', () => {
     test('should reject missing propertyId', async () => {
       const leadId = await createLead();
       await addApplication(
-        newApplication({ propertyId: undefined as unknown as string, leadId }),
+        newApplication({ propertyId: undefined, leadId }),
         createValidationError([validationError.requiredString('propertyId')])
       );
     });

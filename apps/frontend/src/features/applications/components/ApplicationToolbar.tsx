@@ -1,5 +1,4 @@
 import type {
-  Application,
   RejectApplication,
   WithdrawApplication,
   StartReviewApplication,
@@ -12,9 +11,9 @@ import { RejectButton } from './RejectButton';
 import { WithdrawButton } from './WithdrawButton';
 import { SignContractButton } from './SignContractButton';
 
-type ApplicationButtonsProps = {
-  application: Application;
-  workflowPending: boolean;
+type ApplicationToolbarProps = {
+  status: string;
+  isPending: boolean;
   onStartReview: (data: StartReviewApplication) => void;
   onApprove: (data: ApproveApplication) => void;
   onReject: (data: RejectApplication) => void;
@@ -22,43 +21,38 @@ type ApplicationButtonsProps = {
   onSignContract: (data: SignContractApplication) => void;
 };
 
-export function ApplicationButtons({
-  application,
-  workflowPending,
+export function ApplicationToolbar({
+  status,
+  isPending,
   onStartReview,
   onApprove,
   onReject,
   onWithdraw,
   onSignContract,
-}: ApplicationButtonsProps) {
-  const canStartReview = application.status === 'New';
-  const canApprove = application.status === 'Under Review';
-  const canReject = ['New', 'Under Review'].includes(application.status);
-  const canWithdraw = ['New', 'Under Review', 'Approved'].includes(
-    application.status
-  );
-  const canSignContract = application.status === 'Approved';
+}: ApplicationToolbarProps) {
+  const canStartReview = status === 'New';
+  const canApprove = status === 'Under Review';
+  const canReject = ['New', 'Under Review'].includes(status);
+  const canWithdraw = ['New', 'Under Review', 'Approved'].includes(status);
+  const canSignContract = status === 'Approved';
 
   return (
     <>
       <StartReviewButton
-        disabled={workflowPending || !canStartReview}
+        disabled={isPending || !canStartReview}
         onStartReview={onStartReview}
       />
       <ApproveButton
-        disabled={workflowPending || !canApprove}
+        disabled={isPending || !canApprove}
         onApprove={onApprove}
       />
-      <RejectButton
-        disabled={workflowPending || !canReject}
-        onReject={onReject}
-      />
+      <RejectButton disabled={isPending || !canReject} onReject={onReject} />
       <WithdrawButton
-        disabled={workflowPending || !canWithdraw}
+        disabled={isPending || !canWithdraw}
         onWithdraw={onWithdraw}
       />
       <SignContractButton
-        disabled={workflowPending || !canSignContract}
+        disabled={isPending || !canSignContract}
         onSignContract={onSignContract}
       />
     </>

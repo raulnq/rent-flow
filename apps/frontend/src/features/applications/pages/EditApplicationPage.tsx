@@ -27,7 +27,16 @@ import {
   EditApplicationError,
 } from '../components/EditApplicationForm';
 import { ApplicationHeader } from '../components/ApplicationHeader';
-import { ApplicationButtons } from '../components/ApplicationButtons';
+import { ApplicationToolbar } from '../components/ApplicationToolbar';
+import {
+  VisitsError,
+  VisitsSkeleton,
+  VisitTable,
+} from '../../visits/components/VisitTable';
+import { AddButton } from '@/features/visits/components/AddButton';
+import { useAddVisit } from '@/features/visits/stores/useVisits';
+import type { AddVisit } from '#/features/visits/schemas';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function EditApplicationPage() {
   const navigate = useNavigate();
@@ -38,6 +47,7 @@ export function EditApplicationPage() {
   const reject = useReject(applicationId!);
   const withdraw = useWithdraw(applicationId!);
   const signContract = useSignContract(applicationId!);
+  const addMutation = useAddVisit(applicationId!);
 
   const workflowPending =
     startReview.isPending ||
@@ -45,6 +55,17 @@ export function EditApplicationPage() {
     reject.isPending ||
     withdraw.isPending ||
     signContract.isPending;
+
+  const handleAdd = async (data: AddVisit) => {
+    try {
+      await addMutation.mutateAsync(data);
+      toast.success('Visit added successfully');
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to add visit'
+      );
+    }
+  };
 
   const onSubmit: SubmitHandler<EditApplication> = async data => {
     try {
@@ -139,6 +160,31 @@ export function EditApplicationPage() {
           </ErrorBoundary>
         )}
       </QueryErrorResetBoundary>
+      <>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
+            <h2 className="text-lg font-semibold">Visits</h2>
+            <p className="text-sm text-muted-foreground">Manage your visits.</p>
+          </div>
+          <AddButton onAdd={handleAdd} />
+        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>All visits</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <QueryErrorResetBoundary>
+              {({ reset }) => (
+                <ErrorBoundary onReset={reset} FallbackComponent={VisitsError}>
+                  <Suspense fallback={<VisitsSkeleton />}>
+                    <VisitTable applicationId={applicationId!} />
+                  </Suspense>
+                </ErrorBoundary>
+              )}
+            </QueryErrorResetBoundary>
+          </CardContent>
+        </Card>
+      </>
     </div>
   );
 }
@@ -176,10 +222,11 @@ function InnerApplication({
         onBack={onBack}
         title="Edit Application"
         description="Edit rental application details."
+        status={data.status}
       >
-        <ApplicationButtons
-          application={data}
-          workflowPending={workflowPending}
+        <ApplicationToolbar
+          status={data.status}
+          isPending={workflowPending}
           onStartReview={onStartReview}
           onApprove={onApprove}
           onReject={onReject}
