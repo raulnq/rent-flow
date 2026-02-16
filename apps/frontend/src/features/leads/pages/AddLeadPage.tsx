@@ -4,7 +4,9 @@ import { toast } from 'sonner';
 import type { AddLead } from '#/features/leads/schemas';
 import { useAddLead } from '../stores/useLeads';
 import { AddLeadForm } from '../components/AddLeadForm';
-import { LeadHeader } from '../components/LeadHeader';
+import { FormCardHeader } from '@/components/FormCardHeader';
+import { FormCardFooter } from '@/components/FormCardFooter';
+import { Card } from '@/components/ui/card';
 
 export function AddLeadPage() {
   const navigate = useNavigate();
@@ -24,12 +26,16 @@ export function AddLeadPage() {
 
   return (
     <div className="space-y-4">
-      <LeadHeader
-        onBack={() => navigate('/leads')}
-        title="Add Lead"
-        description="Create a new lead."
-      />
-      <AddLeadForm isPending={add.isPending} onSubmit={onSubmit} />
+      <Card>
+        <FormCardHeader title="Add Lead" description="Create a new lead." />
+        <AddLeadForm isPending={add.isPending} onSubmit={onSubmit} />
+        <FormCardFooter
+          saveText="Save Lead"
+          cancelText="Cancel"
+          onCancel={() => navigate('/leads')}
+          isPending={add.isPending}
+        />
+      </Card>
     </div>
   );
 }

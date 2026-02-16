@@ -12,7 +12,7 @@ export function ViewCardFooter({
   onCancel,
 }: ViewCardFooterProps) {
   return (
-    <CardFooter>
+    <CardFooter className="border-t">
       <Field orientation="horizontal" className="flex justify-end">
         <Button type="button" variant="outline" onClick={onCancel}>
           {cancelText}

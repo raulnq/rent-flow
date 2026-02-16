@@ -6,12 +6,12 @@ import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { EditLead } from '#/features/leads/schemas';
 import { useEditLead, useLeadSuspense } from '../stores/useLeads';
-import {
-  EditLeadForm,
-  EditLeadSkeleton,
-  EditLeadError,
-} from '../components/EditLeadForm';
-import { LeadHeader } from '../components/LeadHeader';
+import { EditLeadForm } from '../components/EditLeadForm';
+import { LeadSkeleton } from '../components/LeadSkeleton';
+import { LeadError } from '../components/LeadError';
+import { FormCardHeader } from '@/components/FormCardHeader';
+import { FormCardFooter } from '@/components/FormCardFooter';
+import { Card } from '@/components/ui/card';
 
 export function EditLeadPage() {
   const navigate = useNavigate();
@@ -32,24 +32,32 @@ export function EditLeadPage() {
 
   return (
     <div className="space-y-4">
-      <LeadHeader
-        onBack={() => navigate('/leads')}
-        title="Edit Lead"
-        description="Edit an existing lead."
-      />
-      <QueryErrorResetBoundary>
-        {({ reset }) => (
-          <ErrorBoundary onReset={reset} FallbackComponent={EditLeadError}>
-            <Suspense fallback={<EditLeadSkeleton />}>
-              <InnerLead
-                isPending={edit.isPending}
-                onSubmit={onSubmit}
-                leadId={leadId!}
-              />
-            </Suspense>
-          </ErrorBoundary>
-        )}
-      </QueryErrorResetBoundary>
+      <Card>
+        <FormCardHeader
+          title="Edit Lead"
+          description="Edit an existing lead."
+        />
+        <QueryErrorResetBoundary>
+          {({ reset }) => (
+            <ErrorBoundary onReset={reset} FallbackComponent={LeadError}>
+              <Suspense fallback={<LeadSkeleton />}>
+                <InnerLead
+                  isPending={edit.isPending}
+                  onSubmit={onSubmit}
+                  leadId={leadId!}
+                />
+              </Suspense>
+            </ErrorBoundary>
+          )}
+        </QueryErrorResetBoundary>
+        <FormCardFooter
+          formId="form"
+          saveText="Save Lead"
+          cancelText="Cancel"
+          onCancel={() => navigate('/leads')}
+          isPending={edit.isPending}
+        />
+      </Card>
     </div>
   );
 }

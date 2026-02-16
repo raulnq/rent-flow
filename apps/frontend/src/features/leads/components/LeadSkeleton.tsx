@@ -4,64 +4,58 @@ import {
   FieldLabel,
   FieldSeparator,
 } from '@/components/ui/field';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import type { Lead } from '#/features/leads/schemas';
-import { ViewCardContent } from '@/components/ViewCardContent';
+import { CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 
-type ViewLeadCardProps = {
-  lead: Lead;
-};
-
-export function ViewLeadCard({ lead }: ViewLeadCardProps) {
+export function LeadSkeleton() {
   return (
-    <ViewCardContent>
+    <CardContent>
       <FieldGroup>
         <Field>
           <FieldLabel>Name</FieldLabel>
-          <Input value={lead.name} disabled />
+          <Skeleton className="h-9 w-full" />
         </Field>
         <div className="grid grid-cols-2 gap-4">
           <Field>
             <FieldLabel>DNI</FieldLabel>
-            <Input value={lead.dni} disabled />
+            <Skeleton className="h-9 w-full" />
           </Field>
           <Field>
             <FieldLabel>Birth Date</FieldLabel>
-            <Input value={lead.birthDate ?? ''} disabled />
+            <Skeleton className="h-9 w-full" />
           </Field>
         </div>
         <div className="grid grid-cols-2 gap-4">
           <Field>
             <FieldLabel>Nationality</FieldLabel>
-            <Input value={lead.nationality ?? ''} disabled />
+            <Skeleton className="h-9 w-full" />
           </Field>
           <Field>
             <FieldLabel>Occupation</FieldLabel>
-            <Input value={lead.occupation ?? ''} disabled />
+            <Skeleton className="h-9 w-full" />
           </Field>
         </div>
         <FieldSeparator />
         <div className="grid grid-cols-2 gap-4">
           <Field>
             <FieldLabel>Email</FieldLabel>
-            <Input value={lead.email ?? ''} disabled />
+            <Skeleton className="h-9 w-full" />
           </Field>
           <Field>
             <FieldLabel>Phone</FieldLabel>
-            <Input value={lead.phone} disabled />
+            <Skeleton className="h-9 w-full" />
           </Field>
         </div>
         <Field>
           <FieldLabel>Address</FieldLabel>
-          <Textarea value={lead.address ?? ''} disabled rows={3} />
+          <Skeleton className="h-16 w-full" />
         </Field>
         <FieldSeparator />
         <Field>
           <FieldLabel>Additional Notes</FieldLabel>
-          <Textarea value={lead.notes ?? ''} disabled rows={3} />
+          <Skeleton className="h-16 w-full" />
         </Field>
       </FieldGroup>
-    </ViewCardContent>
+    </CardContent>
   );
 }

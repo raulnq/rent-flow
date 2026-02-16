@@ -18,7 +18,7 @@ export function FormCardFooter({
   onCancel,
 }: FormCardFooterProps) {
   return (
-    <CardFooter>
+    <CardFooter className="border-t">
       <Field orientation="horizontal" className="flex justify-end">
         <Button type="button" variant="outline" onClick={onCancel}>
           {cancelText}
