@@ -33,7 +33,7 @@ export function EditLeadForm({
   });
 
   return (
-    <FormCardContent onSubmit={form.handleSubmit(onSubmit)}>
+    <FormCardContent onSubmit={form.handleSubmit(onSubmit)} formId="form">
       <FieldGroup>
         <Controller
           name="name"

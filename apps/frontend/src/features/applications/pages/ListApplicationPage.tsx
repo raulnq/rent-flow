@@ -1,7 +1,4 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus } from 'lucide-react';
-import { Link } from 'react-router';
+import { Card, CardContent } from '@/components/ui/card';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
@@ -10,31 +7,21 @@ import {
   ApplicationsSkeleton,
   ApplicationTable,
 } from '../components/ApplicationTable';
-import { ApplicationSearch } from '../components/ApplicationSearch';
+import { ApplicationSearchBar } from '../components/ApplicationSearchBar';
+import { ListCardHeader } from '@/components/ListCardHeader';
 
 export function ListApplicationPage() {
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <h2 className="text-lg font-semibold">Applications</h2>
-          <p className="text-sm text-muted-foreground">
-            Manage rental applications.
-          </p>
-        </div>
-        <Button className="sm:self-start" asChild>
-          <Link to="/applications/new">
-            <Plus />
-            Add Application
-          </Link>
-        </Button>
-      </div>
-
       <Card>
-        <CardHeader className="gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <CardTitle className="text-base">All applications</CardTitle>
-          <ApplicationSearch />
-        </CardHeader>
+        <ListCardHeader
+          title="Applications"
+          description="Search your applications."
+          addLink="/applications/new"
+          addText="Add Application"
+        >
+          <ApplicationSearchBar />
+        </ListCardHeader>
         <CardContent>
           <QueryErrorResetBoundary>
             {({ reset }) => (

@@ -3,13 +3,13 @@ import { CardContent } from '@/components/ui/card';
 type FormCardContentProps = {
   onSubmit: React.FormEventHandler<HTMLFormElement>;
   children: React.ReactNode;
-  formId?: string;
+  formId: string;
 };
 
 export function FormCardContent({
   onSubmit,
   children,
-  formId = 'form',
+  formId,
 }: FormCardContentProps) {
   return (
     <CardContent>

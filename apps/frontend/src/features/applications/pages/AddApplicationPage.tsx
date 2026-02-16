@@ -4,7 +4,9 @@ import { toast } from 'sonner';
 import { type AddApplication } from '#/features/applications/schemas';
 import { useAddApplication } from '../stores/useApplications';
 import { AddApplicationForm } from '../components/AddApplicationForm';
-import { ApplicationHeader } from '../components/ApplicationHeader';
+import { FormCardHeader } from '@/components/FormCardHeader';
+import { FormCardFooter } from '@/components/FormCardFooter';
+import { Card } from '@/components/ui/card';
 
 export function AddApplicationPage() {
   const navigate = useNavigate();
@@ -24,12 +26,20 @@ export function AddApplicationPage() {
 
   return (
     <div className="space-y-4">
-      <ApplicationHeader
-        onBack={() => navigate('/applications')}
-        title="Add Application"
-        description="Create a new rental application."
-      />
-      <AddApplicationForm isPending={add.isPending} onSubmit={onSubmit} />
+      <Card>
+        <FormCardHeader
+          title="Add Application"
+          description="Create a new rental application."
+        />
+        <AddApplicationForm isPending={add.isPending} onSubmit={onSubmit} />
+        <FormCardFooter
+          formId="form"
+          saveText="Save Application"
+          cancelText="Cancel"
+          onCancel={() => navigate('/applications')}
+          isPending={add.isPending}
+        />
+      </Card>
     </div>
   );
 }

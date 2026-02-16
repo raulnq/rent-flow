@@ -17,8 +17,8 @@ export function ListPropertyPage() {
         <ListCardHeader
           title="Properties"
           description="Search your properties."
-          addNewLink="/properties/new"
-          addNewText="Add Property"
+          addLink="/properties/new"
+          addText="Add Property"
         >
           <PropertySearchBar />
         </ListCardHeader>

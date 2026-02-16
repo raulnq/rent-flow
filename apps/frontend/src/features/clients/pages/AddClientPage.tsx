@@ -30,6 +30,7 @@ export function AddClientPage() {
         <FormCardHeader title="Add Client" description="Create a new client." />
         <AddClientForm isPending={add.isPending} onSubmit={onSubmit} />
         <FormCardFooter
+          formId="form"
           saveText="Save Client"
           cancelText="Cancel"
           onCancel={() => navigate('/clients')}

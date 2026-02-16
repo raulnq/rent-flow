@@ -30,6 +30,7 @@ export function AddLeadPage() {
         <FormCardHeader title="Add Lead" description="Create a new lead." />
         <AddLeadForm isPending={add.isPending} onSubmit={onSubmit} />
         <FormCardFooter
+          formId="form"
           saveText="Save Lead"
           cancelText="Cancel"
           onCancel={() => navigate('/leads')}

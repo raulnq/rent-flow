@@ -1,11 +1,11 @@
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useRef, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { PropertyCombobox } from '@/features/properties/components/PropertyCombobox';
 import { LeadCombobox } from '@/features/leads/components/LeadCombobox';
+import { SearchBar } from '@/components/SearchBar';
 
-export function ApplicationSearch() {
+export function ApplicationSearchBar() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialPropertyId = searchParams.get('propertyId') ?? '';
   const initialLeadId = searchParams.get('leadId') ?? '';
@@ -58,30 +58,24 @@ export function ApplicationSearch() {
   };
 
   return (
-    <form onSubmit={handleSearch} className="mb-4">
-      <div className="flex gap-2">
-        <div className="w-[250px]">
-          <PropertyCombobox value={propertyId} onChange={setPropertyId} />
-        </div>
-        <div className="w-[250px]">
-          <LeadCombobox value={leadId} onChange={setLeadId} />
-        </div>
-        <Input
-          ref={startCreatedAtInputRef}
-          type="date"
-          placeholder="Start Date..."
-          defaultValue={startCreatedAt}
-          className="w-[200px]"
-        />
-        <Button type="submit" variant="secondary">
-          Search
-        </Button>
-        {(propertyId || leadId || startCreatedAt) && (
-          <Button type="button" variant="ghost" onClick={handleClear}>
-            Clear
-          </Button>
-        )}
+    <SearchBar
+      onSearch={handleSearch}
+      showClearButton={!!(propertyId || leadId || startCreatedAt)}
+      onClear={handleClear}
+    >
+      <div className="w-[250px]">
+        <PropertyCombobox value={propertyId} onChange={setPropertyId} />
       </div>
-    </form>
+      <div className="w-[250px]">
+        <LeadCombobox value={leadId} onChange={setLeadId} />
+      </div>
+      <Input
+        ref={startCreatedAtInputRef}
+        type="date"
+        placeholder="Start Date..."
+        defaultValue={startCreatedAt}
+        className="w-[200px]"
+      />
+    </SearchBar>
   );
 }

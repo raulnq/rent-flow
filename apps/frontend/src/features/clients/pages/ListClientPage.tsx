@@ -17,8 +17,8 @@ export function ListClientPage() {
         <ListCardHeader
           title="Clients"
           description="Search your clients."
-          addNewLink="/clients/new"
-          addNewText="Add Client"
+          addLink="/clients/new"
+          addText="Add Client"
         >
           <ClientSearchBar />
         </ListCardHeader>

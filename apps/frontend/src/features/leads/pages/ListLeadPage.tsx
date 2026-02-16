@@ -13,8 +13,8 @@ export function ListLeadPage() {
         <ListCardHeader
           title="Leads"
           description="Search your leads."
-          addNewLink="/leads/new"
-          addNewText="Add Lead"
+          addLink="/leads/new"
+          addText="Add Lead"
         >
           <LeadSearchBar />
         </ListCardHeader>

@@ -23,13 +23,12 @@ import {
   useSignContract,
   useReserve,
 } from '../stores/useApplications';
-import {
-  EditApplicationForm,
-  EditApplicationSkeleton,
-  EditApplicationError,
-} from '../components/EditApplicationForm';
-import { ApplicationHeader } from '../components/ApplicationHeader';
+import { EditApplicationForm } from '../components/EditApplicationForm';
+import { ApplicationSkeleton } from '../components/ApplicationSkeleton';
+import { ApplicationError } from '../components/ApplicationError';
 import { ApplicationToolbar } from '../components/ApplicationToolbar';
+import { FormCardHeader } from '@/components/FormCardHeader';
+import { FormCardFooter } from '@/components/FormCardFooter';
 import {
   VisitsError,
   VisitsSkeleton,
@@ -38,7 +37,10 @@ import {
 import { AddButton } from '@/features/visits/components/AddButton';
 import { useAddVisit } from '@/features/visits/stores/useVisits';
 import type { AddVisit } from '#/features/visits/schemas';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
+import { ListCardHeader } from '@/components/ListCardHeader';
+import { Badge } from '@/components/ui/badge';
+import { getStatusVariant } from '../utils/status-variants';
 
 export function EditApplicationPage() {
   const navigate = useNavigate();
@@ -152,55 +154,53 @@ export function EditApplicationPage() {
 
   return (
     <div className="space-y-4">
-      <QueryErrorResetBoundary>
-        {({ reset }) => (
-          <ErrorBoundary
-            onReset={reset}
-            FallbackComponent={EditApplicationError}
-          >
-            <Suspense fallback={<EditApplicationSkeleton />}>
-              <InnerApplication
-                isPending={edit.isPending}
-                onSubmit={onSubmit}
-                applicationId={applicationId!}
-                onStartReview={handleStartReview}
-                onApprove={handleApprove}
-                onReject={handleReject}
-                onWithdraw={handleWithdraw}
-                onSignContract={handleSignContract}
-                onReserve={handleReserve}
-                workflowPending={workflowPending}
-                onBack={() => navigate('/applications')}
-              />
-            </Suspense>
-          </ErrorBoundary>
-        )}
-      </QueryErrorResetBoundary>
-      <>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="min-w-0">
-            <h2 className="text-lg font-semibold">Visits</h2>
-            <p className="text-sm text-muted-foreground">Manage your visits.</p>
-          </div>
-          <AddButton onAdd={handleAdd} />
-        </div>
-        <Card>
-          <CardHeader>
-            <CardTitle>All visits</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <QueryErrorResetBoundary>
-              {({ reset }) => (
-                <ErrorBoundary onReset={reset} FallbackComponent={VisitsError}>
-                  <Suspense fallback={<VisitsSkeleton />}>
-                    <VisitTable applicationId={applicationId!} />
-                  </Suspense>
-                </ErrorBoundary>
-              )}
-            </QueryErrorResetBoundary>
-          </CardContent>
-        </Card>
-      </>
+      <Card>
+        <QueryErrorResetBoundary>
+          {({ reset }) => (
+            <ErrorBoundary onReset={reset} FallbackComponent={ApplicationError}>
+              <Suspense fallback={<ApplicationSkeleton />}>
+                <InnerApplication
+                  isPending={edit.isPending}
+                  onSubmit={onSubmit}
+                  applicationId={applicationId!}
+                  onStartReview={handleStartReview}
+                  onApprove={handleApprove}
+                  onReject={handleReject}
+                  onWithdraw={handleWithdraw}
+                  onSignContract={handleSignContract}
+                  onReserve={handleReserve}
+                  workflowPending={workflowPending}
+                />
+              </Suspense>
+            </ErrorBoundary>
+          )}
+        </QueryErrorResetBoundary>
+        <FormCardFooter
+          formId="form"
+          saveText="Save Notes"
+          cancelText="Cancel"
+          onCancel={() => navigate('/applications')}
+          isPending={edit.isPending}
+        />
+      </Card>
+      <Card>
+        <ListCardHeader
+          title="All visits"
+          description="Manage your visits."
+          renderAction={<AddButton onAdd={handleAdd} />}
+        />
+        <CardContent>
+          <QueryErrorResetBoundary>
+            {({ reset }) => (
+              <ErrorBoundary onReset={reset} FallbackComponent={VisitsError}>
+                <Suspense fallback={<VisitsSkeleton />}>
+                  <VisitTable applicationId={applicationId!} />
+                </Suspense>
+              </ErrorBoundary>
+            )}
+          </QueryErrorResetBoundary>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -216,7 +216,6 @@ type InnerApplicationProps = {
   onSignContract: (data: SignContractApplication) => void;
   onReserve: (data: ReserveApplication) => void;
   workflowPending: boolean;
-  onBack: () => void;
 };
 
 function InnerApplication({
@@ -230,17 +229,19 @@ function InnerApplication({
   onSignContract,
   onReserve,
   workflowPending,
-  onBack,
 }: InnerApplicationProps) {
   const { data } = useApplicationSuspense(applicationId);
 
   return (
     <>
-      <ApplicationHeader
-        onBack={onBack}
+      <FormCardHeader
         title="Edit Application"
         description="Edit rental application details."
-        status={data.status}
+        renderAction={
+          data.status && (
+            <Badge variant={getStatusVariant(data.status)}>{data.status}</Badge>
+          )
+        }
       >
         <ApplicationToolbar
           status={data.status}
@@ -252,7 +253,7 @@ function InnerApplication({
           onSignContract={onSignContract}
           onReserve={onReserve}
         />
-      </ApplicationHeader>
+      </FormCardHeader>
       <EditApplicationForm
         isPending={isPending}
         onSubmit={onSubmit}

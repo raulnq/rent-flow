@@ -6,17 +6,19 @@ import { Link } from 'react-router';
 type ListCardHeaderProps = {
   title: string;
   description: string;
-  children: React.ReactNode;
-  addNewLink: string;
-  addNewText: string;
+  children?: React.ReactNode;
+  addLink?: string;
+  addText?: string;
+  renderAction?: React.ReactNode;
 };
 
 export function ListCardHeader({
   title,
   description,
   children,
-  addNewLink,
-  addNewText,
+  addLink,
+  addText,
+  renderAction,
 }: ListCardHeaderProps) {
   return (
     <CardHeader className="border-b">
@@ -25,12 +27,16 @@ export function ListCardHeader({
           <CardTitle className="text-base">{title}</CardTitle>
           <CardDescription>{description}</CardDescription>
         </div>
-        <Button className="sm:self-start" asChild>
-          <Link to={addNewLink}>
-            <Plus className="h-4 w-4 mr-2" />
-            {addNewText}
-          </Link>
-        </Button>
+        {renderAction ? (
+          renderAction
+        ) : addLink && addText ? (
+          <Button className="sm:self-start" asChild>
+            <Link to={addLink}>
+              <Plus className="h-4 w-4 mr-2" />
+              {addText}
+            </Link>
+          </Button>
+        ) : null}
       </div>
       {children}
     </CardHeader>
