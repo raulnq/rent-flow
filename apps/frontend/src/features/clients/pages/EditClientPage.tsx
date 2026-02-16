@@ -6,12 +6,12 @@ import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { EditClient } from '#/features/clients/schemas';
 import { useEditClient, useClientSuspense } from '../stores/useClients';
-import {
-  EditClientForm,
-  EditClientSkeleton,
-  EditClientError,
-} from '../components/EditClientForm';
-import { ClientHeader } from '../components/ClientHeader';
+import { EditClientForm } from '../components/EditClientForm';
+import { Card } from '@/components/ui/card';
+import { FormCardHeader } from '@/components/FormCardHeader';
+import { FormCardFooter } from '@/components/FormCardFooter';
+import { ClientSkeleton } from '../components/ClientSkeleton';
+import { ClientError } from '../components/ClientError';
 
 export function EditClientPage() {
   const navigate = useNavigate();
@@ -32,24 +32,32 @@ export function EditClientPage() {
 
   return (
     <div className="space-y-4">
-      <ClientHeader
-        onBack={() => navigate('/clients')}
-        title="Edit Client"
-        description="Edit an existing client."
-      />
-      <QueryErrorResetBoundary>
-        {({ reset }) => (
-          <ErrorBoundary onReset={reset} FallbackComponent={EditClientError}>
-            <Suspense fallback={<EditClientSkeleton />}>
-              <InnerClient
-                isPending={edit.isPending}
-                onSubmit={onSubmit}
-                clientId={clientId!}
-              />
-            </Suspense>
-          </ErrorBoundary>
-        )}
-      </QueryErrorResetBoundary>
+      <Card>
+        <FormCardHeader
+          title="Edit Client"
+          description="Edit an existing client."
+        />
+        <QueryErrorResetBoundary>
+          {({ reset }) => (
+            <ErrorBoundary onReset={reset} FallbackComponent={ClientError}>
+              <Suspense fallback={<ClientSkeleton />}>
+                <InnerClient
+                  isPending={edit.isPending}
+                  onSubmit={onSubmit}
+                  clientId={clientId!}
+                />
+              </Suspense>
+            </ErrorBoundary>
+          )}
+        </QueryErrorResetBoundary>
+        <FormCardFooter
+          formId="form"
+          saveText="Save Client"
+          cancelText="Cancel"
+          onCancel={() => navigate('/clients')}
+          isPending={edit.isPending}
+        />
+      </Card>
     </div>
   );
 }

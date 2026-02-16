@@ -1,10 +1,10 @@
-import { Button } from '@/components/ui/button';
+import { SearchBar } from '@/components/SearchBar';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { useRef } from 'react';
 import { useSearchParams } from 'react-router';
 
-export function ClientSearch() {
+export function ClientSearchBar() {
   const [searchParams, setSearchParams] = useSearchParams();
   const name = searchParams.get('name') ?? '';
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -35,24 +35,20 @@ export function ClientSearch() {
   };
 
   return (
-    <form onSubmit={handleSearch} className="flex gap-2 mb-4">
-      <div className="relative w-full sm:max-w-xs">
+    <SearchBar
+      onSearch={handleSearch}
+      showClearButton={!!name}
+      onClear={handleClear}
+    >
+      <div className="relative w-[250px]">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           ref={searchInputRef}
-          placeholder="Search clients..."
+          placeholder="Search by name..."
           defaultValue={name}
           className="pl-9"
         />
       </div>
-      <Button type="submit" variant="secondary">
-        Search
-      </Button>
-      {name && (
-        <Button type="button" variant="ghost" onClick={handleClear}>
-          Clear
-        </Button>
-      )}
-    </form>
+    </SearchBar>
   );
 }

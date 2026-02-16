@@ -34,7 +34,7 @@ import {
   VisitsError,
   VisitsSkeleton,
   VisitTable,
-} from '../../visits/components/VisitTable';
+} from '../../visits/components/VisitCard';
 import { AddButton } from '@/features/visits/components/AddButton';
 import { useAddVisit } from '@/features/visits/stores/useVisits';
 import type { AddVisit } from '#/features/visits/schemas';
