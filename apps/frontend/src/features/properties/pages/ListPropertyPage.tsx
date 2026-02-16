@@ -1,7 +1,4 @@
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus } from 'lucide-react';
-import { Link } from 'react-router';
+import { Card, CardContent } from '@/components/ui/card';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
@@ -10,31 +7,21 @@ import {
   PropertiesSkeleton,
   PropertyTable,
 } from '../components/PropertyTable';
-import { PropertySearch } from '../components/PropertySearch';
+import { PropertySearchBar } from '../components/PropertySearchBar';
+import { ListCardHeader } from '@/components/ListCardHeader';
 
 export function ListPropertyPage() {
   return (
     <div className="space-y-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="min-w-0">
-          <h2 className="text-lg font-semibold">Properties</h2>
-          <p className="text-sm text-muted-foreground">
-            Manage your properties.
-          </p>
-        </div>
-        <Button className="sm:self-start" asChild>
-          <Link to="/properties/new">
-            <Plus />
-            Add Property
-          </Link>
-        </Button>
-      </div>
-
       <Card>
-        <CardHeader className="gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <CardTitle className="text-base">All properties</CardTitle>
-          <PropertySearch />
-        </CardHeader>
+        <ListCardHeader
+          title="Properties"
+          description="Search your properties."
+          addNewLink="/properties/new"
+          addNewText="Add Property"
+        >
+          <PropertySearchBar />
+        </ListCardHeader>
         <CardContent>
           <QueryErrorResetBoundary>
             {({ reset }) => (

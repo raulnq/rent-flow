@@ -6,12 +6,12 @@ import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { EditProperty } from '#/features/properties/schemas';
 import { useEditProperty, usePropertySuspense } from '../stores/useProperties';
-import {
-  EditPropertyForm,
-  EditPropertySkeleton,
-  EditPropertyError,
-} from '../components/EditPropertyForm';
-import { PropertyHeader } from '../components/PropertyHeader';
+import { EditPropertyForm } from '../components/EditPropertyForm';
+import { PropertySkeleton } from '../components/PropertySkeleton';
+import { PropertyError } from '../components/PropertyError';
+import { FormCardHeader } from '@/components/FormCardHeader';
+import { FormCardFooter } from '@/components/FormCardFooter';
+import { Card } from '@/components/ui/card';
 
 export function EditPropertyPage() {
   const navigate = useNavigate();
@@ -32,24 +32,32 @@ export function EditPropertyPage() {
 
   return (
     <div className="space-y-4">
-      <PropertyHeader
-        onBack={() => navigate('/properties')}
-        title="Edit Property"
-        description="Edit an existing property."
-      />
-      <QueryErrorResetBoundary>
-        {({ reset }) => (
-          <ErrorBoundary onReset={reset} FallbackComponent={EditPropertyError}>
-            <Suspense fallback={<EditPropertySkeleton />}>
-              <InnerProperty
-                isPending={edit.isPending}
-                onSubmit={onSubmit}
-                propertyId={propertyId!}
-              />
-            </Suspense>
-          </ErrorBoundary>
-        )}
-      </QueryErrorResetBoundary>
+      <Card>
+        <FormCardHeader
+          title="Edit Property"
+          description="Edit an existing property."
+        />
+        <QueryErrorResetBoundary>
+          {({ reset }) => (
+            <ErrorBoundary onReset={reset} FallbackComponent={PropertyError}>
+              <Suspense fallback={<PropertySkeleton />}>
+                <InnerProperty
+                  isPending={edit.isPending}
+                  onSubmit={onSubmit}
+                  propertyId={propertyId!}
+                />
+              </Suspense>
+            </ErrorBoundary>
+          )}
+        </QueryErrorResetBoundary>
+        <FormCardFooter
+          formId="form"
+          saveText="Save Property"
+          cancelText="Cancel"
+          onCancel={() => navigate('/properties')}
+          isPending={edit.isPending}
+        />
+      </Card>
     </div>
   );
 }

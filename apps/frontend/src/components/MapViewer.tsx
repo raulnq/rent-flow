@@ -22,7 +22,7 @@ type MapViewerProps = {
 
 export function MapViewer({ latitude, longitude }: MapViewerProps) {
   return (
-    <div className="h-[300px] rounded-md overflow-hidden border border-border">
+    <div className="h-[400px] rounded-md overflow-hidden border border-border">
       <MapContainer
         center={[latitude, longitude]}
         zoom={13}
