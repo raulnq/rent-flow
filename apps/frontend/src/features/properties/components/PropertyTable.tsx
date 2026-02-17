@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/table';
 import { usePropertiesSuspense } from '../stores/useProperties';
 import { Pagination } from '@/components/Pagination';
+import { NoMatchingItems } from '@/components/NoMatchingItems';
 
 export function PropertiesSkeleton() {
   return (
@@ -54,32 +55,13 @@ export function PropertiesSkeleton() {
   );
 }
 
-export function PropertiesError({
-  resetErrorBoundary,
-}: {
-  resetErrorBoundary: () => void;
-}) {
-  return (
-    <div className="text-center py-8">
-      <p className="text-destructive mb-4">Error loading properties.</p>
-      <Button onClick={resetErrorBoundary} variant="outline">
-        Try again
-      </Button>
-    </div>
-  );
-}
-
 export function PropertyTable() {
   const [searchParams] = useSearchParams();
   const address = searchParams.get('address') ?? '';
   const { data } = usePropertiesSuspense({ address });
 
   if (data.items.length === 0) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        No properties found matching your search.
-      </div>
-    );
+    return <NoMatchingItems />;
   }
 
   return (

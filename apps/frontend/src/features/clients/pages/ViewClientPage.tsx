@@ -9,8 +9,8 @@ import { ViewCardHeader } from '@/components/ViewCardHeader';
 import { Button } from '@/components/ui/button';
 import { Pencil } from 'lucide-react';
 import { ClientSkeleton } from '../components/ClientSkeleton';
-import { ClientError } from '../components/ClientError';
 import { ViewCardFooter } from '@/components/ViewCardFooter';
+import { ErrorFallback } from '@/components/ErrorFallback';
 
 export function ViewClientPage() {
   const { clientId } = useParams<{ clientId: string }>();
@@ -31,7 +31,15 @@ export function ViewClientPage() {
         </ViewCardHeader>
         <QueryErrorResetBoundary>
           {({ reset }) => (
-            <ErrorBoundary onReset={reset} FallbackComponent={ClientError}>
+            <ErrorBoundary
+              onReset={reset}
+              FallbackComponent={({ resetErrorBoundary }) => (
+                <ErrorFallback
+                  resetErrorBoundary={resetErrorBoundary}
+                  message="Failed to load client"
+                />
+              )}
+            >
               <Suspense fallback={<ClientSkeleton />}>
                 <InnerClient clientId={clientId!} />
               </Suspense>

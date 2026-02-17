@@ -12,6 +12,7 @@ import type {
   SignContractApplication,
   ReserveApplication,
 } from '#/features/applications/schemas';
+import type { Application as DBApplication } from '#/features/applications/application';
 
 export async function listApplications(
   params?: ListApplications,
@@ -33,7 +34,15 @@ export async function listApplications(
     const error = await response.json();
     throw new Error(error.detail || 'Failed to fetch applications');
   }
-  return response.json() as unknown as Page<Application>;
+  const result = await response.json();
+  return {
+    ...result,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    items: result.items.map((item: any) => ({
+      ...item,
+      createdAt: new Date(item.createdAt),
+    })),
+  };
 }
 
 export async function getApplication(
@@ -48,13 +57,17 @@ export async function getApplication(
     const error = await response.json();
     throw new Error(error.detail || 'Failed to fetch application');
   }
-  return response.json() as unknown as Application;
+  const result = await response.json();
+  return {
+    ...result,
+    createdAt: new Date(result.createdAt),
+  };
 }
 
 export async function addApplication(
   data: AddApplication,
   token?: string | null
-): Promise<Application> {
+): Promise<DBApplication> {
   const response = await client.api.applications.$post(
     { json: data },
     { headers: token ? { Authorization: `Bearer ${token}` } : {} }
@@ -63,7 +76,12 @@ export async function addApplication(
     const error = await response.json();
     throw new Error(error.detail || 'Failed to add application');
   }
-  return response.json() as unknown as Application;
+
+  const result = await response.json();
+  return {
+    ...result,
+    createdAt: new Date(result.createdAt),
+  };
 }
 
 export async function editApplication(
@@ -82,7 +100,11 @@ export async function editApplication(
     const error = await response.json();
     throw new Error(error.detail || 'Failed to update application');
   }
-  return response.json() as unknown as Application;
+  const result = await response.json();
+  return {
+    ...result,
+    createdAt: new Date(result.createdAt),
+  };
 }
 
 export async function startReview(
@@ -103,7 +125,11 @@ export async function startReview(
     const error = await response.json();
     throw new Error(error.detail || 'Failed to start review');
   }
-  return response.json() as unknown as Application;
+  const result = await response.json();
+  return {
+    ...result,
+    createdAt: new Date(result.createdAt),
+  };
 }
 
 export async function approve(
@@ -124,7 +150,11 @@ export async function approve(
     const error = await response.json();
     throw new Error(error.detail || 'Failed to approve application');
   }
-  return response.json() as unknown as Application;
+  const result = await response.json();
+  return {
+    ...result,
+    createdAt: new Date(result.createdAt),
+  };
 }
 
 export async function reject(
@@ -143,7 +173,11 @@ export async function reject(
     const error = await response.json();
     throw new Error(error.detail || 'Failed to reject application');
   }
-  return response.json() as unknown as Application;
+  const result = await response.json();
+  return {
+    ...result,
+    createdAt: new Date(result.createdAt),
+  };
 }
 
 export async function withdraw(
@@ -164,7 +198,11 @@ export async function withdraw(
     const error = await response.json();
     throw new Error(error.detail || 'Failed to withdraw application');
   }
-  return response.json() as unknown as Application;
+  const result = await response.json();
+  return {
+    ...result,
+    createdAt: new Date(result.createdAt),
+  };
 }
 
 export async function signContract(
@@ -185,7 +223,11 @@ export async function signContract(
     const error = await response.json();
     throw new Error(error.detail || 'Failed to sign contract');
   }
-  return response.json() as unknown as Application;
+  const result = await response.json();
+  return {
+    ...result,
+    createdAt: new Date(result.createdAt),
+  };
 }
 
 export async function reserve(
@@ -206,5 +248,9 @@ export async function reserve(
     const error = await response.json();
     throw new Error(error.detail || 'Failed to reserve application');
   }
-  return response.json() as unknown as Application;
+  const result = await response.json();
+  return {
+    ...result,
+    createdAt: new Date(result.createdAt),
+  };
 }

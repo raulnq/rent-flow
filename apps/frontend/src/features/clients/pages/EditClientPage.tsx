@@ -11,7 +11,7 @@ import { Card } from '@/components/ui/card';
 import { FormCardHeader } from '@/components/FormCardHeader';
 import { FormCardFooter } from '@/components/FormCardFooter';
 import { ClientSkeleton } from '../components/ClientSkeleton';
-import { ClientError } from '../components/ClientError';
+import { ErrorFallback } from '@/components/ErrorFallback';
 
 export function EditClientPage() {
   const navigate = useNavigate();
@@ -39,7 +39,15 @@ export function EditClientPage() {
         />
         <QueryErrorResetBoundary>
           {({ reset }) => (
-            <ErrorBoundary onReset={reset} FallbackComponent={ClientError}>
+            <ErrorBoundary
+              onReset={reset}
+              FallbackComponent={({ resetErrorBoundary }) => (
+                <ErrorFallback
+                  resetErrorBoundary={resetErrorBoundary}
+                  message="Failed to load client"
+                />
+              )}
+            >
               <Suspense fallback={<ClientSkeleton />}>
                 <InnerClient
                   isPending={edit.isPending}

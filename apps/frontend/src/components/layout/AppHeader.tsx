@@ -23,7 +23,7 @@ function usePageTitle() {
   return matchedKey ? TITLE_BY_PATH[matchedKey] : 'CRM';
 }
 
-export default function AppHeader() {
+export function AppHeader() {
   const title = usePageTitle();
 
   return (

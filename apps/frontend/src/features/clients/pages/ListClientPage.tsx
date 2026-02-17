@@ -2,13 +2,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
-import {
-  ClientsError,
-  ClientsSkeleton,
-  ClientTable,
-} from '../components/ClientTable';
+import { ClientsSkeleton, ClientTable } from '../components/ClientTable';
 import { ClientSearchBar } from '../components/ClientSearchBar';
 import { ListCardHeader } from '@/components/ListCardHeader';
+import { ErrorFallback } from '@/components/ErrorFallback';
 
 export function ListClientPage() {
   return (
@@ -25,7 +22,15 @@ export function ListClientPage() {
         <CardContent>
           <QueryErrorResetBoundary>
             {({ reset }) => (
-              <ErrorBoundary onReset={reset} FallbackComponent={ClientsError}>
+              <ErrorBoundary
+                onReset={reset}
+                FallbackComponent={({ resetErrorBoundary }) => (
+                  <ErrorFallback
+                    resetErrorBoundary={resetErrorBoundary}
+                    message="Failed to load clients"
+                  />
+                )}
+              >
                 <Suspense fallback={<ClientsSkeleton />}>
                   <ClientTable />
                 </Suspense>

@@ -7,7 +7,7 @@ import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { usePropertySuspense } from '../stores/useProperties';
 import { ViewPropertyCard } from '../components/ViewPropertyCard';
 import { PropertySkeleton } from '../components/PropertySkeleton';
-import { PropertyError } from '../components/PropertyError';
+import { ErrorFallback } from '@/components/ErrorFallback';
 import { ViewCardHeader } from '@/components/ViewCardHeader';
 import { ViewCardFooter } from '@/components/ViewCardFooter';
 import { Card } from '@/components/ui/card';
@@ -32,7 +32,15 @@ export function ViewPropertyPage() {
         </ViewCardHeader>
         <QueryErrorResetBoundary>
           {({ reset }) => (
-            <ErrorBoundary onReset={reset} FallbackComponent={PropertyError}>
+            <ErrorBoundary
+              onReset={reset}
+              FallbackComponent={({ resetErrorBoundary }) => (
+                <ErrorFallback
+                  resetErrorBoundary={resetErrorBoundary}
+                  message="Failed to load property"
+                />
+              )}
+            >
               <Suspense fallback={<PropertySkeleton />}>
                 <InnerProperty propertyId={propertyId!} />
               </Suspense>

@@ -3,12 +3,12 @@ import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import {
-  ApplicationsError,
   ApplicationsSkeleton,
   ApplicationTable,
 } from '../components/ApplicationTable';
 import { ApplicationSearchBar } from '../components/ApplicationSearchBar';
 import { ListCardHeader } from '@/components/ListCardHeader';
+import { ErrorFallback } from '@/components/ErrorFallback';
 
 export function ListApplicationPage() {
   return (
@@ -27,7 +27,12 @@ export function ListApplicationPage() {
             {({ reset }) => (
               <ErrorBoundary
                 onReset={reset}
-                FallbackComponent={ApplicationsError}
+                FallbackComponent={({ resetErrorBoundary }) => (
+                  <ErrorFallback
+                    resetErrorBoundary={resetErrorBoundary}
+                    message="Failed to load applications"
+                  />
+                )}
               >
                 <Suspense fallback={<ApplicationsSkeleton />}>
                   <ApplicationTable />

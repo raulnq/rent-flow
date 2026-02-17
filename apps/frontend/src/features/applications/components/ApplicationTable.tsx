@@ -14,6 +14,7 @@ import { useApplicationsSuspense } from '../stores/useApplications';
 import { Pagination } from '@/components/Pagination';
 import { Badge } from '@/components/ui/badge';
 import { getStatusVariant } from '../utils/status-variants';
+import { NoMatchingItems } from '@/components/NoMatchingItems';
 
 export function ApplicationsSkeleton() {
   return (
@@ -52,21 +53,6 @@ export function ApplicationsSkeleton() {
   );
 }
 
-export function ApplicationsError({
-  resetErrorBoundary,
-}: {
-  resetErrorBoundary: () => void;
-}) {
-  return (
-    <div className="text-center py-8">
-      <p className="text-destructive mb-4">Error loading applications.</p>
-      <Button onClick={resetErrorBoundary} variant="outline">
-        Try again
-      </Button>
-    </div>
-  );
-}
-
 export function ApplicationTable() {
   const [searchParams] = useSearchParams();
   const propertyId = searchParams.get('propertyId') ?? undefined;
@@ -79,11 +65,7 @@ export function ApplicationTable() {
   });
 
   if (data.items.length === 0) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        No applications found matching your search.
-      </div>
-    );
+    return <NoMatchingItems />;
   }
 
   return (

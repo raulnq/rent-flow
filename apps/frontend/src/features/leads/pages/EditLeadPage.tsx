@@ -8,7 +8,7 @@ import type { EditLead } from '#/features/leads/schemas';
 import { useEditLead, useLeadSuspense } from '../stores/useLeads';
 import { EditLeadForm } from '../components/EditLeadForm';
 import { LeadSkeleton } from '../components/LeadSkeleton';
-import { LeadError } from '../components/LeadError';
+import { ErrorFallback } from '@/components/ErrorFallback';
 import { FormCardHeader } from '@/components/FormCardHeader';
 import { FormCardFooter } from '@/components/FormCardFooter';
 import { Card } from '@/components/ui/card';
@@ -39,7 +39,15 @@ export function EditLeadPage() {
         />
         <QueryErrorResetBoundary>
           {({ reset }) => (
-            <ErrorBoundary onReset={reset} FallbackComponent={LeadError}>
+            <ErrorBoundary
+              onReset={reset}
+              FallbackComponent={({ resetErrorBoundary }) => (
+                <ErrorFallback
+                  resetErrorBoundary={resetErrorBoundary}
+                  message="Failed to load lead"
+                />
+              )}
+            >
               <Suspense fallback={<LeadSkeleton />}>
                 <InnerLead
                   isPending={edit.isPending}

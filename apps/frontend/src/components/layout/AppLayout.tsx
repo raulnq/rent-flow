@@ -1,4 +1,4 @@
-import AppHeader from '@/components/layout/AppHeader';
+import { AppHeader } from '@/components/layout/AppHeader';
 import { AppSidebar } from '@/components/layout/AppSidebar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Outlet } from 'react-router';

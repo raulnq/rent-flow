@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/table';
 import { useLeadsSuspense } from '../stores/useLeads';
 import { Pagination } from '@/components/Pagination';
+import { NoMatchingItems } from '@/components/NoMatchingItems';
 
 export function LeadsSkeleton() {
   return (
@@ -50,32 +51,13 @@ export function LeadsSkeleton() {
   );
 }
 
-export function LeadsError({
-  resetErrorBoundary,
-}: {
-  resetErrorBoundary: () => void;
-}) {
-  return (
-    <div className="text-center py-8">
-      <p className="text-destructive mb-4">Error loading leads.</p>
-      <Button onClick={resetErrorBoundary} variant="outline">
-        Try again
-      </Button>
-    </div>
-  );
-}
-
 export function LeadTable() {
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name') ?? '';
   const { data } = useLeadsSuspense({ name: name });
 
   if (data.items.length === 0) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        No leads found matching your search.
-      </div>
-    );
+    return <NoMatchingItems />;
   }
 
   return (

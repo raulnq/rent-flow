@@ -7,7 +7,7 @@ import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { useLeadSuspense } from '../stores/useLeads';
 import { ViewLeadCard } from '../components/ViewLeadCard';
 import { LeadSkeleton } from '../components/LeadSkeleton';
-import { LeadError } from '../components/LeadError';
+import { ErrorFallback } from '@/components/ErrorFallback';
 import { ViewCardHeader } from '@/components/ViewCardHeader';
 import { ViewCardFooter } from '@/components/ViewCardFooter';
 import { Card } from '@/components/ui/card';
@@ -29,7 +29,15 @@ export function ViewLeadPage() {
         </ViewCardHeader>
         <QueryErrorResetBoundary>
           {({ reset }) => (
-            <ErrorBoundary onReset={reset} FallbackComponent={LeadError}>
+            <ErrorBoundary
+              onReset={reset}
+              FallbackComponent={({ resetErrorBoundary }) => (
+                <ErrorFallback
+                  resetErrorBoundary={resetErrorBoundary}
+                  message="Failed to load lead"
+                />
+              )}
+            >
               <Suspense fallback={<LeadSkeleton />}>
                 <InnerLead leadId={leadId!} />
               </Suspense>

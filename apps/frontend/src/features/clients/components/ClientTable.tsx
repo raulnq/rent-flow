@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/table';
 import { useClientsSuspense } from '../stores/useClients';
 import { Pagination } from '@/components/Pagination';
+import { NoMatchingItems } from '@/components/NoMatchingItems';
 
 export function ClientsSkeleton() {
   return (
@@ -50,33 +51,12 @@ export function ClientsSkeleton() {
   );
 }
 
-export function ClientsError({
-  resetErrorBoundary,
-}: {
-  resetErrorBoundary: () => void;
-}) {
-  return (
-    <div className="text-center py-8">
-      <p className="text-destructive mb-4">Error loading clients.</p>
-      <Button onClick={resetErrorBoundary} variant="outline">
-        Try again
-      </Button>
-    </div>
-  );
-}
-
 export function ClientTable() {
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name') ?? '';
   const { data } = useClientsSuspense({ name: name });
 
-  if (data.items.length === 0) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        No clients found matching your search.
-      </div>
-    );
-  }
+  if (data.items.length === 0) return <NoMatchingItems />;
 
   return (
     <>

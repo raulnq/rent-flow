@@ -25,15 +25,11 @@ import {
 } from '../stores/useApplications';
 import { EditApplicationForm } from '../components/EditApplicationForm';
 import { ApplicationSkeleton } from '../components/ApplicationSkeleton';
-import { ApplicationError } from '../components/ApplicationError';
+import { ErrorFallback } from '@/components/ErrorFallback';
 import { ApplicationToolbar } from '../components/ApplicationToolbar';
 import { FormCardHeader } from '@/components/FormCardHeader';
 import { FormCardFooter } from '@/components/FormCardFooter';
-import {
-  VisitsError,
-  VisitsSkeleton,
-  VisitTable,
-} from '../../visits/components/VisitCard';
+import { VisitsSkeleton, VisitTable } from '../../visits/components/VisitCard';
 import { AddButton } from '@/features/visits/components/AddButton';
 import { useAddVisit } from '@/features/visits/stores/useVisits';
 import type { AddVisit } from '#/features/visits/schemas';
@@ -68,7 +64,7 @@ export function EditApplicationPage() {
       toast.success('Visit added successfully');
     } catch (error) {
       toast.error(
-        error instanceof Error ? error.message : 'Failed to add visit'
+        error instanceof Error ? error.message : 'Failed to save visit'
       );
     }
   };
@@ -157,7 +153,15 @@ export function EditApplicationPage() {
       <Card>
         <QueryErrorResetBoundary>
           {({ reset }) => (
-            <ErrorBoundary onReset={reset} FallbackComponent={ApplicationError}>
+            <ErrorBoundary
+              onReset={reset}
+              FallbackComponent={({ resetErrorBoundary }) => (
+                <ErrorFallback
+                  resetErrorBoundary={resetErrorBoundary}
+                  message="Failed to load application"
+                />
+              )}
+            >
               <Suspense fallback={<ApplicationSkeleton />}>
                 <InnerApplication
                   isPending={edit.isPending}
@@ -192,7 +196,15 @@ export function EditApplicationPage() {
         <CardContent>
           <QueryErrorResetBoundary>
             {({ reset }) => (
-              <ErrorBoundary onReset={reset} FallbackComponent={VisitsError}>
+              <ErrorBoundary
+                onReset={reset}
+                FallbackComponent={({ resetErrorBoundary }) => (
+                  <ErrorFallback
+                    resetErrorBoundary={resetErrorBoundary}
+                    message="Failed to load visits"
+                  />
+                )}
+              >
                 <Suspense fallback={<VisitsSkeleton />}>
                   <VisitTable applicationId={applicationId!} />
                 </Suspense>

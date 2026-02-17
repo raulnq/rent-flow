@@ -27,7 +27,7 @@ export function EditClientForm({
   });
 
   return (
-    <FormCardContent onSubmit={form.handleSubmit(onSubmit)}>
+    <FormCardContent onSubmit={form.handleSubmit(onSubmit)} formId="form">
       <Controller
         name="name"
         control={form.control}

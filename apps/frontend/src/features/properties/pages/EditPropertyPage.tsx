@@ -8,7 +8,7 @@ import type { EditProperty } from '#/features/properties/schemas';
 import { useEditProperty, usePropertySuspense } from '../stores/useProperties';
 import { EditPropertyForm } from '../components/EditPropertyForm';
 import { PropertySkeleton } from '../components/PropertySkeleton';
-import { PropertyError } from '../components/PropertyError';
+import { ErrorFallback } from '@/components/ErrorFallback';
 import { FormCardHeader } from '@/components/FormCardHeader';
 import { FormCardFooter } from '@/components/FormCardFooter';
 import { Card } from '@/components/ui/card';
@@ -39,7 +39,15 @@ export function EditPropertyPage() {
         />
         <QueryErrorResetBoundary>
           {({ reset }) => (
-            <ErrorBoundary onReset={reset} FallbackComponent={PropertyError}>
+            <ErrorBoundary
+              onReset={reset}
+              FallbackComponent={({ resetErrorBoundary }) => (
+                <ErrorFallback
+                  resetErrorBoundary={resetErrorBoundary}
+                  message="Failed to load property"
+                />
+              )}
+            >
               <Suspense fallback={<PropertySkeleton />}>
                 <InnerProperty
                   isPending={edit.isPending}
