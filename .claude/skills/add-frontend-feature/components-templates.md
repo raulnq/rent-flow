@@ -1,66 +1,27 @@
 # Components Templates
 
-## Header (`components/<Entity>Header.tsx`)
+## SearchBar (`components/<Entity>SearchBar.tsx`)
 
-Reusable header with back button, title, description, and optional `children` slot for action buttons.
+Uses the shared `SearchBar` component from `@/components/SearchBar`. Provides filter inputs as children. Updates URL search params.
 
-```tsx
-import { Button } from '@/components/ui/button';
-import { ArrowLeft } from 'lucide-react';
-import { type ReactNode } from 'react';
-
-type <Entity>HeaderProps = {
-  onBack: () => void;
-  title: string;
-  description: string;
-  children?: ReactNode;
-};
-
-export function <Entity>Header({
-  onBack,
-  title,
-  description,
-  children,
-}: <Entity>HeaderProps) {
-  return (
-    <div className="flex items-center justify-between">
-      <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={onBack}>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div>
-          <h2 className="text-lg font-semibold">{title}</h2>
-          <p className="text-sm text-muted-foreground">{description}</p>
-        </div>
-      </div>
-      {children && <div className="flex gap-2">{children}</div>}
-    </div>
-  );
-}
-```
-
-## Search (`components/<Entity>Search.tsx`)
-
-Ref-based input (NOT controlled state), updates URL search params. Resets page to 1 on search/clear.
+### Simple text search variant
 
 ```tsx
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
-import { useRef } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router';
+import { SearchBar } from '@/components/SearchBar';
 
-export function <Entity>Search() {
+export function <Entity>SearchBar() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const name = searchParams.get('name') ?? '';
-  const searchInputRef = useRef<HTMLInputElement>(null);
+  const initialName = searchParams.get('name') ?? '';
+  const [name, setName] = useState(initialName);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     setSearchParams(prev => {
-      const value = searchInputRef.current?.value ?? '';
-      if (value) {
-        prev.set('name', value);
+      if (name) {
+        prev.set('name', name);
       } else {
         prev.delete('name');
       }
@@ -70,9 +31,7 @@ export function <Entity>Search() {
   };
 
   const handleClear = () => {
-    if (searchInputRef.current) {
-      searchInputRef.current.value = '';
-    }
+    setName('');
     setSearchParams(prev => {
       prev.delete('name');
       prev.set('page', '1');
@@ -81,25 +40,78 @@ export function <Entity>Search() {
   };
 
   return (
-    <form onSubmit={handleSearch} className="flex gap-2 mb-4">
-      <div className="relative w-full sm:max-w-xs">
-        <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          ref={searchInputRef}
-          placeholder="Search <entities>..."
-          defaultValue={name}
-          className="pl-9"
-        />
+    <SearchBar
+      onSearch={handleSearch}
+      showClearButton={!!name}
+      onClear={handleClear}
+    >
+      <Input
+        placeholder="Search by name..."
+        value={name}
+        onChange={e => setName(e.target.value)}
+        className="w-[250px]"
+      />
+    </SearchBar>
+  );
+}
+```
+
+### Multi-field search variant (comboboxes, dates)
+
+```tsx
+import { useRef, useState } from 'react';
+import { useSearchParams } from 'react-router';
+import { Input } from '@/components/ui/input';
+import { <Related>Combobox } from '../../<related>/components/<Related>Combobox';
+import { SearchBar } from '@/components/SearchBar';
+
+export function <Entity>SearchBar() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const initialRelatedId = searchParams.get('relatedId') ?? '';
+  const startCreatedAt = searchParams.get('startCreatedAt') ?? '';
+  const [relatedId, setRelatedId] = useState(initialRelatedId);
+  const dateRef = useRef<HTMLInputElement>(null);
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSearchParams(prev => {
+      if (relatedId) prev.set('relatedId', relatedId);
+      else prev.delete('relatedId');
+      const dateValue = dateRef.current?.value ?? '';
+      if (dateValue) prev.set('startCreatedAt', dateValue);
+      else prev.delete('startCreatedAt');
+      prev.set('page', '1');
+      return prev;
+    });
+  };
+
+  const handleClear = () => {
+    setRelatedId('');
+    if (dateRef.current) dateRef.current.value = '';
+    setSearchParams(prev => {
+      prev.delete('relatedId');
+      prev.delete('startCreatedAt');
+      prev.set('page', '1');
+      return prev;
+    });
+  };
+
+  return (
+    <SearchBar
+      onSearch={handleSearch}
+      showClearButton={!!(relatedId || startCreatedAt)}
+      onClear={handleClear}
+    >
+      <div className="w-[250px]">
+        <<Related>Combobox value={relatedId} onChange={setRelatedId} />
       </div>
-      <Button type="submit" variant="secondary">
-        Search
-      </Button>
-      {name && (
-        <Button type="button" variant="ghost" onClick={handleClear}>
-          Clear
-        </Button>
-      )}
-    </form>
+      <Input
+        ref={dateRef}
+        type="date"
+        defaultValue={startCreatedAt}
+        className="w-[200px]"
+      />
+    </SearchBar>
   );
 }
 ```
@@ -224,6 +236,62 @@ export function <Entity>Table() {
 }
 ```
 
+## Skeleton (`components/<Entity>Skeleton.tsx`)
+
+Shared by both Edit and View pages. Renders inside `CardContent` with `Field`/`FieldLabel`/`Skeleton` matching the form layout.
+
+```tsx
+import { Field, FieldLabel } from '@/components/ui/field';
+import { CardContent } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+
+export function <Entity>Skeleton() {
+  return (
+    <CardContent>
+      <div className="space-y-4">
+        <Field>
+          <FieldLabel>Name</FieldLabel>
+          <Skeleton className="h-9 w-full" />
+        </Field>
+        {/* Add one skeleton block per field, matching form layout */}
+        <Field>
+          <FieldLabel>Email</FieldLabel>
+          <Skeleton className="h-9 w-full" />
+        </Field>
+        {/* Use h-16 for Textarea fields */}
+        <Field>
+          <FieldLabel>Address</FieldLabel>
+          <Skeleton className="h-16 w-full" />
+        </Field>
+      </div>
+    </CardContent>
+  );
+}
+```
+
+## Error (`components/<Entity>Error.tsx`)
+
+Shared by both Edit and View pages. Simple error fallback with retry button.
+
+```tsx
+import { Button } from '@/components/ui/button';
+
+export function <Entity>Error({
+  resetErrorBoundary,
+}: {
+  resetErrorBoundary: () => void;
+}) {
+  return (
+    <div className="text-center py-8">
+      <p className="text-destructive mb-4">Failed to load <entity>.</p>
+      <Button onClick={resetErrorBoundary} variant="outline">
+        Try again
+      </Button>
+    </div>
+  );
+}
+```
+
 ## Field Type Variants
 
 When building forms, use the correct pattern for each field type. Only the basic text `Input` is shown in the Add/Edit templates below — use these variants for other types.
@@ -330,7 +398,7 @@ import { Textarea } from '@/components/ui/textarea';
         value={field.value ?? ''}
         onChange={e => field.onChange(e.target.value || null)}
         id="notes"
-        rows={4}
+        rows={3}
         aria-invalid={fieldState.invalid}
         placeholder="Notes (optional)"
         disabled={isPending}
@@ -339,6 +407,30 @@ import { Textarea } from '@/components/ui/textarea';
     </Field>
   )}
 />;
+```
+
+### Date field (nullable)
+
+```tsx
+<Controller
+  name="birthDate"
+  control={form.control}
+  render={({ field, fieldState }) => (
+    <Field data-invalid={fieldState.invalid}>
+      <FieldLabel htmlFor="birthDate">Birth Date</FieldLabel>
+      <Input
+        {...field}
+        id="birthDate"
+        type="date"
+        value={field.value ?? ''}
+        onChange={e => field.onChange(e.target.value || null)}
+        aria-invalid={fieldState.invalid}
+        disabled={isPending}
+      />
+      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+    </Field>
+  )}
+/>
 ```
 
 ### Combobox field (foreign key reference)
@@ -368,13 +460,13 @@ Use the entity's combobox component (see Combobox section below):
 Group related fields in grids:
 
 ```tsx
-<div className="grid grid-cols-3 gap-6">
+<div className="grid grid-cols-3 gap-4">
   <Controller name="rooms" ... />
   <Controller name="bathrooms" ... />
   <Controller name="parkingSpaces" ... />
 </div>
 
-<div className="grid grid-cols-2 gap-6">
+<div className="grid grid-cols-2 gap-4">
   <Controller name="totalArea" ... />
   <Controller name="builtArea" ... />
 </div>
@@ -382,23 +474,17 @@ Group related fields in grids:
 
 ## Add Form (`components/Add<Entity>Form.tsx`)
 
-Card layout. Form uses `id="form"`, submit button uses `form="form"` (button is outside form element in CardFooter).
+Form renders only `FormCardContent` with field controllers. No Card, no Header, no Footer — those are in the page.
+
+Use `FieldGroup` to wrap all controllers and `FieldSeparator` between logical sections.
 
 ```tsx
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useNavigate } from 'react-router';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { add<Entity>Schema, type Add<Entity> } from '#/features/<entities>/schemas';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from '@/components/ui/card';
+import { FormCardContent } from '@/components/FormCardContent';
 
 type Add<Entity>FormProps = {
   isPending: boolean;
@@ -406,7 +492,6 @@ type Add<Entity>FormProps = {
 };
 
 export function Add<Entity>Form({ isPending, onSubmit }: Add<Entity>FormProps) {
-  const navigate = useNavigate();
   const form = useForm<Add<Entity>>({
     resolver: zodResolver(add<Entity>Schema),
     defaultValues: {
@@ -415,121 +500,50 @@ export function Add<Entity>Form({ isPending, onSubmit }: Add<Entity>FormProps) {
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base"><Entity> Details</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form
-          id="form"
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4"
-        >
-          <Controller
-            name="name"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="name">Name</FieldLabel>
-                <Input
-                  {...field}
-                  id="name"
-                  aria-invalid={fieldState.invalid}
-                  placeholder="Name"
-                  disabled={isPending}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-          {/* Add more Controller fields here */}
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal" className="flex justify-end">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => navigate('/<entities>')}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" form="form" disabled={isPending}>
-            Save <Entity>
-          </Button>
-        </Field>
-      </CardFooter>
-    </Card>
+    <FormCardContent formId="form" onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldGroup>
+        <Controller
+          name="name"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="name">Name</FieldLabel>
+              <Input
+                {...field}
+                id="name"
+                aria-invalid={fieldState.invalid}
+                placeholder="Name"
+                disabled={isPending}
+              />
+              {fieldState.invalid && (
+                <FieldError errors={[fieldState.error]} />
+              )}
+            </Field>
+          )}
+        />
+        {/* Add more Controller fields here */}
+        {/* Use <FieldSeparator /> between logical sections */}
+      </FieldGroup>
+    </FormCardContent>
   );
 }
 ```
 
 ## Edit Form (`components/Edit<Entity>Form.tsx`)
 
-Same Card layout as Add, but receives entity data as `defaultValues`. Also exports Skeleton and Error.
+Same structure as Add but receives entity data as `defaultValues`.
 
 ```tsx
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useNavigate } from 'react-router';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import {
   edit<Entity>Schema,
   type Edit<Entity>,
   type <Entity>,
 } from '#/features/<entities>/schemas';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-
-export function Edit<Entity>Error({
-  resetErrorBoundary,
-}: {
-  resetErrorBoundary: () => void;
-}) {
-  return (
-    <div className="text-center py-8">
-      <p className="text-destructive mb-4">Failed to load <entity>.</p>
-      <Button onClick={resetErrorBoundary} variant="outline">
-        Try again
-      </Button>
-    </div>
-  );
-}
-
-export function Edit<Entity>Skeleton() {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base"><Entity> Details</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-[60px]" />
-            <Skeleton className="h-10 w-full" />
-          </div>
-          {/* Add skeleton rows per field */}
-        </div>
-      </CardContent>
-      <CardFooter>
-        <div className="flex justify-end gap-2 w-full">
-          <Skeleton className="h-10 w-[80px]" />
-          <Skeleton className="h-10 w-[100px]" />
-        </div>
-      </CardFooter>
-    </Card>
-  );
-}
+import { FormCardContent } from '@/components/FormCardContent';
 
 type Edit<Entity>FormProps = {
   isPending: boolean;
@@ -537,112 +551,55 @@ type Edit<Entity>FormProps = {
   <entity>: <Entity>;
 };
 
-export function Edit<Entity>Form({ isPending, onSubmit, <entity> }: Edit<Entity>FormProps) {
-  const navigate = useNavigate();
-
+export function Edit<Entity>Form({
+  isPending,
+  onSubmit,
+  <entity>,
+}: Edit<Entity>FormProps) {
   const form = useForm<Edit<Entity>>({
     resolver: zodResolver(edit<Entity>Schema),
     defaultValues: <entity>,
   });
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base"><Entity> Details</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form
-          id="form"
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="space-y-4"
-        >
-          <Controller
-            name="name"
-            control={form.control}
-            render={({ field, fieldState }) => (
-              <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="name">Name</FieldLabel>
-                <Input
-                  {...field}
-                  id="name"
-                  aria-invalid={fieldState.invalid}
-                  placeholder="Name"
-                  disabled={isPending}
-                />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
-              </Field>
-            )}
-          />
-          {/* Add more Controller fields here */}
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal" className="flex justify-end">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => navigate('/<entities>')}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" form="form" disabled={isPending}>
-            Save <Entity>
-          </Button>
-        </Field>
-      </CardFooter>
-    </Card>
+    <FormCardContent formId="form" onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldGroup>
+        <Controller
+          name="name"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="name">Name</FieldLabel>
+              <Input
+                {...field}
+                id="name"
+                aria-invalid={fieldState.invalid}
+                placeholder="Name"
+                disabled={isPending}
+              />
+              {fieldState.invalid && (
+                <FieldError errors={[fieldState.error]} />
+              )}
+            </Field>
+          )}
+        />
+        {/* Add more Controller fields here */}
+        {/* Use <FieldSeparator /> between logical sections */}
+      </FieldGroup>
+    </FormCardContent>
   );
 }
 ```
 
 ## View Card (`components/View<Entity>Card.tsx`)
 
-Read-only display using disabled `Input`/`Textarea` fields. Exports Card, Skeleton, and Error.
+Read-only display using `ViewCardContent` with disabled `Input`/`Textarea` fields.
 
 ```tsx
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Field, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import type { <Entity> } from '#/features/<entities>/schemas';
-
-export function View<Entity>Error({
-  resetErrorBoundary,
-}: {
-  resetErrorBoundary: () => void;
-}) {
-  return (
-    <div className="text-center py-8">
-      <p className="text-destructive mb-4">Failed to load <entity>.</p>
-      <Button onClick={resetErrorBoundary} variant="outline">
-        Try again
-      </Button>
-    </div>
-  );
-}
-
-export function View<Entity>Skeleton() {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base"><Entity> Details</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          {/* One skeleton block per field */}
-          <div className="space-y-2">
-            <Skeleton className="h-4 w-[50px]" />
-            <Skeleton className="h-10 w-full" />
-          </div>
-          {/* Add more skeleton rows per field */}
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
+import { ViewCardContent } from '@/components/ViewCardContent';
 
 type View<Entity>CardProps = {
   <entity>: <Entity>;
@@ -650,38 +607,31 @@ type View<Entity>CardProps = {
 
 export function View<Entity>Card({ <entity> }: View<Entity>CardProps) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-base"><Entity> Details</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
-          <Field>
-            <FieldLabel>Name</FieldLabel>
-            <Input value={<entity>.name} disabled />
-          </Field>
-          <Field>
-            <FieldLabel>Email</FieldLabel>
-            <Input value={<entity>.email ?? ''} disabled />
-          </Field>
-          {/* Use grids for compact display */}
-          <div className="grid grid-cols-3 gap-6">
-            <Field>
-              <FieldLabel>Rooms</FieldLabel>
-              <Input value={<entity>.rooms.toString()} disabled />
-            </Field>
-            {/* ... */}
-          </div>
-          {/* Boolean fields: display as "Yes"/"No" */}
-          <Field>
-            <FieldLabel>Has Elevator</FieldLabel>
-            <Input value={<entity>.hasElevator ? 'Yes' : 'No'} disabled />
-          </Field>
-          {/* Use Textarea for long text fields */}
-          {/* <Textarea value={<entity>.notes ?? ''} disabled /> */}
-        </div>
-      </CardContent>
-    </Card>
+    <ViewCardContent>
+      <Field>
+        <FieldLabel>Name</FieldLabel>
+        <Input value={<entity>.name} disabled />
+      </Field>
+      <Field>
+        <FieldLabel>Email</FieldLabel>
+        <Input value={<entity>.email ?? ''} disabled />
+      </Field>
+      {/* Use grids for compact display */}
+      <div className="grid grid-cols-3 gap-4">
+        <Field>
+          <FieldLabel>Rooms</FieldLabel>
+          <Input value={<entity>.rooms.toString()} disabled />
+        </Field>
+        {/* ... */}
+      </div>
+      {/* Boolean fields: display as "Yes"/"No" */}
+      <Field>
+        <FieldLabel>Has Elevator</FieldLabel>
+        <Input value={<entity>.hasElevator ? 'Yes' : 'No'} disabled />
+      </Field>
+      {/* Use Textarea for long text fields */}
+      {/* <Textarea value={<entity>.notes ?? ''} disabled rows={3} /> */}
+    </ViewCardContent>
   );
 }
 ```
@@ -848,70 +798,6 @@ Key features:
 - Clear button (X) appears when a value is selected
 - Loading, error, and empty states
 - `shouldFilter={false}` — server-side filtering, not client-side
-
-## Multi-Field Search (`components/<Entity>Search.tsx` — advanced variant)
-
-When filtering by comboboxes, dates, or multiple fields instead of just text:
-
-```tsx
-import { useRef, useState } from 'react';
-import { useSearchParams } from 'react-router';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { <Related>Combobox } from '../../<related>/components/<Related>Combobox';
-
-export function <Entity>Search() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const initialRelatedId = searchParams.get('relatedId') ?? '';
-  const startCreatedAt = searchParams.get('startCreatedAt') ?? '';
-  const [relatedId, setRelatedId] = useState(initialRelatedId);
-  const dateRef = useRef<HTMLInputElement>(null);
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSearchParams(prev => {
-      if (relatedId) prev.set('relatedId', relatedId);
-      else prev.delete('relatedId');
-      const dateValue = dateRef.current?.value ?? '';
-      if (dateValue) prev.set('startCreatedAt', dateValue);
-      else prev.delete('startCreatedAt');
-      prev.set('page', '1');
-      return prev;
-    });
-  };
-
-  const handleClear = () => {
-    setRelatedId('');
-    if (dateRef.current) dateRef.current.value = '';
-    setSearchParams(prev => {
-      prev.delete('relatedId');
-      prev.delete('startCreatedAt');
-      prev.set('page', '1');
-      return prev;
-    });
-  };
-
-  return (
-    <form onSubmit={handleSearch} className="mb-4">
-      <div className="flex gap-2">
-        <div className="w-[250px]">
-          <<Related>Combobox value={relatedId} onChange={setRelatedId} />
-        </div>
-        <Input
-          ref={dateRef}
-          type="date"
-          defaultValue={startCreatedAt}
-          className="w-[200px]"
-        />
-        <Button type="submit" variant="secondary">Search</Button>
-        {(relatedId || startCreatedAt) && (
-          <Button type="button" variant="ghost" onClick={handleClear}>Clear</Button>
-        )}
-      </div>
-    </form>
-  );
-}
-```
 
 ## Action Button with Dialog (`components/<Action>Button.tsx`)
 

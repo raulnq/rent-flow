@@ -18,13 +18,24 @@ Read the infrastructure files to understand the current app structure:
 - `apps/frontend/src/components/layout/AppSidebar.tsx` — `NAV_ITEMS` array
 - `apps/frontend/src/components/layout/AppHeader.tsx` — `TITLE_BY_PATH` map
 - `apps/frontend/src/client.ts` — Hono type-safe client
-- `apps/frontend/src/components/ui/field.tsx` — custom Field component
+- `apps/frontend/src/components/ui/field.tsx` — `Field`, `FieldLabel`, `FieldError`, `FieldGroup`, `FieldSeparator`
 - `apps/frontend/src/components/Pagination.tsx` — pagination component
+
+Also read the shared card components (used by all features — do NOT recreate per-feature):
+
+- `apps/frontend/src/components/ListCardHeader.tsx` — list page card header with title + add button + search children
+- `apps/frontend/src/components/FormCardHeader.tsx` — form page card header with title + description + optional action/children
+- `apps/frontend/src/components/FormCardContent.tsx` — wraps `<form>` inside `CardContent`
+- `apps/frontend/src/components/FormCardFooter.tsx` — cancel + save buttons in `CardFooter`
+- `apps/frontend/src/components/ViewCardHeader.tsx` — view page card header with title + action children
+- `apps/frontend/src/components/ViewCardContent.tsx` — wraps read-only fields inside `CardContent`
+- `apps/frontend/src/components/ViewCardFooter.tsx` — cancel-only button in `CardFooter`
+- `apps/frontend/src/components/SearchBar.tsx` — reusable search form wrapper
 
 Then read the code templates (these are the canonical patterns — follow them exactly):
 
 - `.claude/skills/add-frontend-feature/stores-templates.md` — API client + React Query hooks
-- `.claude/skills/add-frontend-feature/components-templates.md` — all 6 components
+- `.claude/skills/add-frontend-feature/components-templates.md` — components
 - `.claude/skills/add-frontend-feature/pages-templates.md` — all 4 pages
 
 ## Step 1 — Create feature directory
@@ -47,21 +58,24 @@ Follow templates in `stores-templates.md`:
 
 Follow templates in `components-templates.md`:
 
-1. **`<Entity>Header.tsx`** — back button + title + description + optional `children` action slot
-2. **`<Entity>Search.tsx`** — ref-based input, URL search params, clear button
-3. **`<Entity>Table.tsx`** — exports `<Entity>Table` + `<Entities>Skeleton` + `<Entities>Error`. Table with row links, view/edit icon buttons, `Pagination` at bottom
-4. **`Add<Entity>Form.tsx`** — Card layout, `useForm` + `zodResolver`, `Controller` fields, `form id="form"` + submit button with `form="form"`
-5. **`Edit<Entity>Form.tsx`** — same as Add but with `defaultValues: entity`. Also exports Skeleton and Error
-6. **`View<Entity>Card.tsx`** — read-only Card with labeled fields. Also exports Skeleton and Error
+1. **`<Entity>SearchBar.tsx`** — uses shared `SearchBar` component, provides filter inputs as children
+2. **`<Entity>Table.tsx`** — exports `<Entity>Table` + `<Entities>Skeleton` + `<Entities>Error`. Table with row links, view/edit icon buttons, `Pagination` at bottom
+3. **`Add<Entity>Form.tsx`** — uses `FormCardContent`, `useForm` + `zodResolver`, `Controller` fields with `FieldGroup`
+4. **`Edit<Entity>Form.tsx`** — same as Add but with `defaultValues: entity`
+5. **`View<Entity>Card.tsx`** — read-only display using `ViewCardContent` with `Field`/`FieldLabel`/disabled `Input`
+6. **`<Entity>Skeleton.tsx`** — loading skeleton shared by Edit and View pages
+7. **`<Entity>Error.tsx`** — error fallback shared by Edit and View pages
 
 ## Step 4 — Create pages
 
 Follow templates in `pages-templates.md`:
 
-1. **`List<Entity>Page.tsx`** — header with title + "Add" button, Card wrapping search + triple-layer table (`QueryErrorResetBoundary` > `ErrorBoundary` > `Suspense`)
-2. **`Add<Entity>Page.tsx`** — mutation hook, `toast.success` + navigate on success, `toast.error` on failure
-3. **`Edit<Entity>Page.tsx`** — **inner component pattern**: page handles layout + error boundary, inner component calls `use<Entity>Suspense`
-4. **`View<Entity>Page.tsx`** — same inner component pattern, Header includes Edit button via `children`
+All pages wrap content in `Card` and use shared card components (no per-feature headers).
+
+1. **`List<Entity>Page.tsx`** — `Card` with `ListCardHeader` (title + add button + search children) + `CardContent` wrapping triple-layer table
+2. **`Add<Entity>Page.tsx`** — `Card` with `FormCardHeader` + `Add<Entity>Form` + `FormCardFooter`. Mutation hook with `toast`
+3. **`Edit<Entity>Page.tsx`** — `Card` with `FormCardHeader` (outside or inside inner) + error boundary + `FormCardFooter`. **Inner component pattern**
+4. **`View<Entity>Page.tsx`** — `Card` with `ViewCardHeader` (Edit button as child) + error boundary + `ViewCardFooter`. **Inner component pattern**
 
 ## Step 5 — Register routes
 
@@ -99,16 +113,17 @@ File: `apps/frontend/src/components/layout/AppHeader.tsx` — add to `TITLE_BY_P
 
 - [ ] `stores/<entities>Client.ts` — raw API functions (list, get, add, edit)
 - [ ] `stores/use<Entities>.ts` — React Query hooks (suspense queries + mutations)
-- [ ] `components/<Entity>Header.tsx` — header with back button + children slot
-- [ ] `components/<Entity>Search.tsx` — ref-based search form (or multi-field search)
-- [ ] `components/<Entity>Table.tsx` — table + skeleton + error + pagination
-- [ ] `components/Add<Entity>Form.tsx` — Card form with Controller fields
-- [ ] `components/Edit<Entity>Form.tsx` — Card form + skeleton + error
-- [ ] `components/View<Entity>Card.tsx` — read-only card with Field/FieldLabel/Input + skeleton + error
-- [ ] `pages/List<Entity>Page.tsx` — list with search + triple-layer table
-- [ ] `pages/Add<Entity>Page.tsx` — add with mutation + toast
-- [ ] `pages/Edit<Entity>Page.tsx` — edit with inner component pattern
-- [ ] `pages/View<Entity>Page.tsx` — view with inner component + edit button
+- [ ] `components/<Entity>SearchBar.tsx` — search form using shared `SearchBar` component
+- [ ] `components/<Entity>Table.tsx` — table + table skeleton + table error + pagination
+- [ ] `components/Add<Entity>Form.tsx` — form fields only (uses `FormCardContent`)
+- [ ] `components/Edit<Entity>Form.tsx` — form fields only (uses `FormCardContent`)
+- [ ] `components/View<Entity>Card.tsx` — read-only fields (uses `ViewCardContent`)
+- [ ] `components/<Entity>Skeleton.tsx` — loading skeleton (shared by Edit + View pages)
+- [ ] `components/<Entity>Error.tsx` — error fallback (shared by Edit + View pages)
+- [ ] `pages/List<Entity>Page.tsx` — `Card` + `ListCardHeader` + search + triple-layer table
+- [ ] `pages/Add<Entity>Page.tsx` — `Card` + `FormCardHeader` + form + `FormCardFooter`
+- [ ] `pages/Edit<Entity>Page.tsx` — `Card` + `FormCardHeader` + inner component + `FormCardFooter`
+- [ ] `pages/View<Entity>Page.tsx` — `Card` + `ViewCardHeader` + inner component + `ViewCardFooter`
 - [ ] `routes.tsx` — routes registered
 - [ ] `AppSidebar.tsx` — nav item added
 - [ ] `AppHeader.tsx` — title added
@@ -135,5 +150,7 @@ File: `apps/frontend/src/components/layout/AppHeader.tsx` — add to `TITLE_BY_P
 - **Clerk `getToken()`** passed to every API call
 - **URL search params** for pagination (not component state)
 - **`toast` from `sonner`** for success/error notifications
-- **Card layout** for forms: `Card > CardHeader > CardContent > form > CardFooter`
-- **`form id="form"`** + **`form="form"` on submit button** (button outside form element)
+- **Shared card components** — `FormCardHeader`/`FormCardContent`/`FormCardFooter` for forms, `ViewCardHeader`/`ViewCardContent`/`ViewCardFooter` for views, `ListCardHeader` for lists
+- **`FieldGroup`** wraps form controllers, **`FieldSeparator`** divides form sections
+- **Page owns the Card** — form components only render fields inside `FormCardContent`, page adds `Card` + header + footer
+- **`form id="form"`** + **`form="form"` on submit button** (button is in `FormCardFooter`, outside form element)

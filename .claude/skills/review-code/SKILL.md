@@ -69,12 +69,18 @@ Use this skill to review code (staged changes, a PR, or specific files) against 
 
 ### Frontend components
 
+- [ ] Page owns the Card — form/view components only render fields inside `FormCardContent`/`ViewCardContent`
+- [ ] Shared card components used: `FormCardHeader`/`FormCardContent`/`FormCardFooter` for forms, `ViewCardHeader`/`ViewCardContent`/`ViewCardFooter` for views, `ListCardHeader` for lists
+- [ ] Search uses `<Entity>SearchBar` wrapping shared `SearchBar` component (not `<Entity>Search`)
+- [ ] `FieldGroup` wraps form controllers, `FieldSeparator` divides form sections
+- [ ] `<Entity>Skeleton.tsx` and `<Entity>Error.tsx` are separate shared files (used by Edit + View pages)
+- [ ] `form id="form"` on `FormCardContent` + `form="form"` on submit button in `FormCardFooter`
 - [ ] Page data fetching uses `useSuspenseQuery` — `useQuery` only for combobox search hooks
 - [ ] Combobox search hooks use `useQuery` with `enabled` prop and `placeholderData: keepPreviousData`
 - [ ] Triple-layer wrapper present: `QueryErrorResetBoundary` > `ErrorBoundary` > `Suspense`
 - [ ] Forms use `Controller` + `zodResolver`, never `register()`
 - [ ] Form fields use `Field`, `FieldLabel`, `FieldError` from `@/components/ui/field`
-- [ ] View cards use `Field` + `FieldLabel` + disabled `Input`/`Textarea` (not raw `<label>/<p>`)
+- [ ] View cards use `ViewCardContent` with `Field` + `FieldLabel` + disabled `Input`/`Textarea`
 - [ ] Number fields use `type="number"` with `onChange={e => field.onChange(Number(e.target.value))}`
 - [ ] Boolean fields use `Select` with string conversion (`String(field.value)` / `v === 'true'`)
 - [ ] Nullable fields handle `null` → `''` display and `'' || null` on change
