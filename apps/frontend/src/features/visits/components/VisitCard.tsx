@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSearchParams } from 'react-router';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import {
@@ -89,7 +90,13 @@ type VisitTableProps = {
 };
 
 export function VisitTable({ applicationId }: VisitTableProps) {
-  const { data } = useVisitsSuspense(applicationId, { pageSize: 5 });
+  const [searchParams] = useSearchParams();
+  const page = searchParams.get('page') ?? '1';
+  const pageNumber = Math.max(1, Math.floor(Number(page)) || 1);
+  const { data } = useVisitsSuspense(applicationId, {
+    pageNumber,
+    pageSize: 5,
+  });
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState<Visit | null>(null);

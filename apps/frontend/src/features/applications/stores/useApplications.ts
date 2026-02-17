@@ -16,7 +16,6 @@ import {
   reserve,
 } from './applicationsClient';
 import { useAuth } from '@clerk/clerk-react';
-import { useSearchParams } from 'react-router';
 import type {
   AddApplication,
   EditApplication,
@@ -37,16 +36,12 @@ export function useApplicationsSuspense({
   startCreatedAt,
 }: Partial<ListApplications> = {}) {
   const { getToken } = useAuth();
-  const [searchParams] = useSearchParams();
-  const queryPage = searchParams.get('page') ?? '1';
-  const currentPage = Math.max(1, Math.floor(Number(queryPage)) || 1);
   const params = {
-    pageNumber: pageNumber ?? currentPage,
+    pageNumber: pageNumber ?? 1,
     pageSize: pageSize ?? 10,
-    propertyId: propertyId ?? searchParams.get('propertyId') ?? undefined,
-    leadId: leadId ?? searchParams.get('leadId') ?? undefined,
-    startCreatedAt:
-      startCreatedAt ?? searchParams.get('startCreatedAt') ?? undefined,
+    propertyId,
+    leadId,
+    startCreatedAt,
   };
   return useSuspenseQuery({
     queryKey: ['applications', params],

@@ -54,7 +54,9 @@ export function LeadsSkeleton() {
 export function LeadTable() {
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name') ?? '';
-  const { data } = useLeadsSuspense({ name: name });
+  const page = searchParams.get('page') ?? '1';
+  const pageNumber = Math.max(1, Math.floor(Number(page)) || 1);
+  const { data } = useLeadsSuspense({ name, pageNumber });
 
   if (data.items.length === 0) {
     return <NoMatchingItems />;

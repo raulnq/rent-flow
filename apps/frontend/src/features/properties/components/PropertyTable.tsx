@@ -58,7 +58,9 @@ export function PropertiesSkeleton() {
 export function PropertyTable() {
   const [searchParams] = useSearchParams();
   const address = searchParams.get('address') ?? '';
-  const { data } = usePropertiesSuspense({ address });
+  const page = searchParams.get('page') ?? '1';
+  const pageNumber = Math.max(1, Math.floor(Number(page)) || 1);
+  const { data } = usePropertiesSuspense({ address, pageNumber });
 
   if (data.items.length === 0) {
     return <NoMatchingItems />;

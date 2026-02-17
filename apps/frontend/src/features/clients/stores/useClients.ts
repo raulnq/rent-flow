@@ -7,7 +7,6 @@ import {
 } from '@tanstack/react-query';
 import { listClients, getClient, addClient, editClient } from './clientsClient';
 import { useAuth } from '@clerk/clerk-react';
-import { useSearchParams } from 'react-router';
 import type {
   AddClient,
   EditClient,
@@ -20,11 +19,8 @@ export function useClientsSuspense({
   name,
 }: Partial<ListClients> = {}) {
   const { getToken } = useAuth();
-  const [searchParams] = useSearchParams();
-  const queryPage = searchParams.get('page') ?? '1';
-  const currentPage = Math.max(1, Math.floor(Number(queryPage)) || 1);
   const params = {
-    pageNumber: pageNumber ?? currentPage,
+    pageNumber: pageNumber ?? 1,
     pageSize: pageSize ?? 10,
     name,
   };

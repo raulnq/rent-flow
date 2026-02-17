@@ -58,10 +58,13 @@ export function ApplicationTable() {
   const propertyId = searchParams.get('propertyId') ?? undefined;
   const leadId = searchParams.get('leadId') ?? undefined;
   const startCreatedAt = searchParams.get('startCreatedAt') ?? undefined;
+  const page = searchParams.get('page') ?? '1';
+  const pageNumber = Math.max(1, Math.floor(Number(page)) || 1);
   const { data } = useApplicationsSuspense({
     propertyId,
     leadId,
     startCreatedAt,
+    pageNumber,
   });
 
   if (data.items.length === 0) {

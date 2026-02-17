@@ -10,16 +10,17 @@ import { useSearchParams } from 'react-router';
 
 interface PaginationProps {
   totalPages: number;
+  pageParamName?: string;
 }
 
-export function Pagination({ totalPages }: PaginationProps) {
+export function Pagination({ totalPages, pageParamName }: PaginationProps) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const queryPage = searchParams.get('page') ?? '1';
+  const queryPage = searchParams.get(pageParamName ?? 'page') ?? '1';
   const currentPage = Math.max(1, Math.floor(Number(queryPage)) || 1);
 
   const handlePageChange = (newPage: number) => {
     setSearchParams(prev => {
-      prev.set('page', newPage.toString());
+      prev.set(pageParamName ?? 'page', newPage.toString());
       return prev;
     });
   };
