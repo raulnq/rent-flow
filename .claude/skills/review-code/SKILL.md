@@ -73,7 +73,9 @@ Use this skill to review code (staged changes, a PR, or specific files) against 
 - [ ] Shared card components used: `FormCardHeader`/`FormCardContent`/`FormCardFooter` for forms, `ViewCardHeader`/`ViewCardContent`/`ViewCardFooter` for views, `ListCardHeader` for lists
 - [ ] Search uses `<Entity>SearchBar` wrapping shared `SearchBar` component (not `<Entity>Search`)
 - [ ] `FieldGroup` wraps form controllers, `FieldSeparator` divides form sections
-- [ ] `<Entity>Skeleton.tsx` and `<Entity>Error.tsx` are separate shared files (used by Edit + View pages)
+- [ ] `<Entity>Skeleton.tsx` is a separate shared file (used by Edit + View pages)
+- [ ] Error handling uses shared `ErrorFallback` from `@/components/ErrorFallback` with `message` prop (NOT per-feature error components)
+- [ ] Empty table state uses shared `NoMatchingItems` from `@/components/NoMatchingItems`
 - [ ] `form id="form"` on `FormCardContent` + `form="form"` on submit button in `FormCardFooter`
 - [ ] Page data fetching uses `useSuspenseQuery` — `useQuery` only for combobox search hooks
 - [ ] Combobox search hooks use `useQuery` with `enabled` prop and `placeholderData: keepPreviousData`
@@ -87,6 +89,7 @@ Use this skill to review code (staged changes, a PR, or specific files) against 
 - [ ] Pages that fetch by ID use inner component pattern
 - [ ] Clerk `getToken()` passed to every API call
 - [ ] Pagination via URL search params, not component state
+- [ ] `useSearchParams` is read in table/page components, not in React Query hooks (hooks receive `pageNumber` as parameter)
 - [ ] Toast notifications via `sonner` (`toast.success`, `toast.error`)
 - [ ] Searchable comboboxes have debounce (300ms), loading/error/empty states, clear button
 - [ ] Action buttons with dialogs use separate `form id` + `form="..."` pattern

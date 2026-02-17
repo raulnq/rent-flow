@@ -12,12 +12,12 @@ import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import {
-  <Entities>Error,
   <Entities>Skeleton,
   <Entity>Table,
 } from '../components/<Entity>Table';
 import { <Entity>SearchBar } from '../components/<Entity>SearchBar';
 import { ListCardHeader } from '@/components/ListCardHeader';
+import { ErrorFallback } from '@/components/ErrorFallback';
 
 export function List<Entity>Page() {
   return (
@@ -34,7 +34,15 @@ export function List<Entity>Page() {
         <CardContent>
           <QueryErrorResetBoundary>
             {({ reset }) => (
-              <ErrorBoundary onReset={reset} FallbackComponent={<Entities>Error}>
+              <ErrorBoundary
+                onReset={reset}
+                FallbackComponent={({ resetErrorBoundary }) => (
+                  <ErrorFallback
+                    resetErrorBoundary={resetErrorBoundary}
+                    message="Failed to load <entities>"
+                  />
+                )}
+              >
                 <Suspense fallback={<<Entities>Skeleton />}>
                   <<Entity>Table />
                 </Suspense>
@@ -115,10 +123,10 @@ import type { Edit<Entity> } from '#/features/<entities>/schemas';
 import { useEdit<Entity>, use<Entity>Suspense } from '../stores/use<Entities>';
 import { Edit<Entity>Form } from '../components/Edit<Entity>Form';
 import { <Entity>Skeleton } from '../components/<Entity>Skeleton';
-import { <Entity>Error } from '../components/<Entity>Error';
 import { Card } from '@/components/ui/card';
 import { FormCardHeader } from '@/components/FormCardHeader';
 import { FormCardFooter } from '@/components/FormCardFooter';
+import { ErrorFallback } from '@/components/ErrorFallback';
 
 export function Edit<Entity>Page() {
   const navigate = useNavigate();
@@ -146,7 +154,15 @@ export function Edit<Entity>Page() {
         />
         <QueryErrorResetBoundary>
           {({ reset }) => (
-            <ErrorBoundary onReset={reset} FallbackComponent={<Entity>Error}>
+            <ErrorBoundary
+              onReset={reset}
+              FallbackComponent={({ resetErrorBoundary }) => (
+                <ErrorFallback
+                  resetErrorBoundary={resetErrorBoundary}
+                  message="Failed to load <entity>"
+                />
+              )}
+            >
               <Suspense fallback={<<Entity>Skeleton />}>
                 <Inner<Entity>
                   isPending={edit.isPending}
@@ -195,12 +211,12 @@ import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { use<Entity>Suspense } from '../stores/use<Entities>';
 import { View<Entity>Card } from '../components/View<Entity>Card';
 import { <Entity>Skeleton } from '../components/<Entity>Skeleton';
-import { <Entity>Error } from '../components/<Entity>Error';
 import { Card } from '@/components/ui/card';
 import { ViewCardHeader } from '@/components/ViewCardHeader';
 import { ViewCardFooter } from '@/components/ViewCardFooter';
 import { Button } from '@/components/ui/button';
 import { Pencil } from 'lucide-react';
+import { ErrorFallback } from '@/components/ErrorFallback';
 
 export function View<Entity>Page() {
   const { <entityId> } = useParams<{ <entityId>: string }>();
@@ -222,7 +238,15 @@ export function View<Entity>Page() {
         </ViewCardHeader>
         <QueryErrorResetBoundary>
           {({ reset }) => (
-            <ErrorBoundary onReset={reset} FallbackComponent={<Entity>Error}>
+            <ErrorBoundary
+              onReset={reset}
+              FallbackComponent={({ resetErrorBoundary }) => (
+                <ErrorFallback
+                  resetErrorBoundary={resetErrorBoundary}
+                  message="Failed to load <entity>"
+                />
+              )}
+            >
               <Suspense fallback={<<Entity>Skeleton />}>
                 <Inner<Entity> <entityId>={<entityId>!} />
               </Suspense>

@@ -118,7 +118,7 @@ export function <Entity>SearchBar() {
 
 ## Table (`components/<Entity>Table.tsx`)
 
-Exports three things: `<Entity>Table`, `<Entities>Skeleton`, `<Entities>Error`. Table reads search params for filters, includes `Pagination` at the bottom.
+Exports two things: `<Entity>Table` and `<Entities>Skeleton`. Table reads search params for filters and pagination, includes `Pagination` at the bottom. Uses shared `NoMatchingItems` for empty state.
 
 ```tsx
 import { Link, useSearchParams } from 'react-router';
@@ -135,6 +135,7 @@ import {
 } from '@/components/ui/table';
 import { use<Entities>Suspense } from '../stores/use<Entities>';
 import { Pagination } from '@/components/Pagination';
+import { NoMatchingItems } from '@/components/NoMatchingItems';
 
 export function <Entities>Skeleton() {
   return (
@@ -163,33 +164,14 @@ export function <Entities>Skeleton() {
   );
 }
 
-export function <Entities>Error({
-  resetErrorBoundary,
-}: {
-  resetErrorBoundary: () => void;
-}) {
-  return (
-    <div className="text-center py-8">
-      <p className="text-destructive mb-4">Error loading <entities>.</p>
-      <Button onClick={resetErrorBoundary} variant="outline">
-        Try again
-      </Button>
-    </div>
-  );
-}
-
 export function <Entity>Table() {
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name') ?? '';
-  const { data } = use<Entities>Suspense({ name: name });
+  const page = searchParams.get('page') ?? '1';
+  const pageNumber = Math.max(1, Math.floor(Number(page)) || 1);
+  const { data } = use<Entities>Suspense({ name, pageNumber });
 
-  if (data.items.length === 0) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        No <entities> found matching your search.
-      </div>
-    );
-  }
+  if (data.items.length === 0) return <NoMatchingItems />;
 
   return (
     <>
@@ -265,29 +247,6 @@ export function <Entity>Skeleton() {
         </Field>
       </div>
     </CardContent>
-  );
-}
-```
-
-## Error (`components/<Entity>Error.tsx`)
-
-Shared by both Edit and View pages. Simple error fallback with retry button.
-
-```tsx
-import { Button } from '@/components/ui/button';
-
-export function <Entity>Error({
-  resetErrorBoundary,
-}: {
-  resetErrorBoundary: () => void;
-}) {
-  return (
-    <div className="text-center py-8">
-      <p className="text-destructive mb-4">Failed to load <entity>.</p>
-      <Button onClick={resetErrorBoundary} variant="outline">
-        Try again
-      </Button>
-    </div>
   );
 }
 ```

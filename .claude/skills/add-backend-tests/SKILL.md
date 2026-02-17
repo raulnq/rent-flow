@@ -390,7 +390,7 @@ test('should reject duplicate uniqueField', async () => {
 - `createValidationError(errors)` — creates ProblemDocument with BAD_REQUEST
 - `createNotFoundError(detail)` — creates ProblemDocument with NOT_FOUND
 - `createConflictError(detail)` — creates ProblemDocument with CONFLICT
-- `validationError.tooSmall(path, min)`, `.tooBig(path, max)`, `.requiredString(path)`, `.invalidUrl(path)`, `.invalidUuid(path)`, `.invalidEmail(path)`, `.invalidEnum(path, options)`, `.notPositive(path)`, `.requiredNumber(path)`
+- `validationError.tooSmall(path, min)`, `.tooBig(path, max)`, `.requiredString(path)`, `.invalidUrl(path)`, `.invalidUuid(path)`, `.invalidEmail(path)`, `.invalidEnum(path, options)`, `.notPositive(path)`, `.requiredNumber(path)`, `.nonNegative(path)`, `.tooSmallNumber(path, min)`, `.tooBigNumber(path, max)`
 
 ## Critical rules
 

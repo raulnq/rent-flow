@@ -323,6 +323,69 @@ export const <entity>Route = new Hono()
   .route('/', <action>Route);
 ```
 
+### Nested resource routes
+
+When an entity belongs to a parent entity (e.g., visits belong to an application), use a nested basePath with the parent's ID param:
+
+```ts
+// routes.ts
+export const <child>Route = new Hono()
+  .basePath('/<parents>/:<parentId>/<children>')
+  .route('/', listRoute)
+  .route('/', addRoute)
+  .route('/', editRoute);
+```
+
+Each child endpoint must validate the parent param and check the parent exists:
+
+```ts
+const paramSchema = <child>Schema.pick({ <parentId>: true });
+
+export const addRoute = new Hono().post(
+  '/',
+  zValidator('param', paramSchema),
+  zValidator('json', add<Child>Schema),
+  async c => {
+    const { <parentId> } = c.req.valid('param');
+
+    const [parent] = await client
+      .select()
+      .from(<parents>)
+      .where(eq(<parents>.<parentId>, <parentId>))
+      .limit(1);
+
+    if (!parent) {
+      return notFoundError(c, `<Parent> ${<parentId>} not found`);
+    }
+
+    const [item] = await client
+      .insert(<children>)
+      .values({ ...data, <childId>: v7(), <parentId> })
+      .returning();
+
+    return c.json(item, StatusCodes.CREATED);
+  }
+);
+```
+
+### Edit with join re-query
+
+When an edit endpoint returns data that includes joined fields (e.g., related entity names), separate the update and the re-query:
+
+```ts
+// Instead of .update().returning(), use:
+await client
+  .update(<entities>)
+  .set(data)
+  .where(eq(<entities>.<entityId>, <entityId>));
+
+const [item] = await get<Entity>WithRelations()
+  .where(eq(<entities>.<entityId>, <entityId>))
+  .limit(1);
+
+return c.json(item, StatusCodes.OK);
+```
+
 ### Join queries for related data
 
 When a list endpoint should return data from related tables (e.g., property list showing client name):

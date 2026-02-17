@@ -95,7 +95,6 @@ import {
 } from '@tanstack/react-query';
 import { list<Entities>, get<Entity>, add<Entity>, edit<Entity> } from './<entities>Client';
 import { useAuth } from '@clerk/clerk-react';
-import { useSearchParams } from 'react-router';
 import type { Add<Entity>, Edit<Entity>, List<Entities> } from '#/features/<entities>/schemas';
 
 export function use<Entities>Suspense({
@@ -104,11 +103,8 @@ export function use<Entities>Suspense({
   // ...filter params
 }: Partial<List<Entities>> = {}) {
   const { getToken } = useAuth();
-  const [searchParams] = useSearchParams();
-  const queryPage = searchParams.get('page') ?? '1';
-  const currentPage = Math.max(1, Math.floor(Number(queryPage)) || 1);
   const params = {
-    pageNumber: pageNumber ?? currentPage,
+    pageNumber: pageNumber ?? 1,
     pageSize: pageSize ?? 10,
   };
   return useSuspenseQuery({
