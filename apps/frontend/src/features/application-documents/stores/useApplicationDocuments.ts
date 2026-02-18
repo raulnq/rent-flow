@@ -8,6 +8,7 @@ import {
   addApplicationDocument,
   editApplicationDocument,
   deleteApplicationDocument,
+  getDownloadUrl,
 } from './applicationDocumentsClient';
 import { useAuth } from '@clerk/clerk-react';
 import type { EditApplicationDocument } from '#/features/application-documents/schemas';
@@ -101,6 +102,20 @@ export function useDeleteApplicationDocument(applicationId: string) {
       queryClient.invalidateQueries({
         queryKey: ['application-documents', applicationId],
       });
+    },
+  });
+}
+
+export function useGetDownloadUrl(applicationId: string) {
+  const { getToken } = useAuth();
+  return useMutation({
+    mutationFn: async ({
+      applicationDocumentId,
+    }: {
+      applicationDocumentId: string;
+    }) => {
+      const token = await getToken();
+      return getDownloadUrl(applicationId, applicationDocumentId, token);
     },
   });
 }

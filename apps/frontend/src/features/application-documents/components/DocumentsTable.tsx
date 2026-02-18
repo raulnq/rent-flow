@@ -14,6 +14,7 @@ import {
   useApplicationDocumentsSuspense,
   useEditApplicationDocument,
   useDeleteApplicationDocument,
+  useGetDownloadUrl,
 } from '../stores/useApplicationDocuments';
 import { Pagination } from '@/components/Pagination';
 import { NoMatchingItems } from '@/components/NoMatchingItems';
@@ -25,8 +26,6 @@ import type {
   EditApplicationDocument,
 } from '#/features/application-documents/schemas';
 import { toast } from 'sonner';
-import { getDownloadUrl } from '../stores/applicationDocumentsClient';
-import { useAuth } from '@clerk/clerk-react';
 
 export function DocumentsSkeleton() {
   return (
@@ -69,7 +68,6 @@ export function DocumentsTable({ applicationId }: { applicationId: string }) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedApplicationDocument, setSelectedApplicationDocument] =
     useState<ApplicationDocument | null>(null);
-  const { getToken } = useAuth();
 
   const { data } = useApplicationDocumentsSuspense(
     applicationId,
@@ -79,15 +77,13 @@ export function DocumentsTable({ applicationId }: { applicationId: string }) {
 
   const editMutation = useEditApplicationDocument(applicationId);
   const deleteMutation = useDeleteApplicationDocument(applicationId);
+  const downloadUrlMutation = useGetDownloadUrl(applicationId);
 
   const handleView = async (document: ApplicationDocument) => {
     try {
-      const token = await getToken();
-      const { url } = await getDownloadUrl(
-        applicationId,
-        document.applicationDocumentId,
-        token
-      );
+      const { url } = await downloadUrlMutation.mutateAsync({
+        applicationDocumentId: document.applicationDocumentId,
+      });
       window.open(url, '_blank');
     } catch (error) {
       toast.error(
@@ -176,6 +172,7 @@ export function DocumentsTable({ applicationId }: { applicationId: string }) {
                     variant="ghost"
                     size="icon"
                     onClick={() => handleView(item)}
+                    disabled={downloadUrlMutation.isPending}
                   >
                     <Eye className="h-4 w-4" />
                   </Button>
