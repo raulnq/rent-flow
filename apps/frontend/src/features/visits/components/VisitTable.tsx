@@ -26,6 +26,7 @@ import { CompleteButton } from './CompleteButton';
 import { NoAttendButton } from './NoAttendButton';
 import { EditDialog } from './EditDialog';
 import { CancelDialog } from './CancelDialog';
+import { NoMatchingItems } from '@/components/NoMatchingItems';
 
 const STATUS_VARIANTS: Record<
   string,
@@ -91,7 +92,7 @@ type VisitTableProps = {
 
 export function VisitTable({ applicationId }: VisitTableProps) {
   const [searchParams] = useSearchParams();
-  const page = searchParams.get('page') ?? '1';
+  const page = searchParams.get('visits_page') ?? '1';
   const pageNumber = Math.max(1, Math.floor(Number(page)) || 1);
   const { data } = useVisitsSuspense(applicationId, {
     pageNumber,
@@ -179,17 +180,8 @@ export function VisitTable({ applicationId }: VisitTableProps) {
     setCancelDialogOpen(true);
   };
 
-  const truncateNotes = (notes: string | null, maxLength: number = 50) => {
-    if (!notes) return '-';
-    return notes.length > maxLength ? `${notes.slice(0, maxLength)}...` : notes;
-  };
-
   if (data.items.length === 0) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        No visits scheduled yet.
-      </div>
-    );
+    return <NoMatchingItems />;
   }
 
   return (
@@ -199,7 +191,6 @@ export function VisitTable({ applicationId }: VisitTableProps) {
           <TableRow>
             <TableHead>Scheduled At</TableHead>
             <TableHead>Status</TableHead>
-            <TableHead>Notes</TableHead>
             <TableHead className="w-[200px]">Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -214,7 +205,6 @@ export function VisitTable({ applicationId }: VisitTableProps) {
                   {visit.status}
                 </Badge>
               </TableCell>
-              <TableCell>{truncateNotes(visit.notes)}</TableCell>
               <TableCell>
                 <div className="flex gap-1">
                   <CompleteButton
@@ -245,9 +235,9 @@ export function VisitTable({ applicationId }: VisitTableProps) {
           ))}
         </TableBody>
       </Table>
-      <Pagination totalPages={data.totalPages} />
+      <Pagination totalPages={data.totalPages} pageParamName="visits_page" />
       <EditDialog
-        key={selectedVisit?.visitId ?? 'new'} // remount component when selected visit changes
+        key={`${selectedVisit?.visitId ?? 'new'}-visit-edit`} // remount component when selected visit changes
         notes={selectedVisit?.notes}
         scheduledAt={selectedVisit?.scheduledAt}
         isOpen={editDialogOpen}

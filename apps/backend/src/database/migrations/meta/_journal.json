@@ -57,6 +57,13 @@
       "when": 1771019340739,
       "tag": "0007_lazy_hellcat",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1771374400385,
+      "tag": "0008_cheerful_logan",
+      "breakpoints": true
     }
   ]
 }

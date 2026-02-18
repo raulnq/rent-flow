@@ -15,6 +15,11 @@ const ENVSchema = z.object({
   CORS_ORIGIN: z.string().optional().default('http://localhost:5173'),
   CLERK_SECRET_KEY: z.string().optional(),
   CLERK_PUBLISHABLE_KEY: z.string().optional(),
+  S3_ENDPOINT: z.string(),
+  S3_ACCESS_KEY_ID: z.string(),
+  S3_SECRET_ACCESS_KEY: z.string(),
+  S3_BUCKET_NAME: z.string(),
+  S3_FORCE_PATH_STYLE: z.coerce.boolean().default(true),
 });
 
 expand(config());

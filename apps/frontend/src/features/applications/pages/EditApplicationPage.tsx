@@ -29,14 +29,20 @@ import { ErrorFallback } from '@/components/ErrorFallback';
 import { ApplicationToolbar } from '../components/ApplicationToolbar';
 import { FormCardHeader } from '@/components/FormCardHeader';
 import { FormCardFooter } from '@/components/FormCardFooter';
-import { VisitsSkeleton, VisitTable } from '../../visits/components/VisitCard';
-import { AddButton } from '@/features/visits/components/AddButton';
+import { VisitsSkeleton, VisitTable } from '../../visits/components/VisitTable';
+import { AddVisitButton } from '@/features/visits/components/AddVisitButton';
 import { useAddVisit } from '@/features/visits/stores/useVisits';
 import type { AddVisit } from '#/features/visits/schemas';
 import { Card, CardContent } from '@/components/ui/card';
 import { ListCardHeader } from '@/components/ListCardHeader';
 import { Badge } from '@/components/ui/badge';
 import { getStatusVariant } from '../utils/status-variants';
+import {
+  DocumentsTable,
+  DocumentsSkeleton,
+} from '@/features/application-documents/components/DocumentsTable';
+import { useAddApplicationDocument } from '@/features/application-documents/stores/useApplicationDocuments';
+import { AddDocumentButton } from '@/features/application-documents/components/AddDocumentButton';
 
 export function EditApplicationPage() {
   const navigate = useNavigate();
@@ -49,6 +55,7 @@ export function EditApplicationPage() {
   const signContract = useSignContract(applicationId!);
   const reserve = useReserve(applicationId!);
   const addMutation = useAddVisit(applicationId!);
+  const addDocumentMutation = useAddApplicationDocument(applicationId!);
 
   const workflowPending =
     startReview.isPending ||
@@ -58,13 +65,27 @@ export function EditApplicationPage() {
     signContract.isPending ||
     reserve.isPending;
 
-  const handleAdd = async (data: AddVisit) => {
+  const handleVisitAdd = async (data: AddVisit) => {
     try {
       await addMutation.mutateAsync(data);
       toast.success('Visit added successfully');
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : 'Failed to save visit'
+      );
+    }
+  };
+
+  const handleAddDocument = async (data: {
+    documentType: string;
+    file: File;
+  }) => {
+    try {
+      await addDocumentMutation.mutateAsync(data);
+      toast.success('Document uploaded successfully');
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to upload document'
       );
     }
   };
@@ -187,32 +208,60 @@ export function EditApplicationPage() {
           isPending={edit.isPending}
         />
       </Card>
-      <Card>
-        <ListCardHeader
-          title="All visits"
-          description="Manage your visits."
-          renderAction={<AddButton onAdd={handleAdd} />}
-        />
-        <CardContent>
-          <QueryErrorResetBoundary>
-            {({ reset }) => (
-              <ErrorBoundary
-                onReset={reset}
-                FallbackComponent={({ resetErrorBoundary }) => (
-                  <ErrorFallback
-                    resetErrorBoundary={resetErrorBoundary}
-                    message="Failed to load visits"
-                  />
-                )}
-              >
-                <Suspense fallback={<VisitsSkeleton />}>
-                  <VisitTable applicationId={applicationId!} />
-                </Suspense>
-              </ErrorBoundary>
-            )}
-          </QueryErrorResetBoundary>
-        </CardContent>
-      </Card>
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <Card>
+          <ListCardHeader
+            title="All visits"
+            description="Manage your visits."
+            renderAction={<AddVisitButton onAdd={handleVisitAdd} />}
+          />
+          <CardContent>
+            <QueryErrorResetBoundary>
+              {({ reset }) => (
+                <ErrorBoundary
+                  onReset={reset}
+                  FallbackComponent={({ resetErrorBoundary }) => (
+                    <ErrorFallback
+                      resetErrorBoundary={resetErrorBoundary}
+                      message="Failed to load visits"
+                    />
+                  )}
+                >
+                  <Suspense fallback={<VisitsSkeleton />}>
+                    <VisitTable applicationId={applicationId!} />
+                  </Suspense>
+                </ErrorBoundary>
+              )}
+            </QueryErrorResetBoundary>
+          </CardContent>
+        </Card>
+        <Card>
+          <ListCardHeader
+            title="Documents"
+            description="Manage your documents."
+            renderAction={<AddDocumentButton onAdd={handleAddDocument} />}
+          />
+          <CardContent>
+            <QueryErrorResetBoundary>
+              {({ reset }) => (
+                <ErrorBoundary
+                  onReset={reset}
+                  FallbackComponent={({ resetErrorBoundary }) => (
+                    <ErrorFallback
+                      resetErrorBoundary={resetErrorBoundary}
+                      message="Failed to load documents"
+                    />
+                  )}
+                >
+                  <Suspense fallback={<DocumentsSkeleton />}>
+                    <DocumentsTable applicationId={applicationId!} />
+                  </Suspense>
+                </ErrorBoundary>
+              )}
+            </QueryErrorResetBoundary>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }

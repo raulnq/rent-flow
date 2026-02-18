@@ -1,5 +1,5 @@
 {
   "permissions": {
-    "allow": ["Bash(git rm:*)", "Bash(git commit:*)"]
+    "allow": ["Bash(git rm:*)", "Bash(git commit:*)", "Bash(npx tsx:*)"]
   }
 }

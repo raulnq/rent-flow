@@ -24,7 +24,7 @@ type AddButtonProps = {
   onAdd: (data: AddVisit) => Promise<void>;
 };
 
-export function AddButton({ onAdd }: AddButtonProps) {
+export function AddVisitButton({ onAdd }: AddButtonProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
 
   const form = useForm<AddVisit>({
