@@ -35,3 +35,10 @@ export const listApplicationDocumentsSchema = paginationSchema;
 export type ListApplicationDocuments = z.infer<
   typeof listApplicationDocumentsSchema
 >;
+
+export const downloadUrlSchema = z.object({
+  url: z.string().url(),
+  expiresIn: z.number(),
+});
+
+export type DownloadUrl = z.infer<typeof downloadUrlSchema>;

@@ -1,5 +1,5 @@
 import { useSearchParams } from 'react-router';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Eye } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import {
@@ -25,6 +25,8 @@ import type {
   EditApplicationDocument,
 } from '#/features/application-documents/schemas';
 import { toast } from 'sonner';
+import { getDownloadUrl } from '../stores/applicationDocumentsClient';
+import { useAuth } from '@clerk/clerk-react';
 
 export function DocumentsSkeleton() {
   return (
@@ -67,6 +69,7 @@ export function DocumentsTable({ applicationId }: { applicationId: string }) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedApplicationDocument, setSelectedApplicationDocument] =
     useState<ApplicationDocument | null>(null);
+  const { getToken } = useAuth();
 
   const { data } = useApplicationDocumentsSuspense(
     applicationId,
@@ -76,6 +79,22 @@ export function DocumentsTable({ applicationId }: { applicationId: string }) {
 
   const editMutation = useEditApplicationDocument(applicationId);
   const deleteMutation = useDeleteApplicationDocument(applicationId);
+
+  const handleView = async (document: ApplicationDocument) => {
+    try {
+      const token = await getToken();
+      const { url } = await getDownloadUrl(
+        applicationId,
+        document.applicationDocumentId,
+        token
+      );
+      window.open(url, '_blank');
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to get download URL'
+      );
+    }
+  };
 
   const handleDelete = async () => {
     if (!selectedApplicationDocument) return;
@@ -153,6 +172,13 @@ export function DocumentsTable({ applicationId }: { applicationId: string }) {
               <TableCell>{item.fileName}</TableCell>
               <TableCell>
                 <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => handleView(item)}
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
                   <Button
                     variant="ghost"
                     size="icon"

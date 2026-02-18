@@ -1,4 +1,9 @@
-import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { ENV } from '#/env.js';
 import { v7 } from 'uuid';
 
@@ -29,4 +34,16 @@ export async function uploadFile(
   await s3Client.send(command);
 
   return filePath;
+}
+
+export async function getPresignedDownloadUrl(
+  filePath: string,
+  expiresIn: number = 900
+): Promise<string> {
+  const command = new GetObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: filePath,
+  });
+
+  return await getSignedUrl(s3Client, command, { expiresIn });
 }

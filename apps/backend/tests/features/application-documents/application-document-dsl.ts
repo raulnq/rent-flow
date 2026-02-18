@@ -9,6 +9,7 @@ import type {
   ApplicationDocument,
   EditApplicationDocument,
   ListApplicationDocuments,
+  DownloadUrl,
 } from '#/features/application-documents/schemas.js';
 import { createApplication } from '../applications/application-dsl.js';
 
@@ -247,6 +248,48 @@ export async function deleteApplicationDocument(
     assert.ok(
       expectedProblemDocument,
       `Expected NO_CONTENT status but received ${response.status}`
+    );
+    assertStrictEqualProblemDocument(problemDocument, expectedProblemDocument);
+    return problemDocument;
+  }
+}
+
+export async function getApplicationDocumentDownloadUrl(
+  applicationId: string,
+  applicationDocumentId: string
+): Promise<DownloadUrl>;
+export async function getApplicationDocumentDownloadUrl(
+  applicationId: string,
+  applicationDocumentId: string,
+  expectedProblemDocument: ProblemDocument
+): Promise<ProblemDocument>;
+
+export async function getApplicationDocumentDownloadUrl(
+  applicationId: string,
+  applicationDocumentId: string,
+  expectedProblemDocument?: ProblemDocument
+): Promise<DownloadUrl | ProblemDocument> {
+  const api = testClient(app);
+  const response = await api.api.applications[':applicationId'].documents[
+    ':applicationDocumentId'
+  ]['download-url'].$get({
+    param: { applicationId, applicationDocumentId },
+  });
+
+  if (response.status === StatusCodes.OK) {
+    assert.ok(
+      !expectedProblemDocument,
+      'Expected a problem document but received OK status'
+    );
+    const result = await response.json();
+    assert.ok(result);
+    return result;
+  } else {
+    const problemDocument = await response.json();
+    assert.ok(problemDocument);
+    assert.ok(
+      expectedProblemDocument,
+      `Expected OK status but received ${response.status}`
     );
     assertStrictEqualProblemDocument(problemDocument, expectedProblemDocument);
     return problemDocument;

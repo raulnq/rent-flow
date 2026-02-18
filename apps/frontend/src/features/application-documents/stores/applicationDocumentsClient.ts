@@ -3,6 +3,7 @@ import type { Page } from '#/pagination';
 import type {
   ApplicationDocument,
   EditApplicationDocument,
+  DownloadUrl,
 } from '#/features/application-documents/schemas';
 
 export async function listApplicationDocuments(
@@ -124,4 +125,24 @@ export async function deleteApplicationDocument(
     const error = await response.json();
     throw new Error(error.detail || 'Failed to delete document');
   }
+}
+
+export async function getDownloadUrl(
+  applicationId: string,
+  applicationDocumentId: string,
+  token?: string | null
+): Promise<DownloadUrl> {
+  const response = await client.api.applications[':applicationId'].documents[
+    ':applicationDocumentId'
+  ]['download-url'].$get(
+    {
+      param: { applicationId, applicationDocumentId },
+    },
+    { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+  );
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to get download URL');
+  }
+  return await response.json();
 }

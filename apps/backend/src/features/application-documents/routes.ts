@@ -3,10 +3,12 @@ import { listRoute } from './list-application-documents.js';
 import { addRoute } from './add-application-document.js';
 import { editRoute } from './edit-application-document.js';
 import { deleteRoute } from './delete-application-document.js';
+import { getDownloadUrlRoute } from './get-download-url.js';
 
 export const applicationDocumentRoute = new Hono()
   .basePath('/applications/:applicationId/documents')
   .route('/', listRoute)
   .route('/', addRoute)
   .route('/', editRoute)
-  .route('/', deleteRoute);
+  .route('/', deleteRoute)
+  .route('/:applicationDocumentId', getDownloadUrlRoute);
