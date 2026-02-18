@@ -6,6 +6,7 @@ import { client } from '#/database/client.js';
 import { eq, and } from 'drizzle-orm';
 import { applicationDocumentSchema } from './schemas.js';
 import { notFoundError } from '#/extensions.js';
+import { deleteFile } from './s3-client.js';
 
 const paramSchema = applicationDocumentSchema.pick({
   applicationId: true,
@@ -36,6 +37,12 @@ export const deleteRoute = new Hono().delete(
       );
     }
 
+    const document = existing[0];
+
+    // Delete from S3 storage
+    await deleteFile(document.filePath);
+
+    // Delete from database
     await client
       .delete(applicationDocuments)
       .where(

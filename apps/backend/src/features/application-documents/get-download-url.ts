@@ -15,7 +15,7 @@ const paramSchema = applicationDocumentSchema.pick({
 });
 
 export const getDownloadUrlRoute = new Hono().get(
-  '/download-url',
+  '/:applicationDocumentId/download-url',
   zValidator('param', paramSchema),
   async c => {
     const { applicationId, applicationDocumentId } = c.req.valid('param');

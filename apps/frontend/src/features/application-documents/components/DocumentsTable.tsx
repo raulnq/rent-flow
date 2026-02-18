@@ -77,14 +77,14 @@ export function DocumentsTable({ applicationId }: { applicationId: string }) {
 
   const editMutation = useEditApplicationDocument(applicationId);
   const deleteMutation = useDeleteApplicationDocument(applicationId);
-  const downloadUrlMutation = useGetDownloadUrl(applicationId);
+  const { getUrl, isLoading } = useGetDownloadUrl(applicationId);
 
   const handleView = async (document: ApplicationDocument) => {
     try {
-      const { url } = await downloadUrlMutation.mutateAsync({
-        applicationDocumentId: document.applicationDocumentId,
-      });
-      window.open(url, '_blank');
+      const result = await getUrl(document.applicationDocumentId);
+      if (result?.url) {
+        window.open(result.url, '_blank');
+      }
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : 'Failed to get download URL'
@@ -172,7 +172,7 @@ export function DocumentsTable({ applicationId }: { applicationId: string }) {
                     variant="ghost"
                     size="icon"
                     onClick={() => handleView(item)}
-                    disabled={downloadUrlMutation.isPending}
+                    disabled={isLoading}
                   >
                     <Eye className="h-4 w-4" />
                   </Button>

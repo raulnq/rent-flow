@@ -2,13 +2,14 @@ import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
+  DeleteObjectCommand,
 } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { ENV } from '#/env.js';
 import { v7 } from 'uuid';
 
 const s3Client = new S3Client({
-  region: 'auto',
+  region: ENV.S3_REGION,
   endpoint: ENV.S3_ENDPOINT,
   forcePathStyle: ENV.S3_FORCE_PATH_STYLE,
   credentials: {
@@ -54,4 +55,12 @@ export async function getPresignedDownloadUrl(
   });
 
   return await getSignedUrl(s3Client, command, { expiresIn });
+}
+
+export async function deleteFile(filePath: string): Promise<void> {
+  const command = new DeleteObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: filePath,
+  });
+  await s3Client.send(command);
 }

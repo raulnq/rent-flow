@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   useMutation,
   useQueryClient,
@@ -107,15 +108,24 @@ export function useDeleteApplicationDocument(applicationId: string) {
 }
 
 export function useGetDownloadUrl(applicationId: string) {
+  const queryClient = useQueryClient();
   const { getToken } = useAuth();
-  return useMutation({
-    mutationFn: async ({
-      applicationDocumentId,
-    }: {
-      applicationDocumentId: string;
-    }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const getUrl = async (documentId: string) => {
+    setIsLoading(true);
+    try {
       const token = await getToken();
-      return getDownloadUrl(applicationId, applicationDocumentId, token);
-    },
-  });
+      const result = await queryClient.fetchQuery({
+        queryKey: ['download-url', applicationId, documentId],
+        queryFn: () => getDownloadUrl(applicationId, documentId, token),
+        staleTime: 14 * 60 * 1000, // Cache for 14 minutes (URL valid for 15)
+      });
+      return result;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return { getUrl, isLoading };
 }

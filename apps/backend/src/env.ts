@@ -20,6 +20,7 @@ const ENVSchema = z.object({
   S3_SECRET_ACCESS_KEY: z.string(),
   S3_BUCKET_NAME: z.string(),
   S3_FORCE_PATH_STYLE: z.coerce.boolean().default(true),
+  S3_REGION: z.string().default('us-east-1'),
 });
 
 expand(config());

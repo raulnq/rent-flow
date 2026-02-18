@@ -11,4 +11,4 @@ export const applicationDocumentRoute = new Hono()
   .route('/', addRoute)
   .route('/', editRoute)
   .route('/', deleteRoute)
-  .route('/:applicationDocumentId', getDownloadUrlRoute);
+  .route('/', getDownloadUrlRoute);
