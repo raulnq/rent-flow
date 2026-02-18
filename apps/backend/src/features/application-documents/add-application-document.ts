@@ -35,6 +35,9 @@ const formSchema = addApplicationDocumentSchema.extend({
     })
     .refine(file => ALLOWED_MIME_TYPES.includes(file.type), {
       message: 'File type must be an image, PDF, or Word document',
+    })
+    .refine(file => file.name.length <= 250, {
+      message: 'File name must not exceed 250 characters',
     }),
 });
 

@@ -25,11 +25,19 @@ export async function uploadFile(
 ): Promise<string> {
   const fileExtension = file.name.split('.').pop();
   const filePath = `${applicationId}/${v7()}.${fileExtension}`;
+
+  // Sanitize ContentType to prevent metadata size issues
+  // Limit to 255 characters and fallback to generic type if invalid
+  const contentType =
+    file.type && file.type.length > 0 && file.type.length <= 255
+      ? file.type
+      : 'application/octet-stream';
+
   const command = new PutObjectCommand({
     Bucket: BUCKET_NAME,
     Key: filePath,
     Body: Buffer.from(await file.arrayBuffer()),
-    ContentType: file.type,
+    ContentType: contentType,
   });
   await s3Client.send(command);
 
