@@ -1,4 +1,4 @@
-# CLAUDE.md — Hono + React Monorepo Conventions
+# CLAUDE.md — Rent Flow Conventions
 
 ## Monorepo layout
 
@@ -61,6 +61,7 @@ Frontend features: `apps/frontend/src/features/<entities>/` — three subdirs: `
 - Errors: RFC 9457 Problem Details via helpers in `#/extensions.js`
 - DB: Drizzle ORM, `pgSchema('..._schema')` tables (not `pgTable()`), UUIDv7 via `v7()` from `uuid`
 - Pagination: `createPage()` + `paginationSchema` from `#/pagination.js`
+- S3 storage: `@aws-sdk/client-s3` + `@aws-sdk/s3-request-presigner` for file uploads/downloads (pre-signed URLs), client in `application-documents/s3-client.ts`
 
 ## Frontend key patterns
 
@@ -71,6 +72,8 @@ Frontend features: `apps/frontend/src/features/<entities>/` — three subdirs: `
 - Auth: Clerk `getToken()` passed to every API call
 - Pagination via URL search params (`?page=N`)
 - shadcn/ui New York style, Tailwind CSS v4, Lucide icons
+- Maps: Leaflet + React-Leaflet + leaflet-geosearch for property location display
+- Dates: date-fns for formatting, react-day-picker for date inputs
 
 ## Testing
 
@@ -94,11 +97,15 @@ npm run dev                  # Start both apps
 npm test -w @node-monorepo/backend  # Run backend tests (node:test)
 npm run database:generate -w @node-monorepo/backend  # Generate migrations
 npm run database:migrate -w @node-monorepo/backend   # Apply migrations
+npm run storage:up           # Start MinIO (S3) container
+npm run seq:up               # Start Seq logging service
 npm run lint:format          # Fix lint + format
 ```
 
 ## Docker
 
-- `docker-compose.yml` defines: `database` (PostgreSQL), `migrator`, `api`, `seq` (logging)
+- `docker-compose.yml` defines: `database` (PostgreSQL), `migrator`, `api`, `storage` (MinIO/S3), `seq` (logging)
 - Database connection: `postgresql://myuser:mypassword@localhost:5432/mydb`
-- Backend `.env.example` has all required environment variables
+- MinIO (S3): API on `localhost:9000`, console on `localhost:9001` (credentials: `minioadmin`/`minioadmin`)
+- Seq: UI on `localhost:8080`, ingestion on `localhost:5341`
+- Backend `.env.example` has all required environment variables (including S3 config)

@@ -56,19 +56,15 @@ export async function addApplicationDocument(
   file: File,
   token?: string | null
 ): Promise<ApplicationDocument> {
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('documentType', documentType);
-
-  const API_BASE_URL =
-    import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-  const url = `${API_BASE_URL}/api/applications/${applicationId}/documents`;
-
-  const response = await fetch(url, {
-    method: 'POST',
-    body: formData,
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-  });
+  const response = await client.api.applications[
+    ':applicationId'
+  ].documents.$post(
+    {
+      param: { applicationId },
+      form: { documentType, file },
+    },
+    { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+  );
 
   if (!response.ok) {
     const error = await response.json();

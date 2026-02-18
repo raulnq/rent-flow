@@ -1,30 +1,43 @@
-# Node Monorepo Template
+# Rent Flow
 
-A GitHub template for full-stack TypeScript monorepos using npm workspaces with a Hono backend, React 19 frontend, PostgreSQL, Drizzle ORM, and Clerk authentication.
+A full-stack rental property management platform built with TypeScript, Hono, React 19, PostgreSQL, and S3-compatible storage. Manages the complete rental workflow from lead capture through property visits to application processing with document uploads.
 
 ## Structure
 
 ```
-node-monorepo/
+rent-flow/
 ├── apps/
 │   ├── backend/                # Hono API server
 │   │   ├── src/
 │   │   │   ├── database/       # Drizzle client, schemas, migrations
-│   │   │   ├── features/       # Feature modules (endpoints + table + schemas)
+│   │   │   ├── features/
+│   │   │   │   ├── clients/                # Client management
+│   │   │   │   ├── leads/                  # Lead capture and tracking
+│   │   │   │   ├── properties/             # Property listings
+│   │   │   │   ├── applications/           # Rental applications
+│   │   │   │   ├── visits/                 # Property visit scheduling
+│   │   │   │   └── application-documents/  # Document uploads (S3)
 │   │   │   ├── middlewares/    # Auth, error handling, not-found
 │   │   │   ├── app.ts         # Hono app with route registration
 │   │   │   ├── env.ts         # Environment validation (Zod)
 │   │   │   ├── extensions.ts  # RFC 9457 error helpers
 │   │   │   ├── logger.ts      # Pino logger
 │   │   │   ├── pagination.ts  # Page type and createPage
+│   │   │   ├── storage.ts     # S3 client configuration
 │   │   │   └── validator.ts   # Custom zValidator wrapper
-│   │   ├── tests/              # Integration tests (node:test)
+│   │   ├── tests/              # Integration tests (node:test) — 33 test files
 │   │   ├── drizzle.config.ts   # Drizzle Kit config
 │   │   └── Dockerfile          # Multi-stage build
 │   └── frontend/               # React 19 + Vite app
 │       └── src/
 │           ├── components/     # Shared UI (shadcn/ui, layout)
-│           ├── features/       # Feature modules (pages, components, stores)
+│           ├── features/
+│           │   ├── clients/                # Client pages, components, stores
+│           │   ├── leads/                  # Lead pages, components, stores
+│           │   ├── properties/             # Property pages with map view
+│           │   ├── applications/           # Application workflow UI
+│           │   ├── visits/                 # Visit scheduling UI
+│           │   └── application-documents/  # Document upload/download UI
 │           ├── hooks/          # Custom hooks
 │           ├── lib/            # Utilities
 │           ├── stores/         # Global stores (Zustand)
@@ -32,7 +45,7 @@ node-monorepo/
 │           └── routes.tsx      # React Router config
 ├── .claude/
 │   └── skills/                 # Claude Code skills for code generation
-├── docker-compose.yml          # PostgreSQL, API, migrations, Seq
+├── docker-compose.yml          # PostgreSQL, MinIO (S3), API, migrations, Seq
 ├── tsconfig.base.json          # Shared TypeScript options
 ├── eslint.config.ts            # Shared ESLint config (flat config)
 ├── prettier.config.ts          # Shared Prettier config
@@ -41,34 +54,18 @@ node-monorepo/
 └── package.json                # Root workspace config
 ```
 
-## Example Todo Feature
+## Features
 
-The template ships with a **Todos** feature as a working reference implementation. It demonstrates the full stack pattern across all layers:
+Rent Flow implements 6 feature modules, each following the same full-stack pattern (Drizzle table, Zod schemas, Hono CRUD endpoints, React pages with TanStack Query):
 
-| Layer               | Files                                                                                                      |
-| ------------------- | ---------------------------------------------------------------------------------------------------------- |
-| Backend table       | `apps/backend/src/features/todos/todo.ts`                                                                  |
-| Backend schemas     | `apps/backend/src/features/todos/schemas.ts`                                                               |
-| Backend endpoints   | `apps/backend/src/features/todos/add-todo.ts`, `get-todo.ts`, `edit-todo.ts`, `list-todos.ts`, `routes.ts` |
-| Backend tests       | `apps/backend/tests/features/todos/`                                                                       |
-| Frontend stores     | `apps/frontend/src/features/todos/stores/`                                                                 |
-| Frontend components | `apps/frontend/src/features/todos/components/`                                                             |
-| Frontend pages      | `apps/frontend/src/features/todos/pages/`                                                                  |
-
-**This feature is only an example and should be removed when you start building your own project.** To clean it up:
-
-1. Delete `apps/backend/src/features/todos/`
-2. Delete `apps/backend/tests/features/todos/`
-3. Delete `apps/frontend/src/features/todos/`
-4. Remove the `todoRoute` import and `.route('/api', todoRoute)` from `apps/backend/src/app.ts`
-5. Remove the `todos` re-export from `apps/backend/src/database/schemas.ts`
-6. Remove the todo routes from `apps/frontend/src/routes.tsx`
-7. Remove the Todos entry from `NAV_ITEMS` in `apps/frontend/src/components/layout/AppSidebar.tsx`
-8. Remove the `/todos` entry from `TITLE_BY_PATH` in `apps/frontend/src/components/layout/AppHeader.tsx`
-9. Update `migrations.schema` in `apps/backend/drizzle.config.ts` to match your own schema name
-10. Generate a fresh migration: `npm run database:generate -w @node-monorepo/backend`
-
-You don't need the example code to use the Claude Code skills — the skills contain self-contained code templates and don't depend on the Todos feature being present.
+| Feature                   | Description                                                                  |
+| ------------------------- | ---------------------------------------------------------------------------- |
+| **Clients**               | Manage tenant/client records with contact information                        |
+| **Leads**                 | Capture and track prospective tenant leads                                   |
+| **Properties**            | Property listings with address, details, and interactive map view (Leaflet)  |
+| **Applications**          | Rental applications linking clients to properties with status workflow       |
+| **Visits**                | Schedule and track property visits for leads                                 |
+| **Application Documents** | Upload, download, and manage application documents via S3-compatible storage |
 
 ## Getting Started
 
@@ -76,7 +73,7 @@ You don't need the example code to use the Claude Code skills — the skills con
 
 - Node.js 20+
 - npm 10+
-- Docker (for PostgreSQL)
+- Docker (for PostgreSQL, MinIO, and Seq)
 - A [Clerk](https://clerk.com) account (for authentication)
 
 ### Installation
@@ -99,15 +96,21 @@ cp apps/frontend/.env.example apps/frontend/.env
 
 **Backend** (`apps/backend/.env`):
 
-| Variable                | Description                  | Default                                              |
-| ----------------------- | ---------------------------- | ---------------------------------------------------- |
-| `PORT`                  | API server port              | `5000`                                               |
-| `DATABASE_URL`          | PostgreSQL connection string | `postgresql://myuser:mypassword@localhost:5432/mydb` |
-| `CORS_ORIGIN`           | Allowed CORS origin          | `http://localhost:5173`                              |
-| `CLERK_PUBLISHABLE_KEY` | Clerk publishable key        | —                                                    |
-| `CLERK_SECRET_KEY`      | Clerk secret key             | —                                                    |
-| `LOG_LEVEL`             | Pino log level               | `info`                                               |
-| `SEQ_URL`               | Seq logging URL (optional)   | —                                                    |
+| Variable                | Description                     | Default                                              |
+| ----------------------- | ------------------------------- | ---------------------------------------------------- |
+| `PORT`                  | API server port                 | `5000`                                               |
+| `DATABASE_URL`          | PostgreSQL connection string    | `postgresql://myuser:mypassword@localhost:5432/mydb` |
+| `CORS_ORIGIN`           | Allowed CORS origin             | `http://localhost:5173`                              |
+| `CLERK_PUBLISHABLE_KEY` | Clerk publishable key           | —                                                    |
+| `CLERK_SECRET_KEY`      | Clerk secret key                | —                                                    |
+| `LOG_LEVEL`             | Pino log level                  | `info`                                               |
+| `SEQ_URL`               | Seq logging URL (optional)      | —                                                    |
+| `S3_ENDPOINT`           | S3-compatible storage endpoint  | `http://localhost:9000`                              |
+| `S3_ACCESS_KEY_ID`      | S3 access key                   | `minioadmin`                                         |
+| `S3_SECRET_ACCESS_KEY`  | S3 secret key                   | `minioadmin`                                         |
+| `S3_BUCKET_NAME`        | S3 bucket for documents         | `rent-flow-documents`                                |
+| `S3_FORCE_PATH_STYLE`   | Use path-style URLs (for MinIO) | `true`                                               |
+| `S3_REGION`             | S3 region                       | `us-east-1`                                          |
 
 **Frontend** (`apps/frontend/.env`):
 
@@ -130,6 +133,16 @@ Generate and apply migrations:
 npm run database:generate -w @node-monorepo/backend
 npm run database:migrate -w @node-monorepo/backend
 ```
+
+### Storage Setup
+
+Start MinIO (S3-compatible storage) for document uploads:
+
+```bash
+npm run storage:up
+```
+
+MinIO Console is available at `http://localhost:9001` (credentials: `minioadmin`/`minioadmin`).
 
 ### Development
 
@@ -161,7 +174,7 @@ npm run build
 docker-compose up
 ```
 
-This starts PostgreSQL, runs migrations, and starts the API server.
+This starts PostgreSQL, MinIO (S3), runs migrations, and starts the API server. Seq is available for structured log viewing at `http://localhost:8080`.
 
 ## Available Scripts
 
@@ -183,9 +196,14 @@ This starts PostgreSQL, runs migrations, and starts the API server.
 | `commit`            | Interactive conventional commit                               |
 | `database:up`       | Start PostgreSQL container                                    |
 | `database:down`     | Stop and remove database container                            |
+| `database:stop`     | Stop database container (without removing)                    |
 | `database:generate` | Generate Drizzle migrations (use `-w @node-monorepo/backend`) |
 | `database:migrate`  | Apply Drizzle migrations (use `-w @node-monorepo/backend`)    |
 | `database:studio`   | Open Drizzle Studio (use `-w @node-monorepo/backend`)         |
+| `storage:up`        | Start MinIO (S3) container                                    |
+| `storage:down`      | Stop and remove MinIO container                               |
+| `storage:stop`      | Stop MinIO container (without removing)                       |
+| `seq:up`            | Start Seq logging service                                     |
 | `test`              | Run backend tests (use `-w @node-monorepo/backend`)           |
 
 ## Tech Stack
@@ -194,10 +212,11 @@ This starts PostgreSQL, runs migrations, and starts the API server.
 
 - **Framework**: [Hono](https://hono.dev) + @hono/node-server
 - **Database**: PostgreSQL + [Drizzle ORM](https://orm.drizzle.team)
+- **Storage**: AWS SDK S3 + [MinIO](https://min.io) (S3-compatible, pre-signed URLs)
 - **Validation**: [Zod](https://zod.dev) (v4) + custom zValidator wrapper
 - **Auth**: [Clerk](https://clerk.com) (@hono/clerk-auth)
 - **Error handling**: [RFC 9457 Problem Details](https://www.rfc-editor.org/rfc/rfc9457) via http-problem-details
-- **Logging**: Pino + pino-pretty + optional Seq
+- **Logging**: Pino + pino-pretty + optional [Seq](https://datalust.co/seq)
 - **Testing**: node:test + Hono testClient + @faker-js/faker
 
 ### Frontend
@@ -207,6 +226,8 @@ This starts PostgreSQL, runs migrations, and starts the API server.
 - **Data fetching**: [TanStack React Query](https://tanstack.com/query) (useSuspenseQuery)
 - **Forms**: [React Hook Form](https://react-hook-form.com) + zodResolver
 - **UI**: [shadcn/ui](https://ui.shadcn.com) (New York style) + [Tailwind CSS v4](https://tailwindcss.com)
+- **Maps**: [Leaflet](https://leafletjs.com) + [React-Leaflet](https://react-leaflet.js.org) + leaflet-geosearch
+- **Dates**: [date-fns](https://date-fns.org) + react-day-picker
 - **Auth**: [Clerk React](https://clerk.com/docs/references/react/overview)
 - **State**: [Zustand](https://zustand.docs.pmnd.rs) (client state)
 - **Toasts**: [Sonner](https://sonner.emilkowal.dev)
@@ -233,16 +254,16 @@ Backend uses `moduleResolution: "NodeNext"` — every import **must** end with `
 ```ts
 // Backend
 import { client } from '#/database/client.js';
-import type { Todo } from '#/features/todos/schemas.js';
+import type { Property } from '#/features/properties/schemas.js';
 
 // Frontend
 import { Button } from '@/components/ui/button';
-import type { Todo } from '#/features/todos/schemas';
+import type { Property } from '#/features/properties/schemas';
 ```
 
 ## Commit Convention
 
-This template uses [Conventional Commits](https://www.conventionalcommits.org/) with enforced scopes:
+This project uses [Conventional Commits](https://www.conventionalcommits.org/) with enforced scopes:
 
 ```
 <type>(<scope>): <subject>
@@ -259,7 +280,7 @@ chore(repo): update dependencies
 
 ## Claude Code Skills
 
-This template includes [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skills that codify the project's coding patterns. When you use Claude Code in this repository, it automatically loads `CLAUDE.md` with the core conventions, and can use the skills below to generate consistent, pattern-compliant code.
+This project includes [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skills that codify the project's coding patterns. When you use Claude Code in this repository, it automatically loads `CLAUDE.md` with the core conventions, and can use the skills below to generate consistent, pattern-compliant code.
 
 ### Available Skills
 
