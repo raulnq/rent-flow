@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { useDebounce } from 'use-debounce';
 import { Check, ChevronDownIcon, Loader2, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -33,6 +33,7 @@ export function LeadCombobox({
   disabled,
   label,
 }: LeadComboboxProps) {
+  const listId = useId();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const [debouncedSearch] = useDebounce(search, 300);
@@ -60,6 +61,7 @@ export function LeadCombobox({
             variant="outline"
             role="combobox"
             aria-expanded={open}
+            aria-controls={listId}
             disabled={disabled}
             className="w-full justify-between font-normal"
           >
@@ -98,7 +100,7 @@ export function LeadCombobox({
             value={search}
             onValueChange={setSearch}
           />
-          <CommandList>
+          <CommandList id={listId}>
             {isError ? (
               <div className="py-6 text-center text-sm text-destructive">
                 Failed to load leads. Please try again.

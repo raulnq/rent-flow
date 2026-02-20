@@ -68,18 +68,6 @@ export function useClients({
   });
 }
 
-export function useClient(clientId?: string) {
-  const { getToken } = useAuth();
-  return useQuery({
-    queryKey: ['client', clientId],
-    queryFn: async () => {
-      const token = await getToken();
-      return getClient(clientId!, token);
-    },
-    enabled: !!clientId,
-  });
-}
-
 export function useAddClient() {
   const queryClient = useQueryClient();
   const { getToken } = useAuth();

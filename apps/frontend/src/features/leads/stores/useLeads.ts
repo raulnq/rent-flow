@@ -64,18 +64,6 @@ export function useLeads({
   });
 }
 
-export function useLead(leadId?: string) {
-  const { getToken } = useAuth();
-  return useQuery({
-    queryKey: ['lead', leadId],
-    queryFn: async () => {
-      const token = await getToken();
-      return getLead(leadId!, token);
-    },
-    enabled: !!leadId,
-  });
-}
-
 export function useAddLead() {
   const queryClient = useQueryClient();
   const { getToken } = useAuth();

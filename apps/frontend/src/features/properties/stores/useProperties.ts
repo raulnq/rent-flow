@@ -73,18 +73,6 @@ export function useProperties({
   });
 }
 
-export function useProperty(propertyId?: string) {
-  const { getToken } = useAuth();
-  return useQuery({
-    queryKey: ['property', propertyId],
-    queryFn: async () => {
-      const token = await getToken();
-      return getProperty(propertyId!, token);
-    },
-    enabled: !!propertyId,
-  });
-}
-
 export function useAddProperty() {
   const queryClient = useQueryClient();
   const { getToken } = useAuth();

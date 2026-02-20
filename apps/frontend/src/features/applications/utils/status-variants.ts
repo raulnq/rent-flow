@@ -1,6 +1,6 @@
 import type { BadgeProps } from '@/components/ui/badge';
 
-export const STATUS_VARIANTS: Record<string, BadgeProps['variant']> = {
+const STATUS_VARIANTS: Record<string, BadgeProps['variant']> = {
   New: 'default',
   'Under Review': 'secondary',
   Approved: 'default',

@@ -71,21 +71,6 @@ export function VisitsSkeleton() {
   );
 }
 
-export function VisitsError({
-  resetErrorBoundary,
-}: {
-  resetErrorBoundary: () => void;
-}) {
-  return (
-    <div className="text-center py-8">
-      <p className="text-destructive mb-4">Error loading visits.</p>
-      <Button onClick={resetErrorBoundary} variant="outline">
-        Try again
-      </Button>
-    </div>
-  );
-}
-
 type VisitTableProps = {
   applicationId: string;
 };
