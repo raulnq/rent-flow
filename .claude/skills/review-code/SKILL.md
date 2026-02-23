@@ -66,6 +66,10 @@ Use this skill to review code (staged changes, a PR, or specific files) against 
 - [ ] Unique field constraints checked before insert (return `conflictError` for duplicates)
 - [ ] Join queries use explicit column selection (not bare `.select()`)
 - [ ] State transition endpoints use `POST /:id/<action>` pattern
+- [ ] Delete endpoints return `StatusCodes.NO_CONTENT` via `c.body(null, StatusCodes.NO_CONTENT)` — not 200
+- [ ] Delete endpoints with S3 files: delete from storage **before** deleting from database
+- [ ] File upload endpoints validate MIME type, file size, and filename length via `.refine()` on `z.instanceof(File)`
+- [ ] Nested resource endpoints validate parent existence before operating on child
 
 ### Frontend components
 
@@ -93,6 +97,8 @@ Use this skill to review code (staged changes, a PR, or specific files) against 
 - [ ] Toast notifications via `sonner` (`toast.success`, `toast.error`)
 - [ ] Searchable comboboxes have debounce (300ms), loading/error/empty states, clear button
 - [ ] Action buttons with dialogs use separate `form id` + `form="..."` pattern
+- [ ] Delete dialogs use `variant="destructive"` button, no form — just confirmation with `onDelete` callback
+- [ ] Heavy components (maps, charts) use `React.lazy()` with `.then(m => ({ default: m.Name }))` + `Suspense` fallback
 - [ ] Routes registered in `routes.tsx`
 - [ ] Sidebar entry added in `AppSidebar.tsx`
 - [ ] Header title added in `AppHeader.tsx`

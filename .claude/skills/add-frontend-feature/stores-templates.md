@@ -204,6 +204,135 @@ Key differences from `useSuspenseQuery`:
 - Uses `placeholderData: keepPreviousData` to keep previous results while fetching
 - Query key includes `'search'` to avoid cache collisions with list page queries
 
+## Delete Client Function + Hook
+
+When a feature supports deletion, add the delete function and mutation hook.
+
+In `stores/<entities>Client.ts`:
+
+```ts
+export async function delete<Entity>(
+  <entityId>: string,
+  token?: string | null
+): Promise<void> {
+  const response = await client.api.<entities>[':<entityId>'].$delete(
+    { param: { <entityId> } },
+    { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+  );
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to delete <entity>');
+  }
+}
+```
+
+In `stores/use<Entities>.ts`:
+
+```ts
+export function useDelete<Entity>() {
+  const queryClient = useQueryClient();
+  const { getToken } = useAuth();
+  return useMutation({
+    mutationFn: async ({ <entityId> }: { <entityId>: string }) => {
+      const token = await getToken();
+      return delete<Entity>(<entityId>, token);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['<entities>'] });
+    },
+  });
+}
+```
+
+## Nested Resource Client + Hooks
+
+When an entity belongs to a parent (e.g., documents belong to an application), all API functions take the parent ID and use nested Hono client paths:
+
+In `stores/<childEntities>Client.ts`:
+
+```ts
+import { client } from '@/client';
+import type { Page } from '#/pagination';
+import type { <ChildEntity> } from '#/features/<child-entities>/schemas';
+
+export async function list<ChildEntities>(
+  <parentId>: string,
+  pageNumber: number,
+  pageSize: number,
+  token?: string | null
+): Promise<Page<<ChildEntity>>> {
+  const response = await client.api.<parents>[
+    ':<parentId>'
+  ].<children>.$get(
+    {
+      param: { <parentId> },
+      query: {
+        pageNumber: pageNumber.toString(),
+        pageSize: pageSize.toString(),
+      },
+    },
+    { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+  );
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to fetch <children>');
+  }
+  return response.json();
+}
+
+export async function delete<ChildEntity>(
+  <parentId>: string,
+  <childEntityId>: string,
+  token?: string | null
+): Promise<void> {
+  const response = await client.api.<parents>[':<parentId>'].<children>[
+    ':<childEntityId>'
+  ].$delete(
+    { param: { <parentId>, <childEntityId> } },
+    { headers: token ? { Authorization: `Bearer ${token}` } : {} }
+  );
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || 'Failed to delete <child>');
+  }
+}
+```
+
+In `stores/use<ChildEntities>.ts`, all query keys include the parent ID:
+
+```ts
+export function use<ChildEntities>Suspense(
+  <parentId>: string,
+  pageNumber: number = 1,
+  pageSize: number = 5
+) {
+  const { getToken } = useAuth();
+  return useSuspenseQuery({
+    queryKey: ['<child-entities>', <parentId>, pageNumber, pageSize],
+    queryFn: async () => {
+      const token = await getToken();
+      return list<ChildEntities>(<parentId>, pageNumber, pageSize, token);
+    },
+  });
+}
+
+export function useDelete<ChildEntity>(<parentId>: string) {
+  const queryClient = useQueryClient();
+  const { getToken } = useAuth();
+  return useMutation({
+    mutationFn: async ({ <childEntityId> }: { <childEntityId>: string }) => {
+      const token = await getToken();
+      return delete<ChildEntity>(<parentId>, <childEntityId>, token);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['<child-entities>', <parentId>],
+      });
+    },
+  });
+}
+```
+
 ## Action Mutation Hooks (state transitions)
 
 When a feature has state transitions (e.g., approve, reject, withdraw), add mutation hooks for each action. Add the API client function and corresponding hook.

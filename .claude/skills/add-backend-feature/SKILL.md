@@ -461,6 +461,254 @@ if (duplicate) {
 }
 ```
 
+### Delete endpoint
+
+File: `apps/backend/src/features/<entities>/delete-<entity>.ts`
+
+Returns `NO_CONTENT` (204) with no body. If the entity has S3 files, delete from storage **before** deleting from DB.
+
+```ts
+import { Hono } from 'hono';
+import { StatusCodes } from 'http-status-codes';
+import { <entities> } from './<entity>.js';
+import { zValidator } from '#/validator.js';
+import { client } from '#/database/client.js';
+import { eq } from 'drizzle-orm';
+import { <entity>Schema } from './schemas.js';
+import { notFoundError } from '#/extensions.js';
+
+const paramSchema = <entity>Schema.pick({ <entityId>: true });
+
+export const deleteRoute = new Hono().delete(
+  '/:<entityId>',
+  zValidator('param', paramSchema),
+  async c => {
+    const { <entityId> } = c.req.valid('param');
+
+    const [existing] = await client
+      .select()
+      .from(<entities>)
+      .where(eq(<entities>.<entityId>, <entityId>))
+      .limit(1);
+
+    if (!existing) {
+      return notFoundError(c, `<Entity> ${<entityId>} not found`);
+    }
+
+    // If entity has S3 files: await deleteFile(existing.filePath);
+
+    await client
+      .delete(<entities>)
+      .where(eq(<entities>.<entityId>, <entityId>));
+
+    return c.body(null, StatusCodes.NO_CONTENT);
+  }
+);
+```
+
+Add to `routes.ts`:
+
+```ts
+import { deleteRoute } from './delete-<entity>.js';
+
+export const <entity>Route = new Hono()
+  .basePath('/<entities>')
+  .route('/', listRoute)
+  .route('/', addRoute)
+  .route('/', getRoute)
+  .route('/', editRoute)
+  .route('/', deleteRoute);
+```
+
+### File upload endpoint (form multipart + S3)
+
+When an endpoint accepts file uploads, use `zValidator('form', ...)` with `z.instanceof(File)` and `.refine()` for validation:
+
+File: `apps/backend/src/features/<entities>/add-<entity>.ts` (upload variant)
+
+```ts
+import { Hono } from 'hono';
+import { v7 } from 'uuid';
+import { z } from 'zod';
+import { StatusCodes } from 'http-status-codes';
+import { <entities> } from './<entity>.js';
+import { zValidator } from '#/validator.js';
+import { client } from '#/database/client.js';
+import { add<Entity>Schema, <entity>Schema } from './schemas.js';
+import { notFoundError } from '#/extensions.js';
+import { uploadFile } from './s3-client.js';
+
+const paramSchema = <entity>Schema.pick({ <parentId>: true });
+
+const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
+const ALLOWED_MIME_TYPES = [
+  'image/jpeg',
+  'image/png',
+  'image/gif',
+  'image/webp',
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+];
+
+const formSchema = add<Entity>Schema.extend({
+  file: z
+    .instanceof(File)
+    .refine(file => file.size <= MAX_FILE_SIZE, {
+      message: `File size must not exceed ${MAX_FILE_SIZE / (1024 * 1024)}MB`,
+    })
+    .refine(file => ALLOWED_MIME_TYPES.includes(file.type), {
+      message: 'File type must be an image, PDF, or Word document',
+    })
+    .refine(file => file.name.length <= 250, {
+      message: 'File name must not exceed 250 characters',
+    }),
+});
+
+export const addRoute = new Hono().post(
+  '/',
+  zValidator('param', paramSchema),
+  zValidator('form', formSchema),
+  async c => {
+    const { <parentId> } = c.req.valid('param');
+    const { file, ...data } = c.req.valid('form');
+
+    // Verify parent exists...
+
+    const filePath = await uploadFile(file, <parentId>);
+
+    const [item] = await client
+      .insert(<entities>)
+      .values({
+        <entityId>: v7(),
+        <parentId>,
+        fileName: file.name,
+        contentType: file.type,
+        filePath,
+        ...data,
+      })
+      .returning();
+
+    return c.json(item, StatusCodes.CREATED);
+  }
+);
+```
+
+### S3 client helper
+
+When a feature needs file storage, create an S3 client file per feature:
+
+File: `apps/backend/src/features/<entities>/s3-client.ts`
+
+```ts
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { ENV } from '#/env.js';
+import { v7 } from 'uuid';
+
+const s3Client = new S3Client({
+  region: ENV.S3_REGION,
+  endpoint: ENV.S3_ENDPOINT,
+  forcePathStyle: ENV.S3_FORCE_PATH_STYLE,
+  credentials: {
+    accessKeyId: ENV.S3_ACCESS_KEY_ID,
+    secretAccessKey: ENV.S3_SECRET_ACCESS_KEY,
+  },
+});
+
+const BUCKET_NAME = ENV.S3_BUCKET_NAME;
+
+export async function uploadFile(
+  file: File,
+  parentId: string
+): Promise<string> {
+  const fileExtension = file.name.split('.').pop();
+  const filePath = `${parentId}/${v7()}.${fileExtension}`;
+
+  const contentType =
+    file.type && file.type.length > 0 && file.type.length <= 255
+      ? file.type
+      : 'application/octet-stream';
+
+  const command = new PutObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: filePath,
+    Body: Buffer.from(await file.arrayBuffer()),
+    ContentType: contentType,
+  });
+  await s3Client.send(command);
+  return filePath;
+}
+
+export async function getPresignedDownloadUrl(
+  filePath: string,
+  expiresIn: number = 900
+): Promise<string> {
+  const command = new GetObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: filePath,
+  });
+  return await getSignedUrl(s3Client, command, { expiresIn });
+}
+
+export async function deleteFile(filePath: string): Promise<void> {
+  const command = new DeleteObjectCommand({
+    Bucket: BUCKET_NAME,
+    Key: filePath,
+  });
+  await s3Client.send(command);
+}
+```
+
+### Download URL endpoint (presigned URL)
+
+When an entity has S3 files, add an endpoint that returns a short-lived presigned download URL:
+
+```ts
+import { Hono } from 'hono';
+import { StatusCodes } from 'http-status-codes';
+import { <entities> } from './<entity>.js';
+import { zValidator } from '#/validator.js';
+import { client } from '#/database/client.js';
+import { eq, and } from 'drizzle-orm';
+import { <entity>Schema } from './schemas.js';
+import { notFoundError } from '#/extensions.js';
+import { getPresignedDownloadUrl } from './s3-client.js';
+
+const paramSchema = <entity>Schema.pick({ <parentId>: true, <entityId>: true });
+
+export const getDownloadUrlRoute = new Hono().get(
+  '/:<entityId>/download-url',
+  zValidator('param', paramSchema),
+  async c => {
+    const { <parentId>, <entityId> } = c.req.valid('param');
+
+    const [document] = await client
+      .select()
+      .from(<entities>)
+      .where(
+        and(
+          eq(<entities>.<entityId>, <entityId>),
+          eq(<entities>.<parentId>, <parentId>)
+        )
+      )
+      .limit(1);
+
+    if (!document) {
+      return notFoundError(c, `<Entity> ${<entityId>} not found`);
+    }
+
+    const url = await getPresignedDownloadUrl(document.filePath, 900);
+    return c.json({ url, expiresIn: 900 }, StatusCodes.OK);
+  }
+);
+```
+
 ## Step 7 — Register the route in the app
 
 File: `apps/backend/src/app.ts`
@@ -483,8 +731,14 @@ File: `apps/backend/src/app.ts`
 - [ ] `apps/backend/src/features/<entities>/get-<entity>.ts` — GET /:id endpoint
 - [ ] `apps/backend/src/features/<entities>/edit-<entity>.ts` — PUT /:id endpoint
 - [ ] `apps/backend/src/features/<entities>/list-<entities>.ts` — GET / endpoint
+- [ ] `apps/backend/src/features/<entities>/delete-<entity>.ts` — DELETE /:id endpoint (if applicable)
 - [ ] `apps/backend/src/features/<entities>/routes.ts` — route aggregator
 - [ ] `apps/backend/src/app.ts` — route registered
+
+### Optional (when applicable)
+
+- [ ] `apps/backend/src/features/<entities>/s3-client.ts` — S3 file operations (if file storage needed)
+- [ ] `apps/backend/src/features/<entities>/get-download-url.ts` — presigned URL endpoint (if S3)
 
 ## Critical rules
 

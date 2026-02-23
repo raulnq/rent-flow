@@ -866,6 +866,117 @@ export function ApproveButton({ disabled, onApprove }: ApproveButtonProps) {
 }
 ```
 
+## Delete Confirmation Dialog (`components/Delete<Entity>Dialog.tsx`)
+
+For destructive actions, create a confirmation dialog. Unlike action dialogs (approve, reject), delete dialogs are simpler — no form, just confirmation:
+
+```tsx
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+
+type Delete<Entity>DialogProps = {
+  name: string | undefined;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
+  onDelete: () => Promise<void>;
+};
+
+export function Delete<Entity>Dialog({
+  name,
+  isOpen,
+  onOpenChange,
+  onDelete,
+}: Delete<Entity>DialogProps) {
+  const handleSubmit = async () => {
+    await onDelete();
+    onOpenChange(false);
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Delete <Entity></DialogTitle>
+          <DialogDescription>
+            Are you sure you want to delete {name}? This action cannot be undone.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <Button variant="destructive" onClick={handleSubmit}>
+            Delete
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+```
+
+Usage in table/page — manage dialog state and call the delete mutation:
+
+```tsx
+const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+const deleteMutation = useDelete<Entity>();
+
+// In table row:
+<Button variant="ghost" size="icon" onClick={() => setDeleteTarget({ id: item.<entityId>, name: item.name })}>
+  <Trash2 className="h-4 w-4" />
+</Button>
+
+// Outside table:
+<Delete<Entity>Dialog
+  name={deleteTarget?.name}
+  isOpen={!!deleteTarget}
+  onOpenChange={open => { if (!open) setDeleteTarget(null); }}
+  onDelete={async () => {
+    await deleteMutation.mutateAsync({ <entityId>: deleteTarget!.id });
+    toast.success('<Entity> deleted successfully');
+    setDeleteTarget(null);
+  }}
+/>
+```
+
+## Lazy Loading Heavy Components
+
+For large components (maps, charts, rich editors), use `React.lazy()` with `Suspense` to avoid loading them upfront:
+
+```tsx
+import { lazy, Suspense } from 'react';
+
+const HeavyComponent = lazy(() =>
+  import('../../../components/HeavyComponent').then(module => ({
+    default: module.HeavyComponent,
+  }))
+);
+
+function HeavyComponentSkeleton() {
+  return (
+    <div className="h-[400px] bg-muted rounded-md animate-pulse border border-border" />
+  );
+}
+
+// Usage in a form or view:
+<Suspense fallback={<HeavyComponentSkeleton />}>
+  <HeavyComponent value={value} onChange={onChange} disabled={disabled} />
+</Suspense>;
+```
+
+Key rules:
+
+- `.then(module => ({ default: module.ComponentName }))` — required since components use named exports (no default)
+- Always wrap in `<Suspense>` with a skeleton fallback matching the component's dimensions
+- Only use for genuinely heavy components (maps, charts) — not for regular UI components
+
 ## Status Badge (`Badge` variant)
 
 Use `Badge` with variants for status display in tables:

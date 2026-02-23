@@ -59,7 +59,8 @@ First, check if the feature already exists by looking for `apps/backend/src/feat
 1. Read `.claude/skills/add-backend-feature/SKILL.md` in full and follow its instructions.
 2. For a **new feature**: create one file per endpoint, a `routes.ts` aggregator, and wire it into the app router.
 3. For an **existing feature**: create only the new endpoint files, update the existing `routes.ts` to include them, and update `schemas.ts` if new request/response schemas are needed.
-4. Run: `npx tsc --noEmit -p apps/backend/tsconfig.app.json`
+4. **If file storage is needed**: create an `s3-client.ts` in the feature directory (see S3 client pattern in the backend skill). Also create file upload and/or download URL endpoints.
+5. Run: `npx tsc --noEmit -p apps/backend/tsconfig.app.json`
 
 **Gate:** TypeScript compilation passes with zero errors. If it fails, fix the errors and re-run until it passes.
 

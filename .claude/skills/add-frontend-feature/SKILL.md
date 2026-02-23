@@ -130,11 +130,15 @@ File: `apps/frontend/src/components/layout/AppHeader.tsx` — add to `TITLE_BY_P
 
 ### Optional (when applicable)
 
+- [ ] `stores/<entities>Client.ts` — `delete<Entity>()` function (if delete needed)
+- [ ] `stores/use<Entities>.ts` — `useDelete<Entity>()` mutation hook (if delete needed)
+- [ ] `components/Delete<Entity>Dialog.tsx` — delete confirmation dialog (if delete needed)
 - [ ] `components/<Entity>Combobox.tsx` — searchable combobox (if entity is referenced as FK in other features)
 - [ ] `stores/use<Entities>.ts` — `use<Entities>()` non-Suspense hook for combobox search
 - [ ] `components/<Action>Button.tsx` — action button with dialog (for state transitions)
 - [ ] `stores/use<Entities>.ts` — action mutation hooks (e.g., `useApprove<Entity>`)
 - [ ] Status `Badge` with variants in table (for entities with workflow states)
+- [ ] Lazy loading with `React.lazy()` + `Suspense` for heavy components (maps, charts)
 
 ## Critical rules
 

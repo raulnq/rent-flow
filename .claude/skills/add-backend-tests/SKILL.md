@@ -376,6 +376,192 @@ test('should reject duplicate uniqueField', async () => {
 });
 ```
 
+### Delete action function
+
+Delete returns `void` on success (204 NO_CONTENT) — different from other actions that return the entity:
+
+```ts
+export async function delete<Entity>(
+  <entityId>: string
+): Promise<void>;
+export async function delete<Entity>(
+  <entityId>: string,
+  expectedProblemDocument: ProblemDocument
+): Promise<ProblemDocument>;
+
+export async function delete<Entity>(
+  <entityId>: string,
+  expectedProblemDocument?: ProblemDocument
+): Promise<void | ProblemDocument> {
+  const api = testClient(app);
+  const response = await api.api.<entities>[':<entityId>'].$delete({
+    param: { <entityId> },
+  });
+
+  if (response.status === StatusCodes.NO_CONTENT) {
+    assert.ok(
+      !expectedProblemDocument,
+      'Expected a problem document but received NO_CONTENT status'
+    );
+    return;
+  } else {
+    const problemDocument = await response.json();
+    assert.ok(problemDocument);
+    assert.ok(
+      expectedProblemDocument,
+      `Expected NO_CONTENT status but received ${response.status}`
+    );
+    assertStrictEqualProblemDocument(problemDocument, expectedProblemDocument);
+    return problemDocument;
+  }
+}
+```
+
+### Delete tests (`delete-<entity>.test.ts`)
+
+```ts
+import { test, describe } from 'node:test';
+import { add<Entity>, delete<Entity>, list<Entities> } from './<entity>-dsl.js';
+import { assertPage } from '../../assertions.js';
+import { createNotFoundError } from '../../errors.js';
+
+describe('Delete <Entity> Endpoint', () => {
+  test('should delete an existing <entity>', async () => {
+    const item = await add<Entity>(walk());
+    await delete<Entity>(item.<entityId>);
+
+    // Verify entity no longer exists in list
+    const page = await list<Entities>({ name: item.name, pageSize: 10, pageNumber: 1 });
+    assertPage(page).hasEmptyResult();
+  });
+
+  test('should only delete the specified <entity>', async () => {
+    const item1 = await add<Entity>(walk());
+    await add<Entity>(cook());
+    await delete<Entity>(item1.<entityId>);
+
+    const page = await list<Entities>({ pageSize: 10, pageNumber: 1 });
+    assertPage(page).hasItemsCountAtLeast(1);
+  });
+
+  test('should return 404 for non-existent <entity>', async () => {
+    const id = '01940b6d-1234-7890-abcd-ef1234567890';
+    await delete<Entity>(id, createNotFoundError(`<Entity> ${id} not found`));
+  });
+});
+```
+
+### File upload action function and tests
+
+For entities that accept file uploads via multipart form, the DSL uses `createMockFile` helpers and passes `form` data:
+
+```ts
+// --- Mock file helper ---
+export const createMockFile = (overrides?: {
+  name?: string;
+  type?: string;
+  size?: number;
+}): File => {
+  const name = overrides?.name ?? 'test-document.pdf';
+  const type = overrides?.type ?? 'application/pdf';
+  const size = overrides?.size ?? 1024;
+  const content = 'x'.repeat(size);
+  const blob = new Blob([content], { type });
+  return new File([blob], name, { type });
+};
+
+// --- Factory functions for file uploads ---
+export const pdfDocument = (): { type: string; file: File } => ({
+  type: 'Pay stubs',
+  file: createMockFile({ name: 'paystub.pdf', type: 'application/pdf' }),
+});
+
+export const oversizedFile = (): { type: string; file: File } => ({
+  type: 'Other',
+  file: createMockFile({
+    name: 'huge.pdf',
+    type: 'application/pdf',
+    size: 51 * 1024 * 1024,
+  }),
+});
+
+export const invalidFileType = (): { type: string; file: File } => ({
+  type: 'Other',
+  file: createMockFile({
+    name: 'script.exe',
+    type: 'application/x-msdownload',
+  }),
+});
+```
+
+Action function uses `form` instead of `json`:
+
+```ts
+export async function add<Entity>(
+  parentId: string,
+  documentType: string,
+  file: File
+): Promise<<Entity>>;
+export async function add<Entity>(
+  parentId: string,
+  documentType: string,
+  file: File,
+  expectedProblemDocument: ProblemDocument
+): Promise<ProblemDocument>;
+
+export async function add<Entity>(
+  parentId: string,
+  documentType: string,
+  file: File,
+  expectedProblemDocument?: ProblemDocument
+): Promise<<Entity> | ProblemDocument> {
+  const api = testClient(app);
+  const response = await api.api.<parents>[':parentId'].<entities>.$post({
+    param: { parentId },
+    form: { file, documentType },
+  });
+  // ... same overload pattern
+}
+```
+
+Test file validates file constraints:
+
+```ts
+describe('Add <Entity> Endpoint', () => {
+  test('should upload a valid file', async () => {
+    const { type, file } = pdfDocument();
+    const item = await add<Entity>(parentId, type, file);
+    assert<Entity>(item)
+      .hasFileName('paystub.pdf')
+      .hasDocumentType('Pay stubs');
+  });
+
+  test('should reject files exceeding size limit', async () => {
+    const { type, file } = oversizedFile();
+    await add<Entity>(
+      parentId,
+      type,
+      file,
+      createValidationError([
+        /* file size error */
+      ])
+    );
+  });
+
+  test('should reject invalid file types', async () => {
+    const { type, file } = invalidFileType();
+    await add<Entity>(
+      parentId,
+      type,
+      file,
+      createValidationError([
+        /* file type error */
+      ])
+    );
+  });
+});
+```
+
 ## Shared helpers reference
 
 ### `assertions.ts`
