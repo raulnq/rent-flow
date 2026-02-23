@@ -126,7 +126,7 @@ export function PropertyCombobox({
                       <div className="flex flex-col">
                         <span className="font-medium">{p.address}</span>
                         <span className="text-xs text-muted-foreground">
-                          {p.propertyType} - ${p.rentalPrice}
+                          {p.clientName} - ${p.rentalPrice}
                         </span>
                       </div>
                       <Check

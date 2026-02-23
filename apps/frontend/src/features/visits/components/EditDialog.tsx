@@ -100,7 +100,7 @@ export function EditDialog({
                   {...field}
                   id="edit-notes"
                   placeholder="Enter notes..."
-                  rows={4}
+                  className="field-sizing-fixed min-h-48"
                   value={field.value ?? ''}
                 />
                 {fieldState.invalid && (

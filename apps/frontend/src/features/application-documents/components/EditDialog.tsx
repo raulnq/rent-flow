@@ -68,12 +68,7 @@ export function EditDialog({
                   {...field}
                   id="notes"
                   value={field.value ?? ''}
-                  onChange={e =>
-                    field.onChange(
-                      e.target.value === '' ? null : e.target.value
-                    )
-                  }
-                  rows={4}
+                  className="field-sizing-fixed min-h-48"
                   placeholder="Add notes about this document..."
                   aria-invalid={fieldState.invalid}
                 />
