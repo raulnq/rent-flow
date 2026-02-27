@@ -28,6 +28,8 @@ services:
       - S3_BUCKET_NAME=${S3_BUCKET_NAME:?}
       - S3_FORCE_PATH_STYLE=false
       - S3_REGION=auto
+      - S3_IMAGES_BUCKET_NAME=${S3_IMAGES_BUCKET_NAME:?}
+      - S3_IMAGES_PUBLIC_BASE_URL=${S3_IMAGES_PUBLIC_BASE_URL:?}
     healthcheck:
       test:
         [

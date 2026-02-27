@@ -29,7 +29,8 @@
     "storage:up": "docker-compose up storage -d",
     "storage:down": "docker-compose down storage",
     "storage:stop": "docker-compose stop storage",
-    "seq:up": "docker-compose up seq -d"
+    "seq:up": "docker-compose up seq -d",
+    "storage:public": "docker exec -it rent-flow-storage-1 sh -c \"mc alias set local http://localhost:9000 minioadmin minioadmin && mc anonymous set download local/$1\" --"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.3.1",

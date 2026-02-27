@@ -6,12 +6,21 @@ import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { EditProperty } from '#/features/properties/schemas';
 import { useEditProperty, usePropertySuspense } from '../stores/useProperties';
+import {
+  usePropertyImagesSuspense,
+  useAddPropertyImage,
+  useDeletePropertyImage,
+} from '../stores/usePropertyImages';
 import { EditPropertyForm } from '../components/EditPropertyForm';
 import { PropertySkeleton } from '../components/PropertySkeleton';
 import { ErrorFallback } from '@/components/ErrorFallback';
 import { FormCardHeader } from '@/components/FormCardHeader';
 import { FormCardFooter } from '@/components/FormCardFooter';
 import { Card } from '@/components/ui/card';
+import {
+  ImageUploader,
+  ImageUploaderSkeleton,
+} from '@/components/ImageUploader';
 
 export function EditPropertyPage() {
   const navigate = useNavigate();
@@ -66,6 +75,23 @@ export function EditPropertyPage() {
           isPending={edit.isPending}
         />
       </Card>
+      <QueryErrorResetBoundary>
+        {({ reset }) => (
+          <ErrorBoundary
+            onReset={reset}
+            FallbackComponent={({ resetErrorBoundary }) => (
+              <ErrorFallback
+                resetErrorBoundary={resetErrorBoundary}
+                message="Failed to load images"
+              />
+            )}
+          >
+            <Suspense fallback={<ImageUploaderSkeleton />}>
+              <ImagesSection propertyId={propertyId!} />
+            </Suspense>
+          </ErrorBoundary>
+        )}
+      </QueryErrorResetBoundary>
     </div>
   );
 }
@@ -87,6 +113,46 @@ function InnerProperty({
       isPending={isPending}
       onSubmit={onSubmit}
       property={data}
+    />
+  );
+}
+
+function ImagesSection({ propertyId }: { propertyId: string }) {
+  const { data } = usePropertyImagesSuspense(propertyId);
+  const addImage = useAddPropertyImage(propertyId);
+  const deleteImage = useDeletePropertyImage(propertyId);
+
+  const handleAdd = async (files: FileList | null) => {
+    if (!files) return;
+    for (const file of Array.from(files)) {
+      try {
+        await addImage.mutateAsync(file);
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : 'Failed to upload image'
+        );
+      }
+    }
+  };
+
+  const handleRemove = async (propertyImageId: string) => {
+    try {
+      await deleteImage.mutateAsync(propertyImageId);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : 'Failed to delete image'
+      );
+    }
+  };
+
+  return (
+    <ImageUploader
+      images={data.map(item => ({
+        id: item.propertyImageId,
+        path: item.imagePath,
+      }))}
+      onAdd={handleAdd}
+      onRemove={handleRemove}
     />
   );
 }

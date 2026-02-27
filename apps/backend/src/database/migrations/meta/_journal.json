@@ -64,6 +64,13 @@
       "when": 1771374400385,
       "tag": "0008_cheerful_logan",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1772063391656,
+      "tag": "0009_bent_calypso",
+      "breakpoints": true
     }
   ]
 }

@@ -46,3 +46,14 @@ export const listPropertiesSchema = paginationSchema.extend({
 });
 
 export type ListProperties = z.infer<typeof listPropertiesSchema>;
+
+export const propertyImageSchema = z.object({
+  propertyImageId: z.uuidv7(),
+  imageName: z.string().min(1).max(250),
+  contentType: z.string().min(1).max(100),
+  imagePath: z.string().min(1).max(500),
+  createdAt: z.date(),
+  propertyId: z.uuidv7(),
+});
+
+export type PropertyImage = z.infer<typeof propertyImageSchema>;

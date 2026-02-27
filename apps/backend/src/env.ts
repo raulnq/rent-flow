@@ -21,6 +21,8 @@ const ENVSchema = z.object({
   S3_BUCKET_NAME: z.string(),
   S3_FORCE_PATH_STYLE: z.coerce.boolean().default(true),
   S3_REGION: z.string().default('us-east-1'),
+  S3_IMAGES_BUCKET_NAME: z.string(),
+  S3_IMAGES_PUBLIC_BASE_URL: z.string(),
 });
 
 expand(config());
