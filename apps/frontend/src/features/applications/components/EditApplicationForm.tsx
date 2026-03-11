@@ -14,18 +14,45 @@ import {
   type EditApplication,
   type Application,
 } from '#/features/applications/schemas';
-import { FormCardContent } from '@/components/FormCardContent';
+import type {
+  RejectApplication,
+  WithdrawApplication,
+  StartReviewApplication,
+  ApproveApplication,
+  SignContractApplication,
+  ReserveApplication,
+} from '#/features/applications/schemas';
+import { FormCard } from '@/components/FormCard';
+import { Badge } from '@/components/ui/badge';
+import { getStatusVariant } from '../utils/status-variants';
+import { ApplicationToolbar } from './ApplicationToolbar';
 
 type EditApplicationFormProps = {
   isPending: boolean;
   onSubmit: SubmitHandler<EditApplication>;
+  onCancel: () => void;
   application: Application;
+  onStartReview: (data: StartReviewApplication) => void;
+  onApprove: (data: ApproveApplication) => void;
+  onReject: (data: RejectApplication) => void;
+  onWithdraw: (data: WithdrawApplication) => void;
+  onSignContract: (data: SignContractApplication) => void;
+  onReserve: (data: ReserveApplication) => void;
+  workflowPending: boolean;
 };
 
 export function EditApplicationForm({
   isPending,
   onSubmit,
+  onCancel,
   application,
+  onStartReview,
+  onApprove,
+  onReject,
+  onWithdraw,
+  onSignContract,
+  onReserve,
+  workflowPending,
 }: EditApplicationFormProps) {
   const form = useForm<EditApplication>({
     resolver: zodResolver(editApplicationSchema),
@@ -36,7 +63,33 @@ export function EditApplicationForm({
   });
 
   return (
-    <FormCardContent formId="form" onSubmit={form.handleSubmit(onSubmit)}>
+    <FormCard
+      onSubmit={form.handleSubmit(onSubmit)}
+      onCancel={onCancel}
+      saveText="Save Notes"
+      isPending={isPending}
+      title="Edit Application"
+      description="Edit rental application details."
+      renderTitleSuffix={
+        application.status && (
+          <Badge variant={getStatusVariant(application.status)}>
+            {application.status}
+          </Badge>
+        )
+      }
+      renderAction={
+        <ApplicationToolbar
+          status={application.status}
+          isPending={workflowPending}
+          onStartReview={onStartReview}
+          onApprove={onApprove}
+          onReject={onReject}
+          onWithdraw={onWithdraw}
+          onSignContract={onSignContract}
+          onReserve={onReserve}
+        />
+      }
+    >
       <FieldGroup>
         <Field>
           <FieldLabel>Property</FieldLabel>
@@ -150,6 +203,6 @@ export function EditApplicationForm({
           </div>
         )}
       </FieldGroup>
-    </FormCardContent>
+    </FormCard>
   );
 }

@@ -1,6 +1,4 @@
-import { Button } from '@/components/ui/button';
-import { Pencil } from 'lucide-react';
-import { Link, useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
@@ -9,9 +7,6 @@ import { usePropertyImagesSuspense } from '../stores/usePropertyImages';
 import { ViewPropertyCard } from '../components/ViewPropertyCard';
 import { PropertySkeleton } from '../components/PropertySkeleton';
 import { ErrorFallback } from '@/components/ErrorFallback';
-import { ViewCardHeader } from '@/components/ViewCardHeader';
-import { ViewCardFooter } from '@/components/ViewCardFooter';
-import { Card } from '@/components/ui/card';
 import {
   ImageUploader,
   ImageUploaderSkeleton,
@@ -23,37 +18,26 @@ export function ViewPropertyPage() {
 
   return (
     <div className="space-y-4">
-      <Card>
-        <ViewCardHeader
-          title="View Property"
-          description="View an existing property."
-        >
-          <Button className="sm:self-start" asChild>
-            <Link to={`/properties/${propertyId}/edit`}>
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit
-            </Link>
-          </Button>
-        </ViewCardHeader>
-        <QueryErrorResetBoundary>
-          {({ reset }) => (
-            <ErrorBoundary
-              onReset={reset}
-              FallbackComponent={({ resetErrorBoundary }) => (
-                <ErrorFallback
-                  resetErrorBoundary={resetErrorBoundary}
-                  message="Failed to load property"
-                />
-              )}
-            >
-              <Suspense fallback={<PropertySkeleton />}>
-                <InnerProperty propertyId={propertyId!} />
-              </Suspense>
-            </ErrorBoundary>
-          )}
-        </QueryErrorResetBoundary>
-        <ViewCardFooter onCancel={() => navigate('/properties')} />
-      </Card>
+      <QueryErrorResetBoundary>
+        {({ reset }) => (
+          <ErrorBoundary
+            onReset={reset}
+            FallbackComponent={({ resetErrorBoundary }) => (
+              <ErrorFallback
+                resetErrorBoundary={resetErrorBoundary}
+                message="Failed to load property"
+              />
+            )}
+          >
+            <Suspense fallback={<PropertySkeleton />}>
+              <InnerProperty
+                propertyId={propertyId!}
+                onCancel={() => navigate('/properties')}
+              />
+            </Suspense>
+          </ErrorBoundary>
+        )}
+      </QueryErrorResetBoundary>
       <QueryErrorResetBoundary>
         {({ reset }) => (
           <ErrorBoundary
@@ -77,11 +61,12 @@ export function ViewPropertyPage() {
 
 type InnerPropertyProps = {
   propertyId: string;
+  onCancel: () => void;
 };
 
-function InnerProperty({ propertyId }: InnerPropertyProps) {
+function InnerProperty({ propertyId, onCancel }: InnerPropertyProps) {
   const { data } = usePropertySuspense(propertyId);
-  return <ViewPropertyCard property={data} />;
+  return <ViewPropertyCard property={data} onCancel={onCancel} />;
 }
 
 function ImagesSection({ propertyId }: { propertyId: string }) {

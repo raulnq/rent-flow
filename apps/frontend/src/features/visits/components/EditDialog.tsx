@@ -1,17 +1,8 @@
-import { Button } from '@/components/ui/button';
+import { Controller } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { ControlledFormDialog } from '@/components/ControlledFormDialog';
 import { z } from 'zod';
 
 const editVisitFormSchema = z.object({
@@ -27,6 +18,7 @@ type EditDialogProps = {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onEdit: (data: EditVisitForm) => Promise<void>;
+  isPending: boolean;
 };
 
 export function EditDialog({
@@ -35,43 +27,27 @@ export function EditDialog({
   isOpen,
   onOpenChange,
   onEdit,
+  isPending,
 }: EditDialogProps) {
-  const form = useForm<EditVisitForm>({
-    resolver: zodResolver(editVisitFormSchema),
-    defaultValues: {
-      scheduledAt: scheduledAt
-        ? new Date(scheduledAt).toISOString().slice(0, 16)
-        : '',
-      notes: notes ?? '',
-    },
-  });
-
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      form.reset();
-    }
-    onOpenChange(open);
-  };
-
-  const handleSubmit = async (data: EditVisitForm) => {
-    await onEdit(data);
-    handleOpenChange(false);
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Edit Visit</DialogTitle>
-          <DialogDescription>
-            Update the visit scheduled time and notes.
-          </DialogDescription>
-        </DialogHeader>
-        <form
-          id="edit-visit-form"
-          onSubmit={form.handleSubmit(handleSubmit)}
-          className="space-y-4"
-        >
+    <ControlledFormDialog
+      schema={editVisitFormSchema}
+      defaultValues={{
+        scheduledAt: scheduledAt
+          ? new Date(scheduledAt).toISOString().slice(0, 16)
+          : '',
+        notes: notes ?? '',
+      }}
+      open={isOpen}
+      onOpenChange={onOpenChange}
+      onSubmit={onEdit}
+      isPending={isPending}
+      label="Edit Visit"
+      saveLabel="Update"
+      description="Update the visit scheduled time and notes."
+    >
+      {form => (
+        <>
           <Controller
             name="scheduledAt"
             control={form.control}
@@ -109,21 +85,8 @@ export function EditDialog({
               </Field>
             )}
           />
-        </form>
-        <DialogFooter>
-          <Button
-            variant="outline"
-            onClick={() => {
-              handleOpenChange(false);
-            }}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" form="edit-visit-form">
-            Update
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </>
+      )}
+    </ControlledFormDialog>
   );
 }

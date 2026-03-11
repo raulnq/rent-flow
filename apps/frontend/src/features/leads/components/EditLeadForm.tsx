@@ -14,17 +14,19 @@ import {
   type EditLead,
   type Lead,
 } from '#/features/leads/schemas';
-import { FormCardContent } from '@/components/FormCardContent';
+import { FormCard } from '@/components/FormCard';
 
 type EditLeadFormProps = {
   isPending: boolean;
   onSubmit: SubmitHandler<EditLead>;
+  onCancel: () => void;
   lead: Lead;
 };
 
 export function EditLeadForm({
   isPending,
   onSubmit,
+  onCancel,
   lead: leadData,
 }: EditLeadFormProps) {
   const form = useForm<EditLead>({
@@ -33,7 +35,14 @@ export function EditLeadForm({
   });
 
   return (
-    <FormCardContent onSubmit={form.handleSubmit(onSubmit)} formId="form">
+    <FormCard
+      onSubmit={form.handleSubmit(onSubmit)}
+      onCancel={onCancel}
+      saveText="Save Lead"
+      isPending={isPending}
+      title="Edit Lead"
+      description="Edit an existing lead."
+    >
       <FieldGroup>
         <Controller
           name="name"
@@ -223,6 +232,6 @@ export function EditLeadForm({
           )}
         />
       </FieldGroup>
-    </FormCardContent>
+    </FormCard>
   );
 }

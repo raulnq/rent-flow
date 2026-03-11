@@ -10,14 +10,19 @@ import {
   FieldSeparator,
 } from '@/components/ui/field';
 import { addLeadSchema, type AddLead } from '#/features/leads/schemas';
-import { FormCardContent } from '@/components/FormCardContent';
+import { FormCard } from '@/components/FormCard';
 
 type AddLeadFormProps = {
   isPending: boolean;
   onSubmit: SubmitHandler<AddLead>;
+  onCancel: () => void;
 };
 
-export function AddLeadForm({ isPending, onSubmit }: AddLeadFormProps) {
+export function AddLeadForm({
+  isPending,
+  onSubmit,
+  onCancel,
+}: AddLeadFormProps) {
   const form = useForm<AddLead>({
     resolver: zodResolver(addLeadSchema),
     defaultValues: {
@@ -34,7 +39,14 @@ export function AddLeadForm({ isPending, onSubmit }: AddLeadFormProps) {
   });
 
   return (
-    <FormCardContent onSubmit={form.handleSubmit(onSubmit)} formId="form">
+    <FormCard
+      onSubmit={form.handleSubmit(onSubmit)}
+      onCancel={onCancel}
+      saveText="Save Lead"
+      isPending={isPending}
+      title="Add Lead"
+      description="Create a new lead."
+    >
       <FieldGroup>
         <Controller
           name="name"
@@ -224,6 +236,6 @@ export function AddLeadForm({ isPending, onSubmit }: AddLeadFormProps) {
           )}
         />
       </FieldGroup>
-    </FormCardContent>
+    </FormCard>
   );
 }

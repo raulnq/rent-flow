@@ -9,9 +9,6 @@ import { useEditLead, useLeadSuspense } from '../stores/useLeads';
 import { EditLeadForm } from '../components/EditLeadForm';
 import { LeadSkeleton } from '../components/LeadSkeleton';
 import { ErrorFallback } from '@/components/ErrorFallback';
-import { FormCardHeader } from '@/components/FormCardHeader';
-import { FormCardFooter } from '@/components/FormCardFooter';
-import { Card } from '@/components/ui/card';
 
 export function EditLeadPage() {
   const navigate = useNavigate();
@@ -32,40 +29,28 @@ export function EditLeadPage() {
 
   return (
     <div className="space-y-4">
-      <Card>
-        <FormCardHeader
-          title="Edit Lead"
-          description="Edit an existing lead."
-        />
-        <QueryErrorResetBoundary>
-          {({ reset }) => (
-            <ErrorBoundary
-              onReset={reset}
-              FallbackComponent={({ resetErrorBoundary }) => (
-                <ErrorFallback
-                  resetErrorBoundary={resetErrorBoundary}
-                  message="Failed to load lead"
-                />
-              )}
-            >
-              <Suspense fallback={<LeadSkeleton />}>
-                <InnerLead
-                  isPending={edit.isPending}
-                  onSubmit={onSubmit}
-                  leadId={leadId!}
-                />
-              </Suspense>
-            </ErrorBoundary>
-          )}
-        </QueryErrorResetBoundary>
-        <FormCardFooter
-          formId="form"
-          saveText="Save Lead"
-          cancelText="Cancel"
-          onCancel={() => navigate('/leads')}
-          isPending={edit.isPending}
-        />
-      </Card>
+      <QueryErrorResetBoundary>
+        {({ reset }) => (
+          <ErrorBoundary
+            onReset={reset}
+            FallbackComponent={({ resetErrorBoundary }) => (
+              <ErrorFallback
+                resetErrorBoundary={resetErrorBoundary}
+                message="Failed to load lead"
+              />
+            )}
+          >
+            <Suspense fallback={<LeadSkeleton />}>
+              <InnerLead
+                isPending={edit.isPending}
+                onSubmit={onSubmit}
+                onCancel={() => navigate('/leads')}
+                leadId={leadId!}
+              />
+            </Suspense>
+          </ErrorBoundary>
+        )}
+      </QueryErrorResetBoundary>
     </div>
   );
 }
@@ -74,9 +59,17 @@ type InnerLeadProps = {
   leadId: string;
   isPending: boolean;
   onSubmit: SubmitHandler<EditLead>;
+  onCancel: () => void;
 };
 
-function InnerLead({ isPending, onSubmit, leadId }: InnerLeadProps) {
+function InnerLead({ isPending, onSubmit, onCancel, leadId }: InnerLeadProps) {
   const { data } = useLeadSuspense(leadId);
-  return <EditLeadForm isPending={isPending} onSubmit={onSubmit} lead={data} />;
+  return (
+    <EditLeadForm
+      isPending={isPending}
+      onSubmit={onSubmit}
+      onCancel={onCancel}
+      lead={data}
+    />
+  );
 }

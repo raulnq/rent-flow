@@ -1,11 +1,11 @@
-import { Field, FieldLabel } from '@/components/ui/field';
-import { CardContent } from '@/components/ui/card';
+import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Skeleton } from '@/components/ui/skeleton';
+import { FormSkeleton } from '@/components/FormCard';
 
 export function ClientSkeleton() {
   return (
-    <CardContent>
-      <div className="space-y-4">
+    <FormSkeleton>
+      <FieldGroup>
         <Field>
           <FieldLabel>Name</FieldLabel>
           <Skeleton className="h-9 w-full" />
@@ -26,7 +26,7 @@ export function ClientSkeleton() {
           <FieldLabel>Address</FieldLabel>
           <Skeleton className="h-16 w-full" />
         </Field>
-      </div>
-    </CardContent>
+      </FieldGroup>
+    </FormSkeleton>
   );
 }

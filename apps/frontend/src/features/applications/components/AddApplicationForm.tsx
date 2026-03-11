@@ -12,16 +12,18 @@ import {
 } from '#/features/applications/schemas';
 import { LeadCombobox } from '../../leads/components/LeadCombobox';
 import { PropertyCombobox } from '../../properties/components/PropertyCombobox';
-import { FormCardContent } from '@/components/FormCardContent';
+import { FormCard } from '@/components/FormCard';
 
 type AddApplicationFormProps = {
   isPending: boolean;
   onSubmit: SubmitHandler<AddApplication>;
+  onCancel: () => void;
 };
 
 export function AddApplicationForm({
   isPending,
   onSubmit,
+  onCancel,
 }: AddApplicationFormProps) {
   const form = useForm<AddApplication>({
     resolver: zodResolver(addApplicationSchema),
@@ -32,7 +34,14 @@ export function AddApplicationForm({
   });
 
   return (
-    <FormCardContent formId="form" onSubmit={form.handleSubmit(onSubmit)}>
+    <FormCard
+      onSubmit={form.handleSubmit(onSubmit)}
+      onCancel={onCancel}
+      saveText="Save Application"
+      isPending={isPending}
+      title="Add Application"
+      description="Create a new application."
+    >
       <FieldGroup>
         <Controller
           name="propertyId"
@@ -65,6 +74,6 @@ export function AddApplicationForm({
           )}
         />
       </FieldGroup>
-    </FormCardContent>
+    </FormCard>
   );
 }

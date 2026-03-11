@@ -7,9 +7,6 @@ import { toast } from 'sonner';
 import type { EditClient } from '#/features/clients/schemas';
 import { useEditClient, useClientSuspense } from '../stores/useClients';
 import { EditClientForm } from '../components/EditClientForm';
-import { Card } from '@/components/ui/card';
-import { FormCardHeader } from '@/components/FormCardHeader';
-import { FormCardFooter } from '@/components/FormCardFooter';
 import { ClientSkeleton } from '../components/ClientSkeleton';
 import { ErrorFallback } from '@/components/ErrorFallback';
 
@@ -32,40 +29,28 @@ export function EditClientPage() {
 
   return (
     <div className="space-y-4">
-      <Card>
-        <FormCardHeader
-          title="Edit Client"
-          description="Edit an existing client."
-        />
-        <QueryErrorResetBoundary>
-          {({ reset }) => (
-            <ErrorBoundary
-              onReset={reset}
-              FallbackComponent={({ resetErrorBoundary }) => (
-                <ErrorFallback
-                  resetErrorBoundary={resetErrorBoundary}
-                  message="Failed to load client"
-                />
-              )}
-            >
-              <Suspense fallback={<ClientSkeleton />}>
-                <InnerClient
-                  isPending={edit.isPending}
-                  onSubmit={onSubmit}
-                  clientId={clientId!}
-                />
-              </Suspense>
-            </ErrorBoundary>
-          )}
-        </QueryErrorResetBoundary>
-        <FormCardFooter
-          formId="form"
-          saveText="Save Client"
-          cancelText="Cancel"
-          onCancel={() => navigate('/clients')}
-          isPending={edit.isPending}
-        />
-      </Card>
+      <QueryErrorResetBoundary>
+        {({ reset }) => (
+          <ErrorBoundary
+            onReset={reset}
+            FallbackComponent={({ resetErrorBoundary }) => (
+              <ErrorFallback
+                resetErrorBoundary={resetErrorBoundary}
+                message="Failed to load client"
+              />
+            )}
+          >
+            <Suspense fallback={<ClientSkeleton />}>
+              <InnerClient
+                isPending={edit.isPending}
+                onSubmit={onSubmit}
+                onCancel={() => navigate('/clients')}
+                clientId={clientId!}
+              />
+            </Suspense>
+          </ErrorBoundary>
+        )}
+      </QueryErrorResetBoundary>
     </div>
   );
 }
@@ -74,11 +59,22 @@ type InnerClientProps = {
   clientId: string;
   isPending: boolean;
   onSubmit: SubmitHandler<EditClient>;
+  onCancel: () => void;
 };
 
-function InnerClient({ isPending, onSubmit, clientId }: InnerClientProps) {
+function InnerClient({
+  isPending,
+  onSubmit,
+  onCancel,
+  clientId,
+}: InnerClientProps) {
   const { data } = useClientSuspense(clientId);
   return (
-    <EditClientForm isPending={isPending} onSubmit={onSubmit} client={data} />
+    <EditClientForm
+      isPending={isPending}
+      onSubmit={onSubmit}
+      onCancel={onCancel}
+      client={data}
+    />
   );
 }

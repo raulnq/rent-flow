@@ -23,17 +23,19 @@ import {
 } from '#/features/properties/schemas';
 import { ClientCombobox } from '@/features/clients/components/ClientCombobox';
 import { LocationMapField } from './LocationMapField';
-import { FormCardContent } from '@/components/FormCardContent';
+import { FormCard } from '@/components/FormCard';
 
 type EditPropertyFormProps = {
   isPending: boolean;
   onSubmit: SubmitHandler<EditProperty>;
+  onCancel: () => void;
   property: Property;
 };
 
 export function EditPropertyForm({
   isPending,
   onSubmit,
+  onCancel,
   property,
 }: EditPropertyFormProps) {
   const form = useForm<EditProperty>({
@@ -42,7 +44,14 @@ export function EditPropertyForm({
   });
 
   return (
-    <FormCardContent formId="form" onSubmit={form.handleSubmit(onSubmit)}>
+    <FormCard
+      onSubmit={form.handleSubmit(onSubmit)}
+      onCancel={onCancel}
+      saveText="Save Property"
+      isPending={isPending}
+      title="Edit Property"
+      description="Edit an existing property."
+    >
       <FieldGroup>
         <Controller
           name="clientId"
@@ -515,6 +524,6 @@ export function EditPropertyForm({
           )}
         />
       </FieldGroup>
-    </FormCardContent>
+    </FormCard>
   );
 }

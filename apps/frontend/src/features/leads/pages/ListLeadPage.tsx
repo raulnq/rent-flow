@@ -6,6 +6,7 @@ import { LeadsSkeleton, LeadTable } from '../components/LeadTable';
 import { LeadSearchBar } from '../components/LeadSearchBar';
 import { ListCardHeader } from '@/components/ListCardHeader';
 import { ErrorFallback } from '@/components/ErrorFallback';
+import { AddButton } from '@/components/AddButton';
 
 export function ListLeadPage() {
   return (
@@ -13,9 +14,8 @@ export function ListLeadPage() {
       <Card>
         <ListCardHeader
           title="Leads"
-          description="Search your leads."
-          addLink="/leads/new"
-          addText="Add Lead"
+          description="Manage your leads."
+          renderAction={<AddButton link="/leads/new" text="Add Lead" />}
         >
           <LeadSearchBar />
         </ListCardHeader>

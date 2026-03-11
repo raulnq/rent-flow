@@ -6,6 +6,7 @@ import { ClientsSkeleton, ClientTable } from '../components/ClientTable';
 import { ClientSearchBar } from '../components/ClientSearchBar';
 import { ListCardHeader } from '@/components/ListCardHeader';
 import { ErrorFallback } from '@/components/ErrorFallback';
+import { AddButton } from '@/components/AddButton';
 
 export function ListClientPage() {
   return (
@@ -13,9 +14,8 @@ export function ListClientPage() {
       <Card>
         <ListCardHeader
           title="Clients"
-          description="Search your clients."
-          addLink="/clients/new"
-          addText="Add Client"
+          description="Manage your clients."
+          renderAction={<AddButton link="/clients/new" text="Add Client" />}
         >
           <ClientSearchBar />
         </ListCardHeader>

@@ -1,18 +1,11 @@
-import { Button } from '@/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
+import { ControlledConfirmDialog } from '@/components/ControlledConfirmDialog';
 
 type DeleteDialogProps = {
   fileName: string | undefined;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onDelete: () => Promise<void>;
+  isPending: boolean;
 };
 
 export function DeleteDialog({
@@ -20,35 +13,16 @@ export function DeleteDialog({
   isOpen,
   onOpenChange,
   onDelete,
+  isPending,
 }: DeleteDialogProps) {
-  const handleOpenChange = (open: boolean) => {
-    onOpenChange(open);
-  };
-
-  const handleSubmit = async () => {
-    await onDelete();
-    handleOpenChange(false);
-  };
-
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Delete Document</DialogTitle>
-          <DialogDescription>
-            Are you sure you want to delete {fileName}? This action cannot be
-            undone.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
-            Cancel
-          </Button>
-          <Button variant="destructive" onClick={handleSubmit}>
-            Delete
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+    <ControlledConfirmDialog
+      label="Delete Document"
+      description={`Are you sure you want to delete ${fileName}? This action cannot be undone.`}
+      open={isOpen}
+      onOpenChange={onOpenChange}
+      onConfirm={onDelete}
+      isPending={isPending}
+    />
   );
 }

@@ -22,14 +22,19 @@ import {
 } from '#/features/properties/schemas';
 import { ClientCombobox } from '@/features/clients/components/ClientCombobox';
 import { LocationMapField } from './LocationMapField';
-import { FormCardContent } from '@/components/FormCardContent';
+import { FormCard } from '@/components/FormCard';
 
 type AddPropertyFormProps = {
   isPending: boolean;
   onSubmit: SubmitHandler<AddProperty>;
+  onCancel: () => void;
 };
 
-export function AddPropertyForm({ isPending, onSubmit }: AddPropertyFormProps) {
+export function AddPropertyForm({
+  isPending,
+  onSubmit,
+  onCancel,
+}: AddPropertyFormProps) {
   const form = useForm<AddProperty>({
     resolver: zodResolver(addPropertySchema),
     defaultValues: {
@@ -59,7 +64,14 @@ export function AddPropertyForm({ isPending, onSubmit }: AddPropertyFormProps) {
   });
 
   return (
-    <FormCardContent formId="form" onSubmit={form.handleSubmit(onSubmit)}>
+    <FormCard
+      onSubmit={form.handleSubmit(onSubmit)}
+      onCancel={onCancel}
+      saveText="Save Property"
+      isPending={isPending}
+      title="Add Property"
+      description="Create a new property."
+    >
       <FieldGroup>
         <Controller
           name="clientId"
@@ -531,6 +543,6 @@ export function AddPropertyForm({ isPending, onSubmit }: AddPropertyFormProps) {
           )}
         />
       </FieldGroup>
-    </FormCardContent>
+    </FormCard>
   );
 }

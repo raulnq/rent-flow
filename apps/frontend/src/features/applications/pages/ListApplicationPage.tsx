@@ -9,6 +9,7 @@ import {
 import { ApplicationSearchBar } from '../components/ApplicationSearchBar';
 import { ListCardHeader } from '@/components/ListCardHeader';
 import { ErrorFallback } from '@/components/ErrorFallback';
+import { AddButton } from '@/components/AddButton';
 
 export function ListApplicationPage() {
   return (
@@ -16,9 +17,10 @@ export function ListApplicationPage() {
       <Card>
         <ListCardHeader
           title="Applications"
-          description="Search your applications."
-          addLink="/applications/new"
-          addText="Add Application"
+          description="Manage your applications."
+          renderAction={
+            <AddButton link="/applications/new" text="Add Application" />
+          }
         >
           <ApplicationSearchBar />
         </ListCardHeader>

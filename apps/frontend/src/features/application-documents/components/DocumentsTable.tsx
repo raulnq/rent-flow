@@ -1,15 +1,15 @@
 import { useSearchParams } from 'react-router';
-import { Pencil, Trash2, Eye } from 'lucide-react';
+import { Eye, Pencil, Trash2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { TableCell } from '@/components/ui/table';
 import {
   useApplicationDocumentsSuspense,
   useEditApplicationDocument,
@@ -18,6 +18,8 @@ import {
 } from '../stores/useApplicationDocuments';
 import { Pagination } from '@/components/Pagination';
 import { NoMatchingItems } from '@/components/NoMatchingItems';
+import { TextTableCell } from '@/components/TextTableCell';
+import { ActionTableCell } from '@/components/ActionTableCell';
 import { EditDialog } from './EditDialog';
 import { DeleteDialog } from './DeleteDialog';
 import { useState } from 'react';
@@ -164,34 +166,35 @@ export function DocumentsTable({ applicationId }: { applicationId: string }) {
         <TableBody>
           {data.items.map(item => (
             <TableRow key={item.applicationDocumentId}>
-              <TableCell className="font-medium">{item.documentType}</TableCell>
-              <TableCell>{item.fileName}</TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleView(item)}
-                    disabled={isLoading}
-                  >
-                    <Eye className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => openEditDialog(item)}
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => openDeleteDialog(item)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </TableCell>
+              <TextTableCell
+                value={item.documentType}
+                className="font-medium"
+              />
+              <TextTableCell value={item.fileName} />
+              <ActionTableCell>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => handleView(item)}
+                  disabled={isLoading}
+                >
+                  <Eye className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => openEditDialog(item)}
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => openDeleteDialog(item)}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </ActionTableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -204,6 +207,7 @@ export function DocumentsTable({ applicationId }: { applicationId: string }) {
         isOpen={editDialogOpen}
         onOpenChange={handleEditDialogChange}
         onEdit={handleEdit}
+        isPending={editMutation.isPending}
       />
 
       <DeleteDialog
@@ -212,6 +216,7 @@ export function DocumentsTable({ applicationId }: { applicationId: string }) {
         isOpen={deleteDialogOpen}
         onOpenChange={handleDeleteDialogChange}
         onDelete={handleDelete}
+        isPending={deleteMutation.isPending}
       />
     </>
   );

@@ -7,15 +7,25 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import type { Lead } from '#/features/leads/schemas';
-import { ViewCardContent } from '@/components/ViewCardContent';
+import { FormCard } from '@/components/FormCard';
+import { EditButton } from '@/components/EditButton';
 
 type ViewLeadCardProps = {
   lead: Lead;
+  onCancel: () => void;
 };
 
-export function ViewLeadCard({ lead }: ViewLeadCardProps) {
+export function ViewLeadCard({ lead, onCancel }: ViewLeadCardProps) {
   return (
-    <ViewCardContent>
+    <FormCard
+      onCancel={onCancel}
+      title="View Lead"
+      description="View an existing lead."
+      readOnly={true}
+      renderAction={
+        <EditButton text="Edit" link={`/leads/${lead.leadId}/edit`} />
+      }
+    >
       <FieldGroup>
         <Field>
           <FieldLabel>Name</FieldLabel>
@@ -62,6 +72,6 @@ export function ViewLeadCard({ lead }: ViewLeadCardProps) {
           <Textarea value={lead.notes ?? ''} disabled rows={3} />
         </Field>
       </FieldGroup>
-    </ViewCardContent>
+    </FormCard>
   );
 }

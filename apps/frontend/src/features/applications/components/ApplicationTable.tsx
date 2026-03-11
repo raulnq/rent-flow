@@ -1,7 +1,5 @@
-import { Link, useSearchParams } from 'react-router';
-import { Pencil } from 'lucide-react';
+import { useSearchParams } from 'react-router';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -12,39 +10,50 @@ import {
 } from '@/components/ui/table';
 import { useApplicationsSuspense } from '../stores/useApplications';
 import { Pagination } from '@/components/Pagination';
-import { Badge } from '@/components/ui/badge';
-import { getStatusVariant } from '../utils/status-variants';
 import { NoMatchingItems } from '@/components/NoMatchingItems';
+import { LinkTableCell } from '@/components/LinkTableCell';
+import { TextTableCell } from '@/components/TextTableCell';
+import { BadgeTableCell } from '@/components/BadgeTableCell';
+import { DateTableCell } from '@/components/DateTableCell';
+import { ActionTableCell } from '@/components/ActionTableCell';
+import { EditCellButton } from '@/components/EditCellButton';
+import { getStatusVariant } from '../utils/status-variants';
+
+function InnerTableHeader() {
+  return (
+    <TableHeader>
+      <TableRow>
+        <TableHead className="min-w-60">Property</TableHead>
+        <TableHead className="hidden md:table-cell">Lead</TableHead>
+        <TableHead className="hidden md:table-cell">Status</TableHead>
+        <TableHead className="hidden lg:table-cell">Created</TableHead>
+        <TableHead className="w-20">Actions</TableHead>
+      </TableRow>
+    </TableHeader>
+  );
+}
 
 export function ApplicationsSkeleton() {
   return (
     <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Property</TableHead>
-          <TableHead>Lead</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Created</TableHead>
-          <TableHead className="w-[100px]">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
+      <InnerTableHeader />
       <TableBody>
         {Array.from({ length: 10 }).map((_, index) => (
           <TableRow key={index}>
             <TableCell>
-              <Skeleton className="h-8 w-[60%]" />
+              <Skeleton className="h-8" />
             </TableCell>
-            <TableCell>
-              <Skeleton className="h-8 w-[50%]" />
+            <TableCell className="hidden md:table-cell">
+              <Skeleton className="h-8" />
             </TableCell>
-            <TableCell>
+            <TableCell className="hidden md:table-cell">
               <Skeleton className="h-6 w-[80px]" />
             </TableCell>
-            <TableCell>
-              <Skeleton className="h-8 w-[100px]" />
+            <TableCell className="hidden lg:table-cell">
+              <Skeleton className="h-8" />
             </TableCell>
             <TableCell>
-              <Skeleton className="h-8 w-full" />
+              <Skeleton className="h-8" />
             </TableCell>
           </TableRow>
         ))}
@@ -72,53 +81,41 @@ export function ApplicationTable() {
   }
 
   return (
-    <>
+    <div className="overflow-x-auto">
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Property</TableHead>
-            <TableHead>Lead</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead className="w-[100px]">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
+        <InnerTableHeader />
         <TableBody>
           {data?.items.map(item => (
             <TableRow key={item.applicationId}>
-              <TableCell className="font-medium">
-                <Link
-                  to={`/applications/${item.applicationId}/edit`}
-                  className="hover:underline"
-                >
-                  {item.propertyAddress ?? 'N/A'}
-                </Link>
-              </TableCell>
-              <TableCell>{item.leadName ?? 'N/A'}</TableCell>
-              <TableCell>
-                <Badge variant={getStatusVariant(item.status)}>
-                  {item.status}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                {new Date(item.createdAt).toLocaleDateString()}
-              </TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button variant="ghost" size="icon" asChild>
-                    <Link to={`/applications/${item.applicationId}/edit`}>
-                      <Pencil className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </TableCell>
+              <LinkTableCell
+                className="font-medium"
+                value={item.propertyAddress ?? 'N/A'}
+                link={`/applications/${item.applicationId}`}
+              />
+              <TextTableCell
+                className="hidden md:table-cell"
+                value={item.leadName}
+              />
+              <BadgeTableCell
+                className="hidden md:table-cell"
+                variant={getStatusVariant(item.status)}
+              >
+                {item.status}
+              </BadgeTableCell>
+              <DateTableCell
+                className="hidden lg:table-cell"
+                value={item.createdAt}
+              />
+              <ActionTableCell>
+                <EditCellButton
+                  link={`/applications/${item.applicationId}/edit`}
+                />
+              </ActionTableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <div className="mt-4">
-        <Pagination totalPages={data.totalPages} />
-      </div>
-    </>
+      <Pagination totalPages={data.totalPages} />
+    </div>
   );
 }

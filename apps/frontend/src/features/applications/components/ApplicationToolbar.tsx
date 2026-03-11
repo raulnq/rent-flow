@@ -46,24 +46,33 @@ export function ApplicationToolbar({
   return (
     <>
       <StartReviewButton
-        disabled={isPending || !canStartReview}
+        disabled={!canStartReview}
+        isPending={isPending}
         onStartReview={onStartReview}
       />
       <ApproveButton
-        disabled={isPending || !canApprove}
+        disabled={!canApprove}
+        isPending={isPending}
         onApprove={onApprove}
       />
       <ReserveButton
-        disabled={isPending || !canReserve}
+        disabled={!canReserve}
+        isPending={isPending}
         onReserve={onReserve}
       />
-      <RejectButton disabled={isPending || !canReject} onReject={onReject} />
+      <RejectButton
+        disabled={!canReject}
+        isPending={isPending}
+        onReject={onReject}
+      />
       <WithdrawButton
-        disabled={isPending || !canWithdraw}
+        disabled={!canWithdraw}
+        isPending={isPending}
         onWithdraw={onWithdraw}
       />
       <SignContractButton
-        disabled={isPending || !canSignContract}
+        disabled={!canSignContract}
+        isPending={isPending}
         onSignContract={onSignContract}
       />
     </>

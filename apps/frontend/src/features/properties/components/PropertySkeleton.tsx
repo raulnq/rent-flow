@@ -4,12 +4,12 @@ import {
   FieldLabel,
   FieldSeparator,
 } from '@/components/ui/field';
-import { CardContent } from '@/components/ui/card';
+import { FormSkeleton } from '@/components/FormCard';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export function PropertySkeleton() {
   return (
-    <CardContent>
+    <FormSkeleton>
       <FieldGroup>
         <Field>
           <FieldLabel>Client (Owner)</FieldLabel>
@@ -120,6 +120,6 @@ export function PropertySkeleton() {
           <Skeleton className="h-16 w-full" />
         </Field>
       </FieldGroup>
-    </CardContent>
+    </FormSkeleton>
   );
 }

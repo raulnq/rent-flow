@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router';
-import { type SubmitHandler } from 'react-hook-form';
+import type { SubmitHandler } from 'react-hook-form';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
@@ -26,17 +26,12 @@ import {
 import { EditApplicationForm } from '../components/EditApplicationForm';
 import { ApplicationSkeleton } from '../components/ApplicationSkeleton';
 import { ErrorFallback } from '@/components/ErrorFallback';
-import { ApplicationToolbar } from '../components/ApplicationToolbar';
-import { FormCardHeader } from '@/components/FormCardHeader';
-import { FormCardFooter } from '@/components/FormCardFooter';
 import { VisitsSkeleton, VisitTable } from '../../visits/components/VisitTable';
 import { AddVisitButton } from '@/features/visits/components/AddVisitButton';
 import { useAddVisit } from '@/features/visits/stores/useVisits';
 import type { AddVisit } from '#/features/visits/schemas';
 import { Card, CardContent } from '@/components/ui/card';
 import { ListCardHeader } from '@/components/ListCardHeader';
-import { Badge } from '@/components/ui/badge';
-import { getStatusVariant } from '../utils/status-variants';
 import {
   DocumentsTable,
   DocumentsSkeleton,
@@ -171,49 +166,46 @@ export function EditApplicationPage() {
 
   return (
     <div className="space-y-4">
-      <Card>
-        <QueryErrorResetBoundary>
-          {({ reset }) => (
-            <ErrorBoundary
-              onReset={reset}
-              FallbackComponent={({ resetErrorBoundary }) => (
-                <ErrorFallback
-                  resetErrorBoundary={resetErrorBoundary}
-                  message="Failed to load application"
-                />
-              )}
-            >
-              <Suspense fallback={<ApplicationSkeleton />}>
-                <InnerApplication
-                  isPending={edit.isPending}
-                  onSubmit={onSubmit}
-                  applicationId={applicationId!}
-                  onStartReview={handleStartReview}
-                  onApprove={handleApprove}
-                  onReject={handleReject}
-                  onWithdraw={handleWithdraw}
-                  onSignContract={handleSignContract}
-                  onReserve={handleReserve}
-                  workflowPending={workflowPending}
-                />
-              </Suspense>
-            </ErrorBoundary>
-          )}
-        </QueryErrorResetBoundary>
-        <FormCardFooter
-          formId="form"
-          saveText="Save Notes"
-          cancelText="Cancel"
-          onCancel={() => navigate('/applications')}
-          isPending={edit.isPending}
-        />
-      </Card>
+      <QueryErrorResetBoundary>
+        {({ reset }) => (
+          <ErrorBoundary
+            onReset={reset}
+            FallbackComponent={({ resetErrorBoundary }) => (
+              <ErrorFallback
+                resetErrorBoundary={resetErrorBoundary}
+                message="Failed to load application"
+              />
+            )}
+          >
+            <Suspense fallback={<ApplicationSkeleton />}>
+              <InnerApplication
+                isPending={edit.isPending}
+                onSubmit={onSubmit}
+                applicationId={applicationId!}
+                onCancel={() => navigate('/applications')}
+                onStartReview={handleStartReview}
+                onApprove={handleApprove}
+                onReject={handleReject}
+                onWithdraw={handleWithdraw}
+                onSignContract={handleSignContract}
+                onReserve={handleReserve}
+                workflowPending={workflowPending}
+              />
+            </Suspense>
+          </ErrorBoundary>
+        )}
+      </QueryErrorResetBoundary>
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
         <Card>
           <ListCardHeader
             title="All visits"
             description="Manage your visits."
-            renderAction={<AddVisitButton onAdd={handleVisitAdd} />}
+            renderAction={
+              <AddVisitButton
+                onAdd={handleVisitAdd}
+                isPending={addMutation.isPending}
+              />
+            }
           />
           <CardContent>
             <QueryErrorResetBoundary>
@@ -239,7 +231,12 @@ export function EditApplicationPage() {
           <ListCardHeader
             title="Documents"
             description="Manage your documents."
-            renderAction={<AddDocumentButton onAdd={handleAddDocument} />}
+            renderAction={
+              <AddDocumentButton
+                onAdd={handleAddDocument}
+                isPending={addDocumentMutation.isPending}
+              />
+            }
           />
           <CardContent>
             <QueryErrorResetBoundary>
@@ -270,6 +267,7 @@ type InnerApplicationProps = {
   applicationId: string;
   isPending: boolean;
   onSubmit: SubmitHandler<EditApplication>;
+  onCancel: () => void;
   onStartReview: (data: StartReviewApplication) => void;
   onApprove: (data: ApproveApplication) => void;
   onReject: (data: RejectApplication) => void;
@@ -283,6 +281,7 @@ function InnerApplication({
   isPending,
   onSubmit,
   applicationId,
+  onCancel,
   onStartReview,
   onApprove,
   onReject,
@@ -294,32 +293,18 @@ function InnerApplication({
   const { data } = useApplicationSuspense(applicationId);
 
   return (
-    <>
-      <FormCardHeader
-        title="Edit Application"
-        description="Edit rental application details."
-        renderAction={
-          data.status && (
-            <Badge variant={getStatusVariant(data.status)}>{data.status}</Badge>
-          )
-        }
-      >
-        <ApplicationToolbar
-          status={data.status}
-          isPending={workflowPending}
-          onStartReview={onStartReview}
-          onApprove={onApprove}
-          onReject={onReject}
-          onWithdraw={onWithdraw}
-          onSignContract={onSignContract}
-          onReserve={onReserve}
-        />
-      </FormCardHeader>
-      <EditApplicationForm
-        isPending={isPending}
-        onSubmit={onSubmit}
-        application={data}
-      />
-    </>
+    <EditApplicationForm
+      isPending={isPending}
+      onSubmit={onSubmit}
+      onCancel={onCancel}
+      application={data}
+      onStartReview={onStartReview}
+      onApprove={onApprove}
+      onReject={onReject}
+      onWithdraw={onWithdraw}
+      onSignContract={onSignContract}
+      onReserve={onReserve}
+      workflowPending={workflowPending}
+    />
   );
 }

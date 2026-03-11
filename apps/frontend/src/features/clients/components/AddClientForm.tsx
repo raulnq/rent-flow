@@ -2,16 +2,26 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Field, FieldError, FieldLabel } from '@/components/ui/field';
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from '@/components/ui/field';
 import { addClientSchema, type AddClient } from '#/features/clients/schemas';
-import { FormCardContent } from '@/components/FormCardContent';
+import { FormCard } from '@/components/FormCard';
 
 type AddClientFormProps = {
   isPending: boolean;
   onSubmit: SubmitHandler<AddClient>;
+  onCancel: () => void;
 };
 
-export function AddClientForm({ isPending, onSubmit }: AddClientFormProps) {
+export function AddClientForm({
+  isPending,
+  onSubmit,
+  onCancel,
+}: AddClientFormProps) {
   const form = useForm<AddClient>({
     resolver: zodResolver(addClientSchema),
     defaultValues: {
@@ -24,97 +34,106 @@ export function AddClientForm({ isPending, onSubmit }: AddClientFormProps) {
   });
 
   return (
-    <FormCardContent onSubmit={form.handleSubmit(onSubmit)} formId="form">
-      <Controller
-        name="name"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor="name">Name</FieldLabel>
-            <Input
-              {...field}
-              id="name"
-              aria-invalid={fieldState.invalid}
-              placeholder="Full name"
-              disabled={isPending}
-            />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
-      />
-      <Controller
-        name="dni"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor="dni">DNI</FieldLabel>
-            <Input
-              {...field}
-              id="dni"
-              aria-invalid={fieldState.invalid}
-              placeholder="DNI"
-              disabled={isPending}
-            />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
-      />
-      <Controller
-        name="phone"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor="phone">Phone</FieldLabel>
-            <Input
-              {...field}
-              id="phone"
-              aria-invalid={fieldState.invalid}
-              placeholder="Phone number"
-              disabled={isPending}
-            />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
-      />
-      <Controller
-        name="email"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor="email">Email</FieldLabel>
-            <Input
-              {...field}
-              id="email"
-              value={field.value ?? ''}
-              onChange={e => field.onChange(e.target.value || null)}
-              aria-invalid={fieldState.invalid}
-              placeholder="Email (optional)"
-              disabled={isPending}
-            />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
-      />
-      <Controller
-        name="address"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <Field data-invalid={fieldState.invalid}>
-            <FieldLabel htmlFor="address">Address</FieldLabel>
-            <Textarea
-              {...field}
-              id="address"
-              value={field.value ?? ''}
-              onChange={e => field.onChange(e.target.value || null)}
-              aria-invalid={fieldState.invalid}
-              placeholder="Address (optional)"
-              disabled={isPending}
-              rows={3}
-            />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
-      />
-    </FormCardContent>
+    <FormCard
+      onSubmit={form.handleSubmit(onSubmit)}
+      onCancel={onCancel}
+      saveText="Save Client"
+      isPending={isPending}
+      title="Add Client"
+      description="Create a new client."
+    >
+      <FieldGroup>
+        <Controller
+          name="name"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="name">Name</FieldLabel>
+              <Input
+                {...field}
+                id="name"
+                aria-invalid={fieldState.invalid}
+                placeholder="Full name"
+                disabled={isPending}
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="dni"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="dni">DNI</FieldLabel>
+              <Input
+                {...field}
+                id="dni"
+                aria-invalid={fieldState.invalid}
+                placeholder="DNI"
+                disabled={isPending}
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="phone"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="phone">Phone</FieldLabel>
+              <Input
+                {...field}
+                id="phone"
+                aria-invalid={fieldState.invalid}
+                placeholder="Phone number"
+                disabled={isPending}
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="email"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="email">Email</FieldLabel>
+              <Input
+                {...field}
+                id="email"
+                value={field.value ?? ''}
+                onChange={e => field.onChange(e.target.value || null)}
+                aria-invalid={fieldState.invalid}
+                placeholder="Email (optional)"
+                disabled={isPending}
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="address"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor="address">Address</FieldLabel>
+              <Textarea
+                {...field}
+                id="address"
+                value={field.value ?? ''}
+                onChange={e => field.onChange(e.target.value || null)}
+                aria-invalid={fieldState.invalid}
+                placeholder="Address (optional)"
+                disabled={isPending}
+                rows={3}
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+      </FieldGroup>
+    </FormCard>
   );
 }

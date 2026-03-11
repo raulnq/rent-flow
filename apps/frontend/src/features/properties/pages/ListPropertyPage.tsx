@@ -6,6 +6,7 @@ import { PropertiesSkeleton, PropertyTable } from '../components/PropertyTable';
 import { PropertySearchBar } from '../components/PropertySearchBar';
 import { ListCardHeader } from '@/components/ListCardHeader';
 import { ErrorFallback } from '@/components/ErrorFallback';
+import { AddButton } from '@/components/AddButton';
 
 export function ListPropertyPage() {
   return (
@@ -13,9 +14,10 @@ export function ListPropertyPage() {
       <Card>
         <ListCardHeader
           title="Properties"
-          description="Search your properties."
-          addLink="/properties/new"
-          addText="Add Property"
+          description="Manage your properties."
+          renderAction={
+            <AddButton link="/properties/new" text="Add Property" />
+          }
         >
           <PropertySearchBar />
         </ListCardHeader>

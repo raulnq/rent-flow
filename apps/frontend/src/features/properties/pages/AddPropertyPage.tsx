@@ -1,12 +1,9 @@
 import { useNavigate } from 'react-router';
-import { type SubmitHandler } from 'react-hook-form';
+import type { SubmitHandler } from 'react-hook-form';
 import { toast } from 'sonner';
 import type { AddProperty } from '#/features/properties/schemas';
 import { useAddProperty } from '../stores/useProperties';
 import { AddPropertyForm } from '../components/AddPropertyForm';
-import { FormCardHeader } from '@/components/FormCardHeader';
-import { FormCardFooter } from '@/components/FormCardFooter';
-import { Card } from '@/components/ui/card';
 
 export function AddPropertyPage() {
   const navigate = useNavigate();
@@ -26,20 +23,11 @@ export function AddPropertyPage() {
 
   return (
     <div className="space-y-4">
-      <Card>
-        <FormCardHeader
-          title="Add Property"
-          description="Create a new property."
-        />
-        <AddPropertyForm isPending={add.isPending} onSubmit={onSubmit} />
-        <FormCardFooter
-          formId="form"
-          saveText="Save Property"
-          cancelText="Cancel"
-          onCancel={() => navigate('/properties')}
-          isPending={add.isPending}
-        />
-      </Card>
+      <AddPropertyForm
+        isPending={add.isPending}
+        onSubmit={onSubmit}
+        onCancel={() => navigate('/properties')}
+      />
     </div>
   );
 }

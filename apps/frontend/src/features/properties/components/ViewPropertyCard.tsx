@@ -9,7 +9,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Skeleton } from '@/components/ui/skeleton';
 import { lazy, Suspense } from 'react';
 import type { Property } from '#/features/properties/schemas';
-import { ViewCardContent } from '@/components/ViewCardContent';
+import { FormCard } from '@/components/FormCard';
+import { EditButton } from '@/components/EditButton';
 
 const MapViewer = lazy(() =>
   import('../../../components/MapViewer').then(module => ({
@@ -19,11 +20,26 @@ const MapViewer = lazy(() =>
 
 type ViewPropertyCardProps = {
   property: Property;
+  onCancel: () => void;
 };
 
-export function ViewPropertyCard({ property }: ViewPropertyCardProps) {
+export function ViewPropertyCard({
+  property,
+  onCancel,
+}: ViewPropertyCardProps) {
   return (
-    <ViewCardContent>
+    <FormCard
+      readOnly
+      onCancel={onCancel}
+      title="View Property"
+      description="View an existing property."
+      renderAction={
+        <EditButton
+          link={`/properties/${property.propertyId}/edit`}
+          text="Edit"
+        />
+      }
+    >
       <FieldGroup>
         <Field>
           <FieldLabel>Client (Owner)</FieldLabel>
@@ -146,6 +162,6 @@ export function ViewPropertyCard({ property }: ViewPropertyCardProps) {
           <Textarea value={property.notes ?? ''} disabled rows={3} />
         </Field>
       </FieldGroup>
-    </ViewCardContent>
+    </FormCard>
   );
 }

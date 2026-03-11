@@ -4,9 +4,6 @@ import { toast } from 'sonner';
 import type { AddClient } from '#/features/clients/schemas';
 import { useAddClient } from '../stores/useClients';
 import { AddClientForm } from '../components/AddClientForm';
-import { FormCardHeader } from '@/components/FormCardHeader';
-import { FormCardFooter } from '@/components/FormCardFooter';
-import { Card } from '@/components/ui/card';
 
 export function AddClientPage() {
   const navigate = useNavigate();
@@ -26,17 +23,11 @@ export function AddClientPage() {
 
   return (
     <div className="space-y-4">
-      <Card>
-        <FormCardHeader title="Add Client" description="Create a new client." />
-        <AddClientForm isPending={add.isPending} onSubmit={onSubmit} />
-        <FormCardFooter
-          formId="form"
-          saveText="Save Client"
-          cancelText="Cancel"
-          onCancel={() => navigate('/clients')}
-          isPending={add.isPending}
-        />
-      </Card>
+      <AddClientForm
+        isPending={add.isPending}
+        onSubmit={onSubmit}
+        onCancel={() => navigate('/clients')}
+      />
     </div>
   );
 }

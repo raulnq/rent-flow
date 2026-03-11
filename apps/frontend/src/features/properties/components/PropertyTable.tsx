@@ -1,7 +1,5 @@
-import { Link, useSearchParams } from 'react-router';
-import { Search, Pencil } from 'lucide-react';
+import { useSearchParams } from 'react-router';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -13,37 +11,49 @@ import {
 import { usePropertiesSuspense } from '../stores/useProperties';
 import { Pagination } from '@/components/Pagination';
 import { NoMatchingItems } from '@/components/NoMatchingItems';
+import { LinkTableCell } from '@/components/LinkTableCell';
+import { TextTableCell } from '@/components/TextTableCell';
+import { NumberTableCell } from '@/components/NumberTableCell';
+import { ActionTableCell } from '@/components/ActionTableCell';
+import { ViewCellButton } from '@/components/ViewCellButton';
+import { EditCellButton } from '@/components/EditCellButton';
+
+function InnerTableHeader() {
+  return (
+    <TableHeader>
+      <TableRow>
+        <TableHead className="min-w-60">Address</TableHead>
+        <TableHead className="hidden md:table-cell">Type</TableHead>
+        <TableHead className="hidden md:table-cell">Client (Owner)</TableHead>
+        <TableHead className="hidden lg:table-cell">Rental Price</TableHead>
+        <TableHead className="hidden lg:table-cell">Rooms</TableHead>
+        <TableHead className="w-20">Actions</TableHead>
+      </TableRow>
+    </TableHeader>
+  );
+}
 
 export function PropertiesSkeleton() {
   return (
     <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Address</TableHead>
-          <TableHead>Type</TableHead>
-          <TableHead>Client (Owner)</TableHead>
-          <TableHead>Rental Price</TableHead>
-          <TableHead>Rooms</TableHead>
-          <TableHead className="w-[100px]">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
+      <InnerTableHeader />
       <TableBody>
         {Array.from({ length: 10 }).map((_, index) => (
           <TableRow key={index}>
             <TableCell>
-              <Skeleton className="h-8 w-[50%]" />
+              <Skeleton className="h-8" />
             </TableCell>
-            <TableCell>
-              <Skeleton className="h-8 w-[60px]" />
+            <TableCell className="hidden md:table-cell">
+              <Skeleton className="h-8" />
             </TableCell>
-            <TableCell>
-              <Skeleton className="h-8 w-[100px]" />
+            <TableCell className="hidden md:table-cell">
+              <Skeleton className="h-8" />
             </TableCell>
-            <TableCell>
-              <Skeleton className="h-8 w-[80px]" />
+            <TableCell className="hidden lg:table-cell">
+              <Skeleton className="h-8" />
             </TableCell>
-            <TableCell>
-              <Skeleton className="h-8 w-[40px]" />
+            <TableCell className="hidden lg:table-cell">
+              <Skeleton className="h-8" />
             </TableCell>
             <TableCell>
               <Skeleton className="h-8" />
@@ -62,59 +72,45 @@ export function PropertyTable() {
   const pageNumber = Math.max(1, Math.floor(Number(page)) || 1);
   const { data } = usePropertiesSuspense({ address, pageNumber });
 
-  if (data.items.length === 0) {
-    return <NoMatchingItems />;
-  }
+  if (data.items.length === 0) return <NoMatchingItems />;
 
   return (
-    <>
+    <div className="overflow-x-auto">
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Address</TableHead>
-            <TableHead>Type</TableHead>
-            <TableHead>Client (Owner)</TableHead>
-            <TableHead>Rental Price</TableHead>
-            <TableHead>Rooms</TableHead>
-            <TableHead className="w-[100px]">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
+        <InnerTableHeader />
         <TableBody>
           {data?.items.map(item => (
             <TableRow key={item.propertyId}>
-              <TableCell className="font-medium">
-                <Link
-                  to={`/properties/${item.propertyId}`}
-                  className="hover:underline"
-                >
-                  {item.address}
-                </Link>
-              </TableCell>
-              <TableCell>{item.propertyType}</TableCell>
-              <TableCell>{item.clientName ?? '—'}</TableCell>
-              <TableCell>${item.rentalPrice.toFixed(2)}</TableCell>
-              <TableCell>{item.rooms}</TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button variant="ghost" size="icon" asChild>
-                    <Link to={`/properties/${item.propertyId}`}>
-                      <Search className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                  <Button variant="ghost" size="icon" asChild>
-                    <Link to={`/properties/${item.propertyId}/edit`}>
-                      <Pencil className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </TableCell>
+              <LinkTableCell
+                className="font-medium"
+                value={item.address}
+                link={`/properties/${item.propertyId}`}
+              />
+              <TextTableCell
+                className="hidden md:table-cell"
+                value={item.propertyType}
+              />
+              <TextTableCell
+                className="hidden md:table-cell"
+                value={item.clientName}
+              />
+              <NumberTableCell
+                className="hidden lg:table-cell"
+                value={item.rentalPrice}
+              />
+              <TextTableCell
+                className="hidden lg:table-cell"
+                value={item.rooms.toString()}
+              />
+              <ActionTableCell>
+                <ViewCellButton link={`/properties/${item.propertyId}`} />
+                <EditCellButton link={`/properties/${item.propertyId}/edit`} />
+              </ActionTableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <div className="mt-4">
-        <Pagination totalPages={data.totalPages} />
-      </div>
-    </>
+      <Pagination totalPages={data.totalPages} />
+    </div>
   );
 }

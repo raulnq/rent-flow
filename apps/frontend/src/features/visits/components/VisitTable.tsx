@@ -5,13 +5,13 @@ import { Skeleton } from '@/components/ui/skeleton';
 import {
   Table,
   TableBody,
-  TableCell,
   TableHead,
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import { TableCell } from '@/components/ui/table';
 import { Pagination } from '@/components/Pagination';
-import { XCircle, Pencil } from 'lucide-react';
+import { CheckCircle, Pencil, UserX, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   useVisitsSuspense,
@@ -21,19 +21,20 @@ import {
   useNoAttendVisit,
 } from '../stores/useVisits';
 import type { Visit, CancelVisit, EditVisit } from '#/features/visits/schemas';
-import { Badge } from '@/components/ui/badge';
-import { CompleteButton } from './CompleteButton';
-import { NoAttendButton } from './NoAttendButton';
 import { EditDialog } from './EditDialog';
 import { CancelDialog } from './CancelDialog';
 import { NoMatchingItems } from '@/components/NoMatchingItems';
+import { BadgeTableCell } from '@/components/BadgeTableCell';
+import { ActionTableCell } from '@/components/ActionTableCell';
+import { DateTableCell } from '@/components/DateTableCell';
+import { ControlledConfirmDialog } from '@/components/ControlledConfirmDialog';
 
 const STATUS_VARIANTS: Record<
   string,
-  'default' | 'secondary' | 'success' | 'destructive' | 'outline'
+  'default' | 'secondary' | 'destructive' | 'outline'
 > = {
   Scheduled: 'default',
-  Completed: 'success',
+  Completed: 'secondary',
   Cancelled: 'destructive',
   'Did Not Attend': 'outline',
 };
@@ -85,6 +86,8 @@ export function VisitTable({ applicationId }: VisitTableProps) {
   });
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
+  const [noAttendDialogOpen, setNoAttendDialogOpen] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState<Visit | null>(null);
 
   const editMutation = useEditVisit(applicationId);
@@ -92,9 +95,10 @@ export function VisitTable({ applicationId }: VisitTableProps) {
   const completeMutation = useCompleteVisit(applicationId);
   const noAttendMutation = useNoAttendVisit(applicationId);
 
-  const handleComplete = async (visitId: string) => {
+  const handleComplete = async () => {
+    if (!selectedVisit) return;
     try {
-      await completeMutation.mutateAsync(visitId);
+      await completeMutation.mutateAsync(selectedVisit.visitId);
       toast.success('Visit marked as completed');
     } catch (error) {
       toast.error(
@@ -103,9 +107,10 @@ export function VisitTable({ applicationId }: VisitTableProps) {
     }
   };
 
-  const handleNoAttend = async (visitId: string) => {
+  const handleNoAttend = async () => {
+    if (!selectedVisit) return;
     try {
-      await noAttendMutation.mutateAsync(visitId);
+      await noAttendMutation.mutateAsync(selectedVisit.visitId);
       toast.success('Visit marked as did not attend');
     } catch (error) {
       toast.error(
@@ -141,28 +146,18 @@ export function VisitTable({ applicationId }: VisitTableProps) {
     }
   };
 
-  const handleEditDialogChange = (open: boolean) => {
-    setEditDialogOpen(open);
-    if (!open) {
-      setSelectedVisit(null);
-    }
-  };
-
-  const handleCancelDialogChange = (open: boolean) => {
-    setCancelDialogOpen(open);
-    if (!open) {
-      setSelectedVisit(null);
-    }
-  };
-
-  const openEditDialog = (visit: Visit) => {
+  const openDialog = (visit: Visit, setOpen: (open: boolean) => void) => {
     setSelectedVisit(visit);
-    setEditDialogOpen(true);
+    setOpen(true);
   };
 
-  const openCancelDialog = (visit: Visit) => {
-    setSelectedVisit(visit);
-    setCancelDialogOpen(true);
+  const createDialogChangeHandler = (setOpen: (open: boolean) => void) => {
+    return (open: boolean) => {
+      setOpen(open);
+      if (!open) {
+        setSelectedVisit(null);
+      }
+    };
   };
 
   if (data.items.length === 0) {
@@ -182,57 +177,81 @@ export function VisitTable({ applicationId }: VisitTableProps) {
         <TableBody>
           {data.items.map(visit => (
             <TableRow key={visit.visitId}>
-              <TableCell>
-                {new Date(visit.scheduledAt).toLocaleString()}
-              </TableCell>
-              <TableCell>
-                <Badge variant={STATUS_VARIANTS[visit.status] || 'default'}>
-                  {visit.status}
-                </Badge>
-              </TableCell>
-              <TableCell>
-                <div className="flex gap-1">
-                  <CompleteButton
-                    onClick={() => handleComplete(visit.visitId)}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => openCancelDialog(visit)}
-                    title="Cancel"
-                  >
-                    <XCircle className="h-4 w-4" />
-                  </Button>
-                  <NoAttendButton
-                    onClick={() => handleNoAttend(visit.visitId)}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => openEditDialog(visit)}
-                    title="Edit"
-                  >
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                </div>
-              </TableCell>
+              <DateTableCell value={visit.scheduledAt} />
+              <BadgeTableCell
+                variant={STATUS_VARIANTS[visit.status] || 'default'}
+              >
+                {visit.status}
+              </BadgeTableCell>
+              <ActionTableCell>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => openDialog(visit, setCompleteDialogOpen)}
+                  title="Complete"
+                >
+                  <CheckCircle className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => openDialog(visit, setNoAttendDialogOpen)}
+                  title="Did Not Attend"
+                >
+                  <UserX className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => openDialog(visit, setCancelDialogOpen)}
+                  title="Cancel"
+                >
+                  <XCircle className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => openDialog(visit, setEditDialogOpen)}
+                  title="Edit"
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+              </ActionTableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
       <Pagination totalPages={data.totalPages} pageParamName="visits_page" />
+      <ControlledConfirmDialog
+        label="Complete"
+        description="Are you sure you want to mark this visit as completed?"
+        open={completeDialogOpen}
+        onOpenChange={createDialogChangeHandler(setCompleteDialogOpen)}
+        onConfirm={handleComplete}
+        isPending={completeMutation.isPending}
+      />
+      <ControlledConfirmDialog
+        label="Did Not Attend"
+        description="Are you sure you want to mark this visit as did not attend?"
+        open={noAttendDialogOpen}
+        onOpenChange={createDialogChangeHandler(setNoAttendDialogOpen)}
+        onConfirm={handleNoAttend}
+        isPending={noAttendMutation.isPending}
+      />
       <EditDialog
-        key={`${selectedVisit?.visitId ?? 'new'}-visit-edit`} // remount component when selected visit changes
+        key={`${selectedVisit?.visitId ?? 'new'}-visit-edit`}
         notes={selectedVisit?.notes}
         scheduledAt={selectedVisit?.scheduledAt}
         isOpen={editDialogOpen}
-        onOpenChange={handleEditDialogChange}
+        onOpenChange={createDialogChangeHandler(setEditDialogOpen)}
         onEdit={handleEdit}
+        isPending={editMutation.isPending}
       />
       <CancelDialog
         isOpen={cancelDialogOpen}
-        onOpenChange={handleCancelDialogChange}
+        onOpenChange={createDialogChangeHandler(setCancelDialogOpen)}
         onCancel={handleCancel}
+        isPending={cancelMutation.isPending}
       />
     </>
   );

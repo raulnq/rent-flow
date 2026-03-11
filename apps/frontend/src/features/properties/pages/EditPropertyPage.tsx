@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router';
-import { type SubmitHandler } from 'react-hook-form';
+import type { SubmitHandler } from 'react-hook-form';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
@@ -14,9 +14,6 @@ import {
 import { EditPropertyForm } from '../components/EditPropertyForm';
 import { PropertySkeleton } from '../components/PropertySkeleton';
 import { ErrorFallback } from '@/components/ErrorFallback';
-import { FormCardHeader } from '@/components/FormCardHeader';
-import { FormCardFooter } from '@/components/FormCardFooter';
-import { Card } from '@/components/ui/card';
 import {
   ImageUploader,
   ImageUploaderSkeleton,
@@ -41,40 +38,28 @@ export function EditPropertyPage() {
 
   return (
     <div className="space-y-4">
-      <Card>
-        <FormCardHeader
-          title="Edit Property"
-          description="Edit an existing property."
-        />
-        <QueryErrorResetBoundary>
-          {({ reset }) => (
-            <ErrorBoundary
-              onReset={reset}
-              FallbackComponent={({ resetErrorBoundary }) => (
-                <ErrorFallback
-                  resetErrorBoundary={resetErrorBoundary}
-                  message="Failed to load property"
-                />
-              )}
-            >
-              <Suspense fallback={<PropertySkeleton />}>
-                <InnerProperty
-                  isPending={edit.isPending}
-                  onSubmit={onSubmit}
-                  propertyId={propertyId!}
-                />
-              </Suspense>
-            </ErrorBoundary>
-          )}
-        </QueryErrorResetBoundary>
-        <FormCardFooter
-          formId="form"
-          saveText="Save Property"
-          cancelText="Cancel"
-          onCancel={() => navigate('/properties')}
-          isPending={edit.isPending}
-        />
-      </Card>
+      <QueryErrorResetBoundary>
+        {({ reset }) => (
+          <ErrorBoundary
+            onReset={reset}
+            FallbackComponent={({ resetErrorBoundary }) => (
+              <ErrorFallback
+                resetErrorBoundary={resetErrorBoundary}
+                message="Failed to load property"
+              />
+            )}
+          >
+            <Suspense fallback={<PropertySkeleton />}>
+              <InnerProperty
+                isPending={edit.isPending}
+                onSubmit={onSubmit}
+                onCancel={() => navigate('/properties')}
+                propertyId={propertyId!}
+              />
+            </Suspense>
+          </ErrorBoundary>
+        )}
+      </QueryErrorResetBoundary>
       <QueryErrorResetBoundary>
         {({ reset }) => (
           <ErrorBoundary
@@ -100,11 +85,13 @@ type InnerPropertyProps = {
   propertyId: string;
   isPending: boolean;
   onSubmit: SubmitHandler<EditProperty>;
+  onCancel: () => void;
 };
 
 function InnerProperty({
   isPending,
   onSubmit,
+  onCancel,
   propertyId,
 }: InnerPropertyProps) {
   const { data } = usePropertySuspense(propertyId);
@@ -112,6 +99,7 @@ function InnerProperty({
     <EditPropertyForm
       isPending={isPending}
       onSubmit={onSubmit}
+      onCancel={onCancel}
       property={data}
     />
   );
