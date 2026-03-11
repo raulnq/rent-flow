@@ -8,17 +8,17 @@ import {
 } from '#/features/applications/schemas';
 import { CheckCircle } from 'lucide-react';
 
-type ApproveButtonProps = {
+type ApplicationApproveActionProps = {
   disabled: boolean;
   isPending: boolean;
   onApprove: (data: ApproveApplication) => void;
 };
 
-export function ApproveButton({
+export function ApplicationApproveAction({
   disabled,
   isPending,
   onApprove,
-}: ApproveButtonProps) {
+}: ApplicationApproveActionProps) {
   return (
     <UncontrolledFormDialog
       schema={approveApplicationSchema}

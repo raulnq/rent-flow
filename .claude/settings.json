@@ -30,7 +30,8 @@
       "Read(//c/Source/rent-flow/**)",
       "Bash(done)",
       "Bash(grep -E \"\\\\.\\(tsx|ts\\)$\")",
-      "Bash(grep -E \"\\\\.tsx$\")"
+      "Bash(grep -E \"\\\\.tsx$\")",
+      "Bash(xargs grep:*)"
     ]
   },
   "hooks": {

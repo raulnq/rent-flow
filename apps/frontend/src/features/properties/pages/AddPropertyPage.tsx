@@ -3,7 +3,7 @@ import type { SubmitHandler } from 'react-hook-form';
 import { toast } from 'sonner';
 import type { AddProperty } from '#/features/properties/schemas';
 import { useAddProperty } from '../stores/useProperties';
-import { AddPropertyForm } from '../components/AddPropertyForm';
+import { PropertyAddForm } from '../components/PropertyAddForm';
 
 export function AddPropertyPage() {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ export function AddPropertyPage() {
 
   return (
     <div className="space-y-4">
-      <AddPropertyForm
+      <PropertyAddForm
         isPending={add.isPending}
         onSubmit={onSubmit}
         onCancel={() => navigate('/properties')}

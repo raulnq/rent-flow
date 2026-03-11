@@ -6,12 +6,12 @@ import type {
   SignContractApplication,
   ReserveApplication,
 } from '#/features/applications/schemas';
-import { StartReviewButton } from './StartReviewButton';
-import { ApproveButton } from './ApproveButton';
-import { RejectButton } from './RejectButton';
-import { WithdrawButton } from './WithdrawButton';
-import { SignContractButton } from './SignContractButton';
-import { ReserveButton } from './ReserveButton';
+import { ApplicationStartReviewAction } from './ApplicationStartReviewAction';
+import { ApplicationApproveAction } from './ApplicationApproveAction';
+import { ApplicationRejectAction } from './ApplicationRejectAction';
+import { ApplicationWithdrawAction } from './ApplicationWithdrawAction';
+import { ApplicationSignContractAction } from './ApplicationSignContractAction';
+import { ApplicationReserveAction } from './ApplicationReserveAction';
 
 type ApplicationToolbarProps = {
   status: string;
@@ -45,32 +45,32 @@ export function ApplicationToolbar({
 
   return (
     <>
-      <StartReviewButton
+      <ApplicationStartReviewAction
         disabled={!canStartReview}
         isPending={isPending}
         onStartReview={onStartReview}
       />
-      <ApproveButton
+      <ApplicationApproveAction
         disabled={!canApprove}
         isPending={isPending}
         onApprove={onApprove}
       />
-      <ReserveButton
+      <ApplicationReserveAction
         disabled={!canReserve}
         isPending={isPending}
         onReserve={onReserve}
       />
-      <RejectButton
+      <ApplicationRejectAction
         disabled={!canReject}
         isPending={isPending}
         onReject={onReject}
       />
-      <WithdrawButton
+      <ApplicationWithdrawAction
         disabled={!canWithdraw}
         isPending={isPending}
         onWithdraw={onWithdraw}
       />
-      <SignContractButton
+      <ApplicationSignContractAction
         disabled={!canSignContract}
         isPending={isPending}
         onSignContract={onSignContract}

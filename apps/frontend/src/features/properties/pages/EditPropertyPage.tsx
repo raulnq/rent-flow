@@ -11,7 +11,7 @@ import {
   useAddPropertyImage,
   useDeletePropertyImage,
 } from '../stores/usePropertyImages';
-import { EditPropertyForm } from '../components/EditPropertyForm';
+import { PropertyEditForm } from '../components/PropertyEditForm';
 import { PropertySkeleton } from '../components/PropertySkeleton';
 import { ErrorFallback } from '@/components/ErrorFallback';
 import {
@@ -96,7 +96,7 @@ function InnerProperty({
 }: InnerPropertyProps) {
   const { data } = usePropertySuspense(propertyId);
   return (
-    <EditPropertyForm
+    <PropertyEditForm
       isPending={isPending}
       onSubmit={onSubmit}
       onCancel={onCancel}

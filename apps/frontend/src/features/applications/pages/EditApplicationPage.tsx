@@ -23,11 +23,11 @@ import {
   useSignContract,
   useReserve,
 } from '../stores/useApplications';
-import { EditApplicationForm } from '../components/EditApplicationForm';
+import { ApplicationEditForm } from '../components/ApplicationEditForm';
 import { ApplicationSkeleton } from '../components/ApplicationSkeleton';
 import { ErrorFallback } from '@/components/ErrorFallback';
 import { VisitsSkeleton, VisitTable } from '../../visits/components/VisitTable';
-import { AddVisitButton } from '@/features/visits/components/AddVisitButton';
+import { VisitAddAction } from '@/features/visits/components/VisitAddAction';
 import { useAddVisit } from '@/features/visits/stores/useVisits';
 import type { AddVisit } from '#/features/visits/schemas';
 import { Card, CardContent } from '@/components/ui/card';
@@ -37,7 +37,7 @@ import {
   DocumentsSkeleton,
 } from '@/features/application-documents/components/DocumentsTable';
 import { useAddApplicationDocument } from '@/features/application-documents/stores/useApplicationDocuments';
-import { AddDocumentButton } from '@/features/application-documents/components/AddDocumentButton';
+import { DocumentAddAction } from '@/features/application-documents/components/DocumentAddAction';
 
 export function EditApplicationPage() {
   const navigate = useNavigate();
@@ -201,7 +201,7 @@ export function EditApplicationPage() {
             title="All visits"
             description="Manage your visits."
             renderAction={
-              <AddVisitButton
+              <VisitAddAction
                 onAdd={handleVisitAdd}
                 isPending={addMutation.isPending}
               />
@@ -232,7 +232,7 @@ export function EditApplicationPage() {
             title="Documents"
             description="Manage your documents."
             renderAction={
-              <AddDocumentButton
+              <DocumentAddAction
                 onAdd={handleAddDocument}
                 isPending={addDocumentMutation.isPending}
               />
@@ -293,7 +293,7 @@ function InnerApplication({
   const { data } = useApplicationSuspense(applicationId);
 
   return (
-    <EditApplicationForm
+    <ApplicationEditForm
       isPending={isPending}
       onSubmit={onSubmit}
       onCancel={onCancel}

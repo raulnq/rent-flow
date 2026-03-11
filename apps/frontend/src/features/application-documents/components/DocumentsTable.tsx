@@ -20,8 +20,8 @@ import { Pagination } from '@/components/Pagination';
 import { NoMatchingItems } from '@/components/NoMatchingItems';
 import { TextTableCell } from '@/components/TextTableCell';
 import { ActionTableCell } from '@/components/ActionTableCell';
-import { EditDialog } from './EditDialog';
-import { DeleteDialog } from './DeleteDialog';
+import { DocumentEditAction } from './DocumentEditAction';
+import { DocumentDeleteAction } from './DocumentDeleteAction';
 import { useState } from 'react';
 import type {
   ApplicationDocument,
@@ -36,7 +36,6 @@ export function DocumentsSkeleton() {
         <TableRow>
           <TableHead>Document Type</TableHead>
           <TableHead>File Name</TableHead>
-          <TableHead>Notes</TableHead>
           <TableHead className="w-[120px]">Actions</TableHead>
         </TableRow>
       </TableHeader>
@@ -48,9 +47,6 @@ export function DocumentsSkeleton() {
             </TableCell>
             <TableCell>
               <Skeleton className="h-8 w-[150px]" />
-            </TableCell>
-            <TableCell>
-              <Skeleton className="h-8 w-[200px]" />
             </TableCell>
             <TableCell>
               <Skeleton className="h-8" />
@@ -201,7 +197,7 @@ export function DocumentsTable({ applicationId }: { applicationId: string }) {
       </Table>
       <Pagination totalPages={data.totalPages} pageParamName="documents_page" />
 
-      <EditDialog
+      <DocumentEditAction
         key={`${selectedApplicationDocument?.applicationDocumentId ?? 'new'}-document-edit`}
         notes={selectedApplicationDocument?.notes}
         isOpen={editDialogOpen}
@@ -210,7 +206,7 @@ export function DocumentsTable({ applicationId }: { applicationId: string }) {
         isPending={editMutation.isPending}
       />
 
-      <DeleteDialog
+      <DocumentDeleteAction
         key={`${selectedApplicationDocument?.applicationDocumentId ?? 'new'}-document-delete`}
         fileName={selectedApplicationDocument?.fileName}
         isOpen={deleteDialogOpen}

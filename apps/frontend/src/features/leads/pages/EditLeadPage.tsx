@@ -6,7 +6,7 @@ import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { EditLead } from '#/features/leads/schemas';
 import { useEditLead, useLeadSuspense } from '../stores/useLeads';
-import { EditLeadForm } from '../components/EditLeadForm';
+import { LeadEditForm } from '../components/LeadEditForm';
 import { LeadSkeleton } from '../components/LeadSkeleton';
 import { ErrorFallback } from '@/components/ErrorFallback';
 
@@ -65,7 +65,7 @@ type InnerLeadProps = {
 function InnerLead({ isPending, onSubmit, onCancel, leadId }: InnerLeadProps) {
   const { data } = useLeadSuspense(leadId);
   return (
-    <EditLeadForm
+    <LeadEditForm
       isPending={isPending}
       onSubmit={onSubmit}
       onCancel={onCancel}

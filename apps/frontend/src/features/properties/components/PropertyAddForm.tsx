@@ -24,17 +24,17 @@ import { ClientCombobox } from '@/features/clients/components/ClientCombobox';
 import { LocationMapField } from './LocationMapField';
 import { FormCard } from '@/components/FormCard';
 
-type AddPropertyFormProps = {
+type PropertyAddFormProps = {
   isPending: boolean;
   onSubmit: SubmitHandler<AddProperty>;
   onCancel: () => void;
 };
 
-export function AddPropertyForm({
+export function PropertyAddForm({
   isPending,
   onSubmit,
   onCancel,
-}: AddPropertyFormProps) {
+}: PropertyAddFormProps) {
   const form = useForm<AddProperty>({
     resolver: zodResolver(addPropertySchema),
     defaultValues: {

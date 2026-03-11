@@ -3,7 +3,7 @@ import type { SubmitHandler } from 'react-hook-form';
 import { toast } from 'sonner';
 import type { AddApplication } from '#/features/applications/schemas';
 import { useAddApplication } from '../stores/useApplications';
-import { AddApplicationForm } from '../components/AddApplicationForm';
+import { ApplicationAddForm } from '../components/ApplicationAddForm';
 
 export function AddApplicationPage() {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ export function AddApplicationPage() {
 
   return (
     <div className="space-y-4">
-      <AddApplicationForm
+      <ApplicationAddForm
         isPending={add.isPending}
         onSubmit={onSubmit}
         onCancel={() => navigate('/applications')}

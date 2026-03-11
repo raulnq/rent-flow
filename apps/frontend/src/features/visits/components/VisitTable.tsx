@@ -21,8 +21,8 @@ import {
   useNoAttendVisit,
 } from '../stores/useVisits';
 import type { Visit, CancelVisit, EditVisit } from '#/features/visits/schemas';
-import { EditDialog } from './EditDialog';
-import { CancelDialog } from './CancelDialog';
+import { VisitEditAction } from './VisitEditAction';
+import { VisitCancelAction } from './VisitCancelAction';
 import { NoMatchingItems } from '@/components/NoMatchingItems';
 import { BadgeTableCell } from '@/components/BadgeTableCell';
 import { ActionTableCell } from '@/components/ActionTableCell';
@@ -84,8 +84,8 @@ export function VisitTable({ applicationId }: VisitTableProps) {
     pageNumber,
     pageSize: 5,
   });
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [editDialogOpen, setVisitEditActionOpen] = useState(false);
+  const [cancelDialogOpen, setVisitCancelActionOpen] = useState(false);
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
   const [noAttendDialogOpen, setNoAttendDialogOpen] = useState(false);
   const [selectedVisit, setSelectedVisit] = useState<Visit | null>(null);
@@ -203,7 +203,7 @@ export function VisitTable({ applicationId }: VisitTableProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => openDialog(visit, setCancelDialogOpen)}
+                  onClick={() => openDialog(visit, setVisitCancelActionOpen)}
                   title="Cancel"
                 >
                   <XCircle className="h-4 w-4" />
@@ -211,7 +211,7 @@ export function VisitTable({ applicationId }: VisitTableProps) {
                 <Button
                   variant="ghost"
                   size="icon"
-                  onClick={() => openDialog(visit, setEditDialogOpen)}
+                  onClick={() => openDialog(visit, setVisitEditActionOpen)}
                   title="Edit"
                 >
                   <Pencil className="h-4 w-4" />
@@ -238,18 +238,18 @@ export function VisitTable({ applicationId }: VisitTableProps) {
         onConfirm={handleNoAttend}
         isPending={noAttendMutation.isPending}
       />
-      <EditDialog
+      <VisitEditAction
         key={`${selectedVisit?.visitId ?? 'new'}-visit-edit`}
         notes={selectedVisit?.notes}
         scheduledAt={selectedVisit?.scheduledAt}
         isOpen={editDialogOpen}
-        onOpenChange={createDialogChangeHandler(setEditDialogOpen)}
+        onOpenChange={createDialogChangeHandler(setVisitEditActionOpen)}
         onEdit={handleEdit}
         isPending={editMutation.isPending}
       />
-      <CancelDialog
+      <VisitCancelAction
         isOpen={cancelDialogOpen}
-        onOpenChange={createDialogChangeHandler(setCancelDialogOpen)}
+        onOpenChange={createDialogChangeHandler(setVisitCancelActionOpen)}
         onCancel={handleCancel}
         isPending={cancelMutation.isPending}
       />

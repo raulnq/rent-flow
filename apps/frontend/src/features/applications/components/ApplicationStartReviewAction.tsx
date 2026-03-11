@@ -3,46 +3,46 @@ import { Input } from '@/components/ui/input';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { UncontrolledFormDialog } from '@/components/UncontrolledFormDialog';
 import {
-  signContractApplicationSchema,
-  type SignContractApplication,
+  startReviewApplicationSchema,
+  type StartReviewApplication,
 } from '#/features/applications/schemas';
-import { FileText } from 'lucide-react';
+import { PlayCircle } from 'lucide-react';
 
-type SignContractButtonProps = {
+type ApplicationStartReviewActionProps = {
   disabled: boolean;
   isPending: boolean;
-  onSignContract: (data: SignContractApplication) => void;
+  onStartReview: (data: StartReviewApplication) => void;
 };
 
-export function SignContractButton({
+export function ApplicationStartReviewAction({
   disabled,
   isPending,
-  onSignContract,
-}: SignContractButtonProps) {
+  onStartReview,
+}: ApplicationStartReviewActionProps) {
   return (
     <UncontrolledFormDialog
-      schema={signContractApplicationSchema}
+      schema={startReviewApplicationSchema}
       defaultValues={{
-        contractSignedAt: new Date().toISOString().split('T')[0],
+        reviewStartedAt: new Date().toISOString().split('T')[0],
       }}
-      onSubmit={onSignContract}
+      onSubmit={onStartReview}
       isPending={isPending}
-      label="Sign Contract"
-      saveLabel="Sign Contract"
-      description="Please select the date when the contract was signed."
-      icon={<FileText className="h-4 w-4" />}
+      label="Start Review"
+      saveLabel="Start Review"
+      description="Please select the date when the review starts."
+      icon={<PlayCircle className="h-4 w-4" />}
       disabled={disabled}
     >
       {form => (
         <Controller
-          name="contractSignedAt"
+          name="reviewStartedAt"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="contractSignedAt">Date</FieldLabel>
+              <FieldLabel htmlFor="reviewStartedAt">Date</FieldLabel>
               <Input
                 {...field}
-                id="contractSignedAt"
+                id="reviewStartedAt"
                 type="date"
                 aria-invalid={fieldState.invalid}
               />

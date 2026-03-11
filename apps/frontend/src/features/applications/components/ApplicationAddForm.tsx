@@ -14,17 +14,17 @@ import { LeadCombobox } from '../../leads/components/LeadCombobox';
 import { PropertyCombobox } from '../../properties/components/PropertyCombobox';
 import { FormCard } from '@/components/FormCard';
 
-type AddApplicationFormProps = {
+type ApplicationAddFormProps = {
   isPending: boolean;
   onSubmit: SubmitHandler<AddApplication>;
   onCancel: () => void;
 };
 
-export function AddApplicationForm({
+export function ApplicationAddForm({
   isPending,
   onSubmit,
   onCancel,
-}: AddApplicationFormProps) {
+}: ApplicationAddFormProps) {
   const form = useForm<AddApplication>({
     resolver: zodResolver(addApplicationSchema),
     defaultValues: {

@@ -8,29 +8,29 @@ import {
   FieldGroup,
   FieldLabel,
 } from '@/components/ui/field';
-import { addClientSchema, type AddClient } from '#/features/clients/schemas';
+import {
+  editClientSchema,
+  type EditClient,
+  type Client,
+} from '#/features/clients/schemas';
 import { FormCard } from '@/components/FormCard';
 
-type AddClientFormProps = {
+type ClientEditFormProps = {
   isPending: boolean;
-  onSubmit: SubmitHandler<AddClient>;
+  onSubmit: SubmitHandler<EditClient>;
   onCancel: () => void;
+  client: Client;
 };
 
-export function AddClientForm({
+export function ClientEditForm({
   isPending,
   onSubmit,
   onCancel,
-}: AddClientFormProps) {
-  const form = useForm<AddClient>({
-    resolver: zodResolver(addClientSchema),
-    defaultValues: {
-      name: '',
-      dni: '',
-      phone: '',
-      email: null,
-      address: null,
-    },
+  client,
+}: ClientEditFormProps) {
+  const form = useForm<EditClient>({
+    resolver: zodResolver(editClientSchema),
+    defaultValues: client,
   });
 
   return (
@@ -39,8 +39,8 @@ export function AddClientForm({
       onCancel={onCancel}
       saveText="Save Client"
       isPending={isPending}
-      title="Add Client"
-      description="Create a new client."
+      title="Edit Client"
+      description="Edit an existing client."
     >
       <FieldGroup>
         <Controller

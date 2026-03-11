@@ -1,6 +1,6 @@
 import { ControlledConfirmDialog } from '@/components/ControlledConfirmDialog';
 
-type DeleteDialogProps = {
+type DocumentDeleteActionProps = {
   fileName: string | undefined;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
@@ -8,13 +8,13 @@ type DeleteDialogProps = {
   isPending: boolean;
 };
 
-export function DeleteDialog({
+export function DocumentDeleteAction({
   fileName,
   isOpen,
   onOpenChange,
   onDelete,
   isPending,
-}: DeleteDialogProps) {
+}: DocumentDeleteActionProps) {
   return (
     <ControlledConfirmDialog
       label="Delete Document"

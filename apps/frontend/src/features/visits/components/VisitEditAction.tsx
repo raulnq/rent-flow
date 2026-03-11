@@ -12,7 +12,7 @@ const editVisitFormSchema = z.object({
 
 type EditVisitForm = z.infer<typeof editVisitFormSchema>;
 
-type EditDialogProps = {
+type VisitEditActionProps = {
   scheduledAt: Date | undefined;
   notes: string | null | undefined;
   isOpen: boolean;
@@ -21,14 +21,14 @@ type EditDialogProps = {
   isPending: boolean;
 };
 
-export function EditDialog({
+export function VisitEditAction({
   scheduledAt,
   notes,
   isOpen,
   onOpenChange,
   onEdit,
   isPending,
-}: EditDialogProps) {
+}: VisitEditActionProps) {
   return (
     <ControlledFormDialog
       schema={editVisitFormSchema}

@@ -9,29 +9,33 @@ import {
   FieldLabel,
   FieldSeparator,
 } from '@/components/ui/field';
-import {
-  editLeadSchema,
-  type EditLead,
-  type Lead,
-} from '#/features/leads/schemas';
+import { addLeadSchema, type AddLead } from '#/features/leads/schemas';
 import { FormCard } from '@/components/FormCard';
 
-type EditLeadFormProps = {
+type LeadAddFormProps = {
   isPending: boolean;
-  onSubmit: SubmitHandler<EditLead>;
+  onSubmit: SubmitHandler<AddLead>;
   onCancel: () => void;
-  lead: Lead;
 };
 
-export function EditLeadForm({
+export function LeadAddForm({
   isPending,
   onSubmit,
   onCancel,
-  lead: leadData,
-}: EditLeadFormProps) {
-  const form = useForm<EditLead>({
-    resolver: zodResolver(editLeadSchema),
-    defaultValues: leadData,
+}: LeadAddFormProps) {
+  const form = useForm<AddLead>({
+    resolver: zodResolver(addLeadSchema),
+    defaultValues: {
+      name: '',
+      dni: '',
+      phone: '',
+      email: null,
+      address: null,
+      birthDate: null,
+      occupation: null,
+      notes: null,
+      nationality: null,
+    },
   });
 
   return (
@@ -40,8 +44,8 @@ export function EditLeadForm({
       onCancel={onCancel}
       saveText="Save Lead"
       isPending={isPending}
-      title="Edit Lead"
-      description="Edit an existing lead."
+      title="Add Lead"
+      description="Create a new lead."
     >
       <FieldGroup>
         <Controller

@@ -25,19 +25,19 @@ import { ClientCombobox } from '@/features/clients/components/ClientCombobox';
 import { LocationMapField } from './LocationMapField';
 import { FormCard } from '@/components/FormCard';
 
-type EditPropertyFormProps = {
+type PropertyEditFormProps = {
   isPending: boolean;
   onSubmit: SubmitHandler<EditProperty>;
   onCancel: () => void;
   property: Property;
 };
 
-export function EditPropertyForm({
+export function PropertyEditForm({
   isPending,
   onSubmit,
   onCancel,
   property,
-}: EditPropertyFormProps) {
+}: PropertyEditFormProps) {
   const form = useForm<EditProperty>({
     resolver: zodResolver(editPropertySchema),
     defaultValues: property,

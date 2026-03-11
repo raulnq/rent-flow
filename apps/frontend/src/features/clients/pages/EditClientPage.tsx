@@ -6,7 +6,7 @@ import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { EditClient } from '#/features/clients/schemas';
 import { useEditClient, useClientSuspense } from '../stores/useClients';
-import { EditClientForm } from '../components/EditClientForm';
+import { ClientEditForm } from '../components/ClientEditForm';
 import { ClientSkeleton } from '../components/ClientSkeleton';
 import { ErrorFallback } from '@/components/ErrorFallback';
 
@@ -70,7 +70,7 @@ function InnerClient({
 }: InnerClientProps) {
   const { data } = useClientSuspense(clientId);
   return (
-    <EditClientForm
+    <ClientEditForm
       isPending={isPending}
       onSubmit={onSubmit}
       onCancel={onCancel}

@@ -27,7 +27,7 @@ import { Badge } from '@/components/ui/badge';
 import { getStatusVariant } from '../utils/status-variants';
 import { ApplicationToolbar } from './ApplicationToolbar';
 
-type EditApplicationFormProps = {
+type ApplicationEditFormProps = {
   isPending: boolean;
   onSubmit: SubmitHandler<EditApplication>;
   onCancel: () => void;
@@ -41,7 +41,7 @@ type EditApplicationFormProps = {
   workflowPending: boolean;
 };
 
-export function EditApplicationForm({
+export function ApplicationEditForm({
   isPending,
   onSubmit,
   onCancel,
@@ -53,7 +53,7 @@ export function EditApplicationForm({
   onSignContract,
   onReserve,
   workflowPending,
-}: EditApplicationFormProps) {
+}: ApplicationEditFormProps) {
   const form = useForm<EditApplication>({
     resolver: zodResolver(editApplicationSchema),
     defaultValues: {

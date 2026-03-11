@@ -3,7 +3,7 @@ import type { SubmitHandler } from 'react-hook-form';
 import { toast } from 'sonner';
 import type { AddLead } from '#/features/leads/schemas';
 import { useAddLead } from '../stores/useLeads';
-import { AddLeadForm } from '../components/AddLeadForm';
+import { LeadAddForm } from '../components/LeadAddForm';
 
 export function AddLeadPage() {
   const navigate = useNavigate();
@@ -23,7 +23,7 @@ export function AddLeadPage() {
 
   return (
     <div className="space-y-4">
-      <AddLeadForm
+      <LeadAddForm
         isPending={add.isPending}
         onSubmit={onSubmit}
         onCancel={() => navigate('/leads')}

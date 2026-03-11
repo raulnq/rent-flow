@@ -1,53 +1,52 @@
 import { Controller } from 'react-hook-form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { UncontrolledFormDialog } from '@/components/UncontrolledFormDialog';
 import {
-  withdrawApplicationSchema,
-  type WithdrawApplication,
+  reserveApplicationSchema,
+  type ReserveApplication,
 } from '#/features/applications/schemas';
-import { UserX } from 'lucide-react';
+import { Calendar } from 'lucide-react';
 
-type WithdrawButtonProps = {
+type ApplicationReserveActionProps = {
   disabled: boolean;
   isPending: boolean;
-  onWithdraw: (data: WithdrawApplication) => void;
+  onReserve: (data: ReserveApplication) => void;
 };
 
-export function WithdrawButton({
+export function ApplicationReserveAction({
   disabled,
   isPending,
-  onWithdraw,
-}: WithdrawButtonProps) {
+  onReserve,
+}: ApplicationReserveActionProps) {
   return (
     <UncontrolledFormDialog
-      schema={withdrawApplicationSchema}
+      schema={reserveApplicationSchema}
       defaultValues={{
-        withdrawnReason: '',
-        withdrawnAt: new Date().toISOString().split('T')[0],
+        reservedAt: new Date().toISOString().split('T')[0],
+        reservedAmount: 0,
       }}
-      onSubmit={onWithdraw}
+      onSubmit={onReserve}
       isPending={isPending}
-      label="Withdraw"
-      saveLabel="Withdraw"
-      description="Please provide a reason for withdrawing this application."
-      icon={<UserX className="h-4 w-4" />}
+      label="Reserve"
+      saveLabel="Reserve"
+      description="Please enter the reservation date and amount."
+      icon={<Calendar className="h-4 w-4" />}
       disabled={disabled}
     >
       {form => (
         <>
           <Controller
-            name="withdrawnReason"
+            name="reservedAt"
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="withdrawnReason">Reason</FieldLabel>
-                <Textarea
+                <FieldLabel htmlFor="reservedAt">Date</FieldLabel>
+                <Input
                   {...field}
-                  id="withdrawnReason"
-                  placeholder="Enter withdrawal reason..."
-                  rows={4}
+                  id="reservedAt"
+                  type="date"
+                  aria-invalid={fieldState.invalid}
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
@@ -56,16 +55,19 @@ export function WithdrawButton({
             )}
           />
           <Controller
-            name="withdrawnAt"
+            name="reservedAmount"
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor="withdrawnAt">Date</FieldLabel>
+                <FieldLabel htmlFor="reservedAmount">Amount</FieldLabel>
                 <Input
                   {...field}
-                  id="withdrawnAt"
-                  type="date"
+                  id="reservedAmount"
+                  type="number"
+                  step="0.01"
+                  min="0"
                   aria-invalid={fieldState.invalid}
+                  onChange={e => field.onChange(parseFloat(e.target.value))}
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />

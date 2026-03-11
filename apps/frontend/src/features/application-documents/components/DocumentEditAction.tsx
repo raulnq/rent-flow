@@ -2,48 +2,52 @@ import { Controller } from 'react-hook-form';
 import { Textarea } from '@/components/ui/textarea';
 import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import { ControlledFormDialog } from '@/components/ControlledFormDialog';
-import type { CancelVisit } from '#/features/visits/schemas';
-import { cancelVisitSchema } from '#/features/visits/schemas';
+import type { EditApplicationDocument } from '#/features/application-documents/schemas';
+import { editApplicationDocumentSchema } from '#/features/application-documents/schemas';
 
-type CancelDialogProps = {
+type DocumentEditActionProps = {
+  notes: string | null | undefined;
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onCancel: (data: CancelVisit) => Promise<void>;
+  onEdit: (data: EditApplicationDocument) => Promise<void>;
   isPending: boolean;
 };
 
-export function CancelDialog({
+export function DocumentEditAction({
+  notes,
   isOpen,
   onOpenChange,
-  onCancel,
+  onEdit,
   isPending,
-}: CancelDialogProps) {
+}: DocumentEditActionProps) {
   return (
     <ControlledFormDialog
-      schema={cancelVisitSchema}
+      schema={editApplicationDocumentSchema}
       defaultValues={{
-        cancellationReason: '',
+        notes: notes ?? null,
       }}
       open={isOpen}
       onOpenChange={onOpenChange}
-      onSubmit={onCancel}
+      onSubmit={onEdit}
       isPending={isPending}
-      label="Cancel Visit"
-      saveLabel="Cancel Visit"
-      description="Please provide a reason for cancelling this visit."
+      label="Edit Document"
+      saveLabel="Update"
+      description="Update the document notes"
     >
       {form => (
         <Controller
-          name="cancellationReason"
+          name="notes"
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel htmlFor="cancellationReason">Reason</FieldLabel>
+              <FieldLabel htmlFor="notes">Notes</FieldLabel>
               <Textarea
                 {...field}
-                id="cancellationReason"
-                placeholder="Enter cancellation reason..."
-                rows={4}
+                id="notes"
+                value={field.value ?? ''}
+                className="field-sizing-fixed min-h-48"
+                placeholder="Add notes about this document..."
+                aria-invalid={fieldState.invalid}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>

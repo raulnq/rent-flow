@@ -10,12 +10,12 @@ const addVisitFormSchema = z.object({
   scheduledAt: z.string().min(1, 'Scheduled time is required'),
 });
 
-type AddButtonProps = {
+type VisitAddActionProps = {
   onAdd: (data: AddVisit) => Promise<void>;
   isPending: boolean;
 };
 
-export function AddVisitButton({ onAdd, isPending }: AddButtonProps) {
+export function VisitAddAction({ onAdd, isPending }: VisitAddActionProps) {
   return (
     <UncontrolledFormDialog
       schema={addVisitFormSchema}

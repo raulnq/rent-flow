@@ -19,12 +19,15 @@ const addDocumentSchema = addApplicationDocumentSchema.extend({
 
 type AddDocument = z.infer<typeof addDocumentSchema>;
 
-type AddButtonProps = {
+type DocumentAddActionProps = {
   onAdd: (data: AddDocument) => Promise<void>;
   isPending: boolean;
 };
 
-export function AddDocumentButton({ onAdd, isPending }: AddButtonProps) {
+export function DocumentAddAction({
+  onAdd,
+  isPending,
+}: DocumentAddActionProps) {
   return (
     <UncontrolledFormDialog
       schema={addDocumentSchema}

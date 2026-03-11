@@ -9,17 +9,17 @@ import {
 } from '#/features/applications/schemas';
 import { XCircle } from 'lucide-react';
 
-type RejectButtonProps = {
+type ApplicationRejectActionProps = {
   disabled: boolean;
   isPending: boolean;
   onReject: (data: RejectApplication) => void;
 };
 
-export function RejectButton({
+export function ApplicationRejectAction({
   disabled,
   isPending,
   onReject,
-}: RejectButtonProps) {
+}: ApplicationRejectActionProps) {
   return (
     <UncontrolledFormDialog
       schema={rejectApplicationSchema}
