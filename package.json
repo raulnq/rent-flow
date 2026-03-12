@@ -30,6 +30,8 @@
     "storage:down": "docker-compose down storage",
     "storage:stop": "docker-compose stop storage",
     "seq:up": "docker-compose up seq -d",
+    "env:up": "npm run database:up && npm run storage:up",
+    "env:stop": "npm run database:stop && npm run storage:stop",
     "storage:public": "docker exec -it rent-flow-storage-1 sh -c \"mc alias set local http://localhost:9000 minioadmin minioadmin && mc anonymous set download local/$1\" --"
   },
   "devDependencies": {

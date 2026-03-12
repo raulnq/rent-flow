@@ -1,26 +1,22 @@
 import { SidebarTrigger } from '@/components/ui/sidebar';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { NAV_ITEMS } from '@/nav-items';
 import { Bell, Search } from 'lucide-react';
 import { useLocation } from 'react-router';
 import { ThemeToggle } from '../ThemeToggle';
 
-const TITLE_BY_PATH: Record<string, string> = {
-  '/': 'Dashboard',
-  '/applications': 'Applications',
-  '/clients': 'Clients',
-  '/leads': 'Leads',
-  '/properties': 'Properties',
-};
-
 function usePageTitle() {
   const { pathname } = useLocation();
 
+  const TITLE_BY_PATH: Record<string, string> = Object.fromEntries(
+    NAV_ITEMS.map(item => [item.to, item.title])
+  );
   const matchedKey = Object.keys(TITLE_BY_PATH)
     .sort((a, b) => b.length - a.length)
     .find(key => pathname.startsWith(key));
 
-  return matchedKey ? TITLE_BY_PATH[matchedKey] : 'CRM';
+  return matchedKey ? TITLE_BY_PATH[matchedKey] : 'NONE';
 }
 
 export function AppHeader() {

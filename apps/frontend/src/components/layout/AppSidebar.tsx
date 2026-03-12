@@ -11,30 +11,9 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from '@/components/ui/sidebar';
-import {
-  LayoutDashboard,
-  Users,
-  UserPlus,
-  Building2,
-  FileText,
-} from 'lucide-react';
+import { NAV_ITEMS } from '@/nav-items';
 import { useLocation } from 'react-router';
 import { UserButton } from '@clerk/clerk-react';
-
-type NavItem = {
-  title: string;
-  to: string;
-  icon: React.ComponentType<{ className?: string }>;
-  end?: boolean;
-};
-
-const NAV_ITEMS: NavItem[] = [
-  { title: 'Dashboard', to: '/', icon: LayoutDashboard, end: true },
-  { title: 'Clients', to: '/clients', icon: Users },
-  { title: 'Leads', to: '/leads', icon: UserPlus },
-  { title: 'Properties', to: '/properties', icon: Building2 },
-  { title: 'Applications', to: '/applications', icon: FileText },
-];
 
 export function AppSidebar() {
   const { pathname } = useLocation();

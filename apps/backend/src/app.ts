@@ -1,7 +1,7 @@
 import { Hono } from 'hono';
 import { onError } from './middlewares/on-error.js';
 import { onNotFound } from './middlewares/on-not-found.js';
-import { clerkMiddleware, requireAuth } from './middlewares/auth.js';
+import { conditionalClerkMiddleware, requireAuth } from './middlewares/auth.js';
 import { ENV } from './env.js';
 import { secureHeaders } from 'hono/secure-headers';
 import { cors } from 'hono/cors';
@@ -30,8 +30,14 @@ export const app = new Hono({ strict: false })
     })
   )
   .use(secureHeaders())
-  .use('*', clerkMiddleware())
+  .use('*', conditionalClerkMiddleware())
   .use('/api/*', requireAuth)
+  .route('/api', applicationDocumentRoute)
+  .route('/api', applicationRoute)
+  .route('/api', clientRoute)
+  .route('/api', leadRoute)
+  .route('/api', propertyRoute)
+  .route('/api', visitRoute)
   .get('/live', c =>
     c.json({
       status: 'healthy',
@@ -39,12 +45,6 @@ export const app = new Hono({ strict: false })
       timestamp: Date.now(),
     })
   )
-  .route('/api', applicationDocumentRoute)
-  .route('/api', applicationRoute)
-  .route('/api', clientRoute)
-  .route('/api', leadRoute)
-  .route('/api', propertyRoute)
-  .route('/api', visitRoute)
   .notFound(onNotFound)
   .onError(onError);
 

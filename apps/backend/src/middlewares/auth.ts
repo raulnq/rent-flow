@@ -3,7 +3,16 @@ import { createMiddleware } from 'hono/factory';
 import { ENV } from '../env.js';
 import { unauthorizedError } from '../extensions.js';
 
-export { clerkMiddleware, getAuth };
+export { getAuth };
+
+export const conditionalClerkMiddleware = () => {
+  if (ENV.NODE_ENV === 'test') {
+    return createMiddleware(async (_c, next) => {
+      await next();
+    });
+  }
+  return clerkMiddleware();
+};
 
 export const requireAuth = createMiddleware(async (c, next) => {
   if (ENV.NODE_ENV === 'test') {
