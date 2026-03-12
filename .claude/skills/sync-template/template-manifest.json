@@ -55,12 +55,6 @@
       "apps/frontend/src/components/layout/AppHeader.tsx",
 
       "apps/frontend/src/components/FormCard.tsx",
-      "apps/frontend/src/components/FormCardHeader.tsx",
-      "apps/frontend/src/components/FormCardContent.tsx",
-      "apps/frontend/src/components/FormCardFooter.tsx",
-      "apps/frontend/src/components/ViewCardHeader.tsx",
-      "apps/frontend/src/components/ViewCardContent.tsx",
-      "apps/frontend/src/components/ViewCardFooter.tsx",
       "apps/frontend/src/components/ListCardHeader.tsx",
       "apps/frontend/src/components/SearchBar.tsx",
       "apps/frontend/src/components/SearchCombobox.tsx",
