@@ -8,6 +8,7 @@ services:
     environment:
       - NODE_ENV=production
       - DATABASE_URL=${DATABASE_URL:?}
+      - DATABASE_SCHEMA=rent_flow
   api:
     build:
       context: .
@@ -30,6 +31,7 @@ services:
       - S3_REGION=auto
       - S3_IMAGES_BUCKET_NAME=${S3_IMAGES_BUCKET_NAME:?}
       - S3_IMAGES_PUBLIC_BASE_URL=${S3_IMAGES_PUBLIC_BASE_URL:?}
+      - DATABASE_SCHEMA=rent_flow
     healthcheck:
       test:
         [
