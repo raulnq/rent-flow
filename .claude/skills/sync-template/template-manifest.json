@@ -16,13 +16,11 @@
       ".vscode/launch.json",
       ".husky/commit-msg",
       ".husky/pre-commit",
-
       "apps/backend/tsconfig.json",
       "apps/backend/tsconfig.app.json",
       "apps/backend/drizzle.config.ts",
       "apps/backend/Dockerfile",
       "apps/backend/src/index.ts",
-      "apps/backend/src/env.ts",
       "apps/backend/src/logger.ts",
       "apps/backend/src/validator.ts",
       "apps/backend/src/extensions.ts",
@@ -34,7 +32,6 @@
       "apps/backend/tests/setup.ts",
       "apps/backend/tests/assertions.ts",
       "apps/backend/tests/errors.ts",
-
       "apps/frontend/tsconfig.json",
       "apps/frontend/tsconfig.app.json",
       "apps/frontend/tsconfig.node.json",
@@ -45,15 +42,12 @@
       "apps/frontend/src/App.tsx",
       "apps/frontend/src/client.ts",
       "apps/frontend/src/index.css",
-      "apps/frontend/src/vite-env.d.ts",
       "apps/frontend/src/lib/utils.ts",
       "apps/frontend/src/hooks/use-mobile.ts",
       "apps/frontend/src/stores/useThemeStore.ts",
-
       "apps/frontend/src/components/layout/AppLayout.tsx",
       "apps/frontend/src/components/layout/AppSidebar.tsx",
       "apps/frontend/src/components/layout/AppHeader.tsx",
-
       "apps/frontend/src/components/FormCard.tsx",
       "apps/frontend/src/components/ListCardHeader.tsx",
       "apps/frontend/src/components/SearchBar.tsx",
@@ -82,7 +76,6 @@
       "apps/frontend/src/components/UncontrolledFormDialog.tsx",
       "apps/frontend/src/components/UncontrolledConfirmDialog.tsx",
       "apps/frontend/src/components/UncontrolledFileUploadDialog.tsx",
-
       "apps/frontend/src/components/ui/badge.tsx",
       "apps/frontend/src/components/ui/button.tsx",
       "apps/frontend/src/components/ui/card.tsx",
@@ -149,6 +142,8 @@
     "dist/**",
     "package-lock.json",
     "*.tsbuildinfo",
-    ".claude/settings.json"
+    ".claude/settings.json",
+    "apps/frontend/src/vite-env.d.ts",
+    "apps/backend/src/env.ts"
   ]
 }
