@@ -10,7 +10,6 @@
     "jsxImportSource": "hono/jsx",
     "removeComments": true,
     "outDir": "./dist",
-    "baseUrl": ".",
     "paths": {
       "#/*": ["./src/*"]
     }
