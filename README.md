@@ -51,7 +51,8 @@ rent-flow/
 ├── prettier.config.ts          # Shared Prettier config
 ├── commitlint.config.ts        # Commit linting config
 ├── CLAUDE.md                   # Claude Code conventions (auto-loaded)
-└── package.json                # Root workspace config
+├── pnpm-workspace.yaml         # pnpm workspace config
+└── package.json                # Root package config
 ```
 
 ## Features
@@ -72,14 +73,14 @@ Rent Flow implements 6 feature modules, each following the same full-stack patte
 ### Prerequisites
 
 - Node.js 20+
-- npm 10+
+- pnpm 10+ (`corepack enable && corepack prepare pnpm@latest --activate`)
 - Docker (for PostgreSQL, MinIO, and Seq)
 - A [Clerk](https://clerk.com) account (for authentication)
 
 ### Installation
 
 ```bash
-npm install
+pnpm install
 ```
 
 ### Environment Setup
@@ -124,14 +125,14 @@ cp apps/frontend/.env.example apps/frontend/.env
 Start PostgreSQL via Docker:
 
 ```bash
-npm run database:up
+pnpm run database:up
 ```
 
 Generate and apply migrations:
 
 ```bash
-npm run database:generate -w @node-monorepo/backend
-npm run database:migrate -w @node-monorepo/backend
+pnpm --filter @node-monorepo/backend database:generate
+pnpm --filter @node-monorepo/backend database:migrate
 ```
 
 ### Storage Setup
@@ -139,7 +140,7 @@ npm run database:migrate -w @node-monorepo/backend
 Start MinIO (S3-compatible storage) for document uploads:
 
 ```bash
-npm run storage:up
+pnpm run storage:up
 ```
 
 MinIO Console is available at `http://localhost:9001` (credentials: `minioadmin`/`minioadmin`).
@@ -149,23 +150,23 @@ MinIO Console is available at `http://localhost:9001` (credentials: `minioadmin`
 Run both backend and frontend concurrently:
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Or run them separately:
 
 ```bash
 # Backend only (http://localhost:5000)
-npm run dev:backend
+pnpm run dev:backend
 
 # Frontend only (http://localhost:5173)
-npm run dev:frontend
+pnpm run dev:frontend
 ```
 
 ### Build
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 ### Production (Docker)
@@ -178,33 +179,33 @@ This starts PostgreSQL, MinIO (S3), runs migrations, and starts the API server. 
 
 ## Available Scripts
 
-| Script              | Description                                                   |
-| ------------------- | ------------------------------------------------------------- |
-| `dev`               | Start both backend and frontend concurrently                  |
-| `dev:backend`       | Start backend dev server                                      |
-| `dev:frontend`      | Start frontend dev server                                     |
-| `build`             | Build both apps                                               |
-| `build:backend`     | Build backend                                                 |
-| `build:frontend`    | Build frontend                                                |
-| `start:backend`     | Start backend in production                                   |
-| `preview:frontend`  | Preview frontend build                                        |
-| `lint`              | Run ESLint                                                    |
-| `lint:fix`          | Fix ESLint issues                                             |
-| `format`            | Format code with Prettier                                     |
-| `format:check`      | Check code formatting                                         |
-| `lint:format`       | Fix lint + format in one step                                 |
-| `commit`            | Interactive conventional commit                               |
-| `database:up`       | Start PostgreSQL container                                    |
-| `database:down`     | Stop and remove database container                            |
-| `database:stop`     | Stop database container (without removing)                    |
-| `database:generate` | Generate Drizzle migrations (use `-w @node-monorepo/backend`) |
-| `database:migrate`  | Apply Drizzle migrations (use `-w @node-monorepo/backend`)    |
-| `database:studio`   | Open Drizzle Studio (use `-w @node-monorepo/backend`)         |
-| `storage:up`        | Start MinIO (S3) container                                    |
-| `storage:down`      | Stop and remove MinIO container                               |
-| `storage:stop`      | Stop MinIO container (without removing)                       |
-| `seq:up`            | Start Seq logging service                                     |
-| `test`              | Run backend tests (use `-w @node-monorepo/backend`)           |
+| Script              | Description                                                                            |
+| ------------------- | -------------------------------------------------------------------------------------- |
+| `dev`               | Start both backend and frontend concurrently                                           |
+| `dev:backend`       | Start backend dev server                                                               |
+| `dev:frontend`      | Start frontend dev server                                                              |
+| `build`             | Build both apps                                                                        |
+| `build:backend`     | Build backend                                                                          |
+| `build:frontend`    | Build frontend                                                                         |
+| `start:backend`     | Start backend in production                                                            |
+| `preview:frontend`  | Preview frontend build                                                                 |
+| `lint`              | Run ESLint                                                                             |
+| `lint:fix`          | Fix ESLint issues                                                                      |
+| `format`            | Format code with Prettier                                                              |
+| `format:check`      | Check code formatting                                                                  |
+| `lint:format`       | Fix lint + format in one step                                                          |
+| `commit`            | Interactive conventional commit                                                        |
+| `database:up`       | Start PostgreSQL container                                                             |
+| `database:down`     | Stop and remove database container                                                     |
+| `database:stop`     | Stop database container (without removing)                                             |
+| `database:generate` | Generate Drizzle migrations (`pnpm --filter @node-monorepo/backend database:generate`) |
+| `database:migrate`  | Apply Drizzle migrations (`pnpm --filter @node-monorepo/backend database:migrate`)     |
+| `database:studio`   | Open Drizzle Studio (`pnpm --filter @node-monorepo/backend database:studio`)           |
+| `storage:up`        | Start MinIO (S3) container                                                             |
+| `storage:down`      | Stop and remove MinIO container                                                        |
+| `storage:stop`      | Stop MinIO container (without removing)                                                |
+| `seq:up`            | Start Seq logging service                                                              |
+| `test`              | Run backend tests (`pnpm --filter @node-monorepo/backend test`)                        |
 
 ## Tech Stack
 
@@ -234,7 +235,7 @@ This starts PostgreSQL, MinIO (S3), runs migrations, and starts the API server. 
 
 ### Tooling
 
-- **Monorepo**: npm workspaces
+- **Monorepo**: pnpm workspaces
 - **Language**: TypeScript 5.9 (strict, verbatimModuleSyntax)
 - **Linting**: ESLint 9 (flat config) + typescript-eslint
 - **Formatting**: Prettier
@@ -370,7 +371,7 @@ VSCode debug configurations are included:
 
 ### Debug Frontend
 
-1. Start the frontend dev server first: `npm run dev:frontend`
+1. Start the frontend dev server first: `pnpm run dev:frontend`
 2. Open Run and Debug panel (Ctrl+Shift+D)
 3. Select "Debug Frontend"
 4. Press F5 - Chrome will open
